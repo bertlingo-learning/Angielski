@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Interview - Preply</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #fafafa;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .header h1 {
+            color: #1a1a1a;
+            font-size: 2.2em;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.05em;
+            font-weight: 400;
+        }
+        
+        .question-container {
+            display: none;
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        .question-container.active {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from { 
+                opacity: 0; 
+                transform: translateX(30px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateX(0);
+            }
+        }
+        
+        .section-title {
+            color: #1a1a1a;
+            margin-bottom: 35px;
+            margin-top: 20px;
+            font-size: 1.8em;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .question-number {
+            color: #999;
+            font-size: 0.85em;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        
+        .question {
+            font-size: 1.6em;
+            color: #1a1a1a;
+            margin-bottom: 25px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        
+        .hint {
+            color: #888;
+            font-size: 0.95em;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        
+        .option:hover {
+            background: #e9ecef;
+            border-color: #4a90e2;
+        }
+        
+        .option input[type="checkbox"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .option label {
+            cursor: pointer;
+            font-size: 1em;
+            color: #333;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 140px;
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            resize: vertical;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #4a90e2;
+            background: white;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 35px;
+            gap: 12px;
+        }
+        
+        button {
+            padding: 14px 32px;
+            font-size: 1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        
+        .btn-prev {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+        
+        .btn-prev:hover {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-next {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .btn-next:hover {
+            background-color: #357abd;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+        
+        .btn-finish {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        .btn-finish:hover {
+            background-color: #229954;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #f0f0f0;
+            border-radius: 3px;
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a90e2, #357abd);
+            transition: width 0.4s ease;
+        }
+        
+        .disclaimer-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .disclaimer-screen h2 {
+            font-size: 2em;
+            color: #1a1a1a;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        
+        .disclaimer-screen p {
+            font-size: 1.15em;
+            color: #555;
+            line-height: 1.8;
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+        
+        .summary {
+            display: none;
+        }
+        
+        .summary.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .summary-item {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .summary-question {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+        
+        .summary-answer {
+            color: #555;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .summary-section {
+            margin-top: 50px;
+            margin-bottom: 25px;
+        }
+        
+        .summary-section-title {
+            color: #1a1a1a;
+            font-size: 1.6em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+        
+        .important-info-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .important-info-title {
+            color: #1a1a1a;
+            font-size: 1.8em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .important-info-title::before {
+            content: "ℹ️ ";
+            margin-right: 10px;
+        }
+        
+        .disclaimer-item {
+            margin-bottom: 25px;
+            padding: 24px;
+            background: linear-gradient(135deg, #fff9e6 0%, #fff4d6 100%);
+            border-radius: 12px;
+        }
+        
+        .disclaimer-item h3 {
+            color: #1a1a1a;
+            font-size: 1.2em;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        .disclaimer-item p {
+            color: #555;
+            line-height: 1.7;
+        }
+        
+        .btn-print {
+            background-color: #e74c3c;
+            color: white;
+            margin-top: 30px;
+        }
+        
+        .btn-print:hover {
+            background-color: #c0392b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn-restart {
+            background-color: #95a5a6;
+            color: white;
+            margin-top: 30px;
+            margin-left: 12px;
+        }
+        
+        .btn-restart:hover {
+            background-color: #7f8c8d;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            
+            button {
+                display: none;
+            }
+            
+            .progress-bar {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .question {
+                font-size: 1.3em;
+            }
+            
+            .navigation {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Student Interview</h1>
+            <p>Let's get to know each other and plan your perfect learning journey!</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div id="questionsContainer"></div>
+        
+        <div class="summary" id="summary"></div>
+    </div>
+    
+    <script>
+        const questions = [
+            {
+                section: "🎯 GOALS AND MOTIVATION",
+                items: [
+                    {
+                        q: "Should the lessons be mainly in English? How much English, how much Polish?",
+                        options: ["Mostly English, some Polish", "50/50", "Mostly Polish, some English", "Flexible - depends on topic"]
+                    },
+                    {
+                        q: "What is your main learning goal?",
+                        options: ["Exam preparation", "Job interview", "Travel", "Living abroad", "Career development", "General improvement"]
+                    },
+                    {
+                        q: "In what specific situations will you use the language?",
+                        options: ["Business meetings", "Presentations", "Everyday conversations", "Travel", "Work emails", "Academic writing"]
+                    },
+                    {
+                        q: "What motivates you to learn English right now?"
+                    },
+                    {
+                        q: "What do you want to focus on most in learning English?",
+                        options: ["Fluency", "Confidence", "Grammatical accuracy", "Pronunciation", "Vocabulary", "Listening comprehension"]
+                    },
+                    {
+                        q: "In what timeframe do you want to achieve your goals?",
+                        options: ["1-3 months", "3-6 months", "6-12 months", "1+ year", "No specific deadline"]
+                    }
+                ]
+            },
+            {
+                section: "📊 LEVEL AND EXPERIENCE",
+                items: [
+                    {
+                        q: "How do you assess your current level according to the CEFR scale?",
+                        hint: "A1 - beginner, A2 - elementary, B1 - intermediate, B2 - upper-intermediate, C1 - advanced, C2 - proficiency",
+                        options: ["A1 - Beginner", "A2 - Elementary", "B1 - Intermediate", "B2 - Upper-intermediate", "C1 - Advanced", "C2 - Proficiency"]
+                    },
+                    {
+                        q: "How do you rate your confidence when speaking in this language?",
+                        hint: "scale 1-10 or descriptive",
+                        options: ["1-2 (Very low)", "3-4 (Low)", "5-6 (Medium)", "7-8 (Good)", "9-10 (Very confident)"]
+                    },
+                    {
+                        q: "What were your previous experiences learning English? What worked and what didn't?"
+                    },
+                    {
+                        q: "What is currently the most difficult for you in learning English?",
+                        options: ["Listening comprehension", "Speaking", "Writing", "Grammar", "Vocabulary", "Pronunciation"]
+                    },
+                    {
+                        q: "Are you familiar with grammatical terminology?",
+                        hint: "e.g. are concepts like Present Perfect, modal verbs, conditional sentences familiar to you, pronouns, verbs, adjectives",
+                        options: ["Yes, very familiar", "Somewhat familiar", "Basic knowledge", "Not familiar at all"]
+                    }
+                ]
+            },
+            {
+                section: "🎨 LEARNING STYLE AND PREFERENCES",
+                items: [
+                    {
+                        q: "How do you like to learn? What activities or teaching methods do you like?",
+                        options: ["Games", "Videos", "Reading articles", "Role-playing", "Discussions", "Podcasts", "Grammar exercises"]
+                    },
+                    {
+                        q: "What activities or teaching methods do you not like?"
+                    },
+                    {
+                        q: "Do you plan to dedicate time to independent study or homework between lessons?",
+                        options: ["Yes, regularly (daily)", "Yes, occasionally (few times a week)", "Maybe sometimes", "No, only during lessons"]
+                    },
+                    {
+                        q: "Do you use any learning applications?",
+                        hint: "e.g. Anki, Duolingo, Quizlet, others"
+                    },
+                    {
+                        q: "Should I explain everything in detail (all grammatical and phonetic nuances, etc.), or should we focus more on the practical application of English? What level of learning precision do you prefer?",
+                        options: ["Very detailed explanations", "Balanced approach", "Practical application focus", "Minimal theory, maximum practice"]
+                    }
+                ]
+            },
+            {
+                section: "⚙️ TECHNICAL ASPECTS",
+                items: [
+                    {
+                        q: "How often would you like to have lessons and at what time?",
+                        hint: "e.g. 2x per week in the evenings, weekends"
+                    },
+                    {
+                        q: "What device will you mainly use during lessons?",
+                        options: ["Phone", "Tablet", "PC/Laptop"]
+                    },
+                    {
+                        q: "Are you open to using additional software (such as HopToDesk) for a better interactive learning experience?",
+                        options: ["Yes, definitely", "Yes, if necessary", "Maybe", "Prefer not to"]
+                    },
+                    {
+                        q: "Do you print materials or do you prefer digital versions?",
+                        options: ["Print materials", "Digital versions", "Both", "No preference"]
+                    }
+                ]
+            },
+            {
+                section: "🌟 PERSONALIZATION",
+                items: [
+                    {
+                        q: "What are your hobbies and interests?"
+                    },
+                    {
+                        q: "What movies, series or music do you like?"
+                    }
+                ]
+            },
+            {
+                section: "💬 ADDITIONAL INFORMATION",
+                items: [
+                    {
+                        q: "Do you have any concerns, boundaries or difficulties (e.g. health-related) that I should know about?"
+                    },
+                    {
+                        q: "Is there anything else you would like to tell me about your expectations or needs?"
+                    }
+                ]
+            }
+        ];
+        
+        const disclaimers = [
+            {
+                title: "💬 Feedback and Constructive Criticism",
+                text: "I am open to constructive criticism expressed with respect. Please don't be afraid to share your thoughts about what you consider inappropriate in my teaching style. Feedback allows me to grow."
+            },
+            {
+                title: "✅ Don't Be Afraid to Make Mistakes",
+                text: "Please don't be afraid to make mistakes. It doesn't matter how incorrectly you speak, what matters is that you speak. Don't expect criticism or unpleasant reactions from me. I'm here to help you, not to be critical. So don't be afraid to say that you don't understand something or forgot something, even if we've explained it several times. I'm not a critical person, quite the opposite, and I want every student to feel comfortable during lessons with me."
+            },
+            {
+                title: "🔄 Flexibility and Adjustments",
+                text: "If during our collaboration you feel that something in our lessons should change (pace, methods, materials), let me know. The lessons are for you, so I want them to be as effective as possible."
+            }
+        ];
+        
+        let currentQuestion = 0;
+        let totalQuestions = 0;
+        let answers = {};
+        let flatQuestions = [];
+        let currentDisclaimerIndex = 0;
+        let showingDisclaimers = false;
+        
+        // Flatten questions
+        questions.forEach(section => {
+            section.items.forEach(item => {
+                flatQuestions.push({
+                    section: section.section,
+                    question: item.q,
+                    hint: item.hint || "",
+                    options: item.options || []
+                });
+            });
+        });
+        
+        totalQuestions = flatQuestions.length;
+        
+        function renderQuestion(index) {
+            const container = document.getElementById('questionsContainer');
+            const q = flatQuestions[index];
+            const isNewSection = index === 0 || flatQuestions[index - 1].section !== q.section;
+            
+            let optionsHTML = '';
+            if (q.options.length > 0) {
+                optionsHTML = '<div class="options">';
+                q.options.forEach((option, i) => {
+                    const checkId = `opt${index}_${i}`;
+                    optionsHTML += `
+                        <div class="option">
+                            <input type="checkbox" id="${checkId}" value="${option}">
+                            <label for="${checkId}">${option}</label>
+                        </div>
+                    `;
+                });
+                optionsHTML += '</div>';
+            }
+            
+            container.innerHTML = `
+                <div class="question-container active">
+                    ${isNewSection ? `<div class="section-title">${q.section}</div>` : ''}
+                    <div class="question-number">Question ${index + 1} of ${totalQuestions}</div>
+                    <div class="question">${q.question}</div>
+                    ${q.hint ? `<div class="hint">${q.hint}</div>` : ''}
+                    ${optionsHTML}
+                    <textarea id="answer${index}" placeholder="Your notes and additional information...">${answers[index]?.text || ''}</textarea>
+                    <div class="navigation">
+                        ${index > 0 ? '<button class="btn-prev" onclick="prevQuestion()">← Previous</button>' : '<div></div>'}
+                        ${index < totalQuestions - 1 
+                            ? '<button class="btn-next" onclick="nextQuestion()">Next →</button>' 
+                            : '<button class="btn-next" onclick="startDisclaimers()">Next →</button>'}
+                    </div>
+                </div>
+            `;
+            
+            // Restore checkbox states
+            if (answers[index]?.selected) {
+                answers[index].selected.forEach(val => {
+                    const checkbox = Array.from(document.querySelectorAll('input[type="checkbox"]'))
+                        .find(cb => cb.value === val);
+                    if (checkbox) checkbox.checked = true;
+                });
+            }
+            
+            updateProgress();
+        }
+        
+        function renderDisclaimer(index) {
+            const container = document.getElementById('questionsContainer');
+            const disclaimer = disclaimers[index];
+            
+            container.innerHTML = `
+                <div class="question-container active">
+                    <div class="disclaimer-screen">
+                        <h2>${disclaimer.title}</h2>
+                        <p>${disclaimer.text}</p>
+                        <div class="navigation" style="justify-content: center;">
+                            ${index < disclaimers.length - 1 
+                                ? '<button class="btn-next" onclick="nextDisclaimer()">Next →</button>' 
+                                : '<button class="btn-finish" onclick="showSummary()">Finish ✓</button>'}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            updateProgress();
+        }
+        
+        function updateProgress() {
+            const totalSteps = totalQuestions + disclaimers.length;
+            const currentStep = showingDisclaimers ? totalQuestions + currentDisclaimerIndex + 1 : currentQuestion + 1;
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+        
+        function saveAnswer() {
+            if (!showingDisclaimers) {
+                const textarea = document.getElementById(`answer${currentQuestion}`);
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+                const selected = Array.from(checkboxes).map(cb => cb.value);
+                
+                answers[currentQuestion] = {
+                    text: textarea ? textarea.value : '',
+                    selected: selected
+                };
+            }
+        }
+        
+        function nextQuestion() {
+            saveAnswer();
+            if (currentQuestion < totalQuestions - 1) {
+                currentQuestion++;
+                renderQuestion(currentQuestion);
+            }
+        }
+        
+        function prevQuestion() {
+            saveAnswer();
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion(currentQuestion);
+            }
+        }
+        
+        function startDisclaimers() {
+            saveAnswer();
+            showingDisclaimers = true;
+            currentDisclaimerIndex = 0;
+            renderDisclaimer(0);
+        }
+        
+        function nextDisclaimer() {
+            if (currentDisclaimerIndex < disclaimers.length - 1) {
+                currentDisclaimerIndex++;
+                renderDisclaimer(currentDisclaimerIndex);
+            }
+        }
+        
+        function showSummary() {
+            document.getElementById('questionsContainer').style.display = 'none';
+            document.querySelector('.progress-bar').style.display = 'none';
+            
+            const summaryDiv = document.getElementById('summary');
+            let summaryHTML = '<h2 style="text-align: center; margin-bottom: 40px; color: #1a1a1a; font-size: 2em;">📊 Interview Summary</h2>';
+            
+            let currentSection = '';
+            flatQuestions.forEach((q, index) => {
+                if (q.section !== currentSection) {
+                    if (currentSection !== '') {
+                        summaryHTML += '</div>';
+                    }
+                    summaryHTML += `
+                        <div class="summary-section">
+                            <div class="summary-section-title">${q.section}</div>
+                        </div>
+                        <div>
+                    `;
+                    currentSection = q.section;
+                }
+                
+                let answerText = '';
+                if (answers[index]) {
+                    if (answers[index].selected.length > 0) {
+                        answerText = '<strong>Selected:</strong> ' + answers[index].selected.join(', ');
+                        if (answers[index].text) {
+                            answerText += '<br><br><strong>Notes:</strong> ' + answers[index].text;
+                        }
+                    } else {
+                        answerText = answers[index].text || '<em style="color: #999;">No answer</em>';
+                    }
+                } else {
+                    answerText = '<em style="color: #999;">No answer</em>';
+                }
+                
+                summaryHTML += `
+                    <div class="summary-item">
+                        <div class="summary-question">${index + 1}. ${q.question}</div>
+                        <div class="summary-answer">${answerText}</div>
+                    </div>
+                `;
+            });
+            
+            summaryHTML += '</div>';
+            
+            // Add disclaimers
+            summaryHTML += '<div class="important-info-section">';
+            summaryHTML += '<div class="important-info-title">IMPORTANT INFORMATION</div>';
+            disclaimers.forEach((disclaimer) => {
+                summaryHTML += `
+                    <div class="disclaimer-item">
+                        <h3>${disclaimer.title}</h3>
+                        <p>${disclaimer.text}</p>
+                    </div>
+                `;
+            });
+            summaryHTML += '</div>';
+            
+            summaryHTML += `
+                <div style="text-align: center;">
+                    <button class="btn-print" onclick="window.print()">🖨️ Print</button>
+                    <button class="btn-restart" onclick="restart()">🔄 New Interview</button>
+                </div>
+            `;
+            
+            summaryDiv.innerHTML = summaryHTML;
+            summaryDiv.classList.add('active');
+        }
+        
+        function restart() {
+            currentQuestion = 0;
+            currentDisclaimerIndex = 0;
+            showingDisclaimers = false;
+            answers = {};
+            document.getElementById('summary').classList.remove('active');
+            document.getElementById('questionsContainer').style.display = 'block';
+            document.querySelector('.progress-bar').style.display = 'block';
+            renderQuestion(0);
+        }
+        
+        // Initialize
+        renderQuestion(0);
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                if (showingDisclaimers) {
+                    if (currentDisclaimerIndex < disclaimers.length - 1) {
+                        nextDisclaimer();
+                    } else {
+                        showSummary();
+                    }
+                } else {
+                    if (currentQuestion < totalQuestions - 1) {
+                        nextQuestion();
+                    } else {
+                        startDisclaimers();
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
