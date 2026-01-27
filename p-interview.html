@@ -47,6 +47,34 @@
             color: #666;
             font-size: 1.05em;
             font-weight: 400;
+            margin-bottom: 20px;
+        }
+        
+        .language-switch {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .language-switch button {
+            padding: 8px 20px;
+            border: 2px solid #4a90e2;
+            background: white;
+            color: #4a90e2;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .language-switch button.active {
+            background: #4a90e2;
+            color: white;
+        }
+        
+        .language-switch button:hover {
+            transform: translateY(-1px);
         }
         
         .question-container {
@@ -91,13 +119,6 @@
             margin-bottom: 25px;
             font-weight: 600;
             line-height: 1.3;
-        }
-        
-        .hint {
-            color: #888;
-            font-size: 0.95em;
-            margin-bottom: 25px;
-            line-height: 1.5;
         }
         
         .options {
@@ -367,6 +388,10 @@
             .progress-bar {
                 display: none;
             }
+            
+            .language-switch {
+                display: none;
+            }
         }
         
         @media (max-width: 768px) {
@@ -391,8 +416,12 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📋 Student Interview</h1>
-            <p>Let's get to know each other and plan your perfect learning journey!</p>
+            <h1 id="mainTitle">📋 Student Interview</h1>
+            <p id="subtitle">Let's get to know each other and plan your perfect learning journey!</p>
+            <div class="language-switch">
+                <button class="active" onclick="switchLanguage('en')">English</button>
+                <button onclick="switchLanguage('pl')">Polski</button>
+            </div>
         </div>
         
         <div class="progress-bar">
@@ -405,146 +434,7 @@
     </div>
     
     <script>
-        const questions = [
-            {
-                section: "🎯 GOALS AND MOTIVATION",
-                items: [
-                    {
-                        q: "Should the lessons be mainly in English? How much English, how much Polish?",
-                        options: ["Mostly English, some Polish", "50/50", "Mostly Polish, some English", "Flexible - depends on topic"]
-                    },
-                    {
-                        q: "What is your main learning goal?",
-                        options: ["Exam preparation", "Job interview", "Travel", "Living abroad", "Career development", "General improvement"]
-                    },
-                    {
-                        q: "In what specific situations will you use the language?",
-                        options: ["Business meetings", "Presentations", "Everyday conversations", "Travel", "Work emails", "Academic writing"]
-                    },
-                    {
-                        q: "What motivates you to learn English right now?"
-                    },
-                    {
-                        q: "What do you want to focus on most in learning English?",
-                        options: ["Fluency", "Confidence", "Grammatical accuracy", "Pronunciation", "Vocabulary", "Listening comprehension"]
-                    },
-                    {
-                        q: "In what timeframe do you want to achieve your goals?",
-                        options: ["1-3 months", "3-6 months", "6-12 months", "1+ year", "No specific deadline"]
-                    }
-                ]
-            },
-            {
-                section: "📊 LEVEL AND EXPERIENCE",
-                items: [
-                    {
-                        q: "How do you assess your current level according to the CEFR scale?",
-                        hint: "A1 - beginner, A2 - elementary, B1 - intermediate, B2 - upper-intermediate, C1 - advanced, C2 - proficiency",
-                        options: ["A1 - Beginner", "A2 - Elementary", "B1 - Intermediate", "B2 - Upper-intermediate", "C1 - Advanced", "C2 - Proficiency"]
-                    },
-                    {
-                        q: "How do you rate your confidence when speaking in this language?",
-                        hint: "scale 1-10 or descriptive",
-                        options: ["1-2 (Very low)", "3-4 (Low)", "5-6 (Medium)", "7-8 (Good)", "9-10 (Very confident)"]
-                    },
-                    {
-                        q: "What were your previous experiences learning English? What worked and what didn't?"
-                    },
-                    {
-                        q: "What is currently the most difficult for you in learning English?",
-                        options: ["Listening comprehension", "Speaking", "Writing", "Grammar", "Vocabulary", "Pronunciation"]
-                    },
-                    {
-                        q: "Are you familiar with grammatical terminology?",
-                        hint: "e.g. are concepts like Present Perfect, modal verbs, conditional sentences familiar to you, pronouns, verbs, adjectives",
-                        options: ["Yes, very familiar", "Somewhat familiar", "Basic knowledge", "Not familiar at all"]
-                    }
-                ]
-            },
-            {
-                section: "🎨 LEARNING STYLE AND PREFERENCES",
-                items: [
-                    {
-                        q: "How do you like to learn? What activities or teaching methods do you like?",
-                        options: ["Games", "Videos", "Reading articles", "Role-playing", "Discussions", "Podcasts", "Grammar exercises"]
-                    },
-                    {
-                        q: "What activities or teaching methods do you not like?"
-                    },
-                    {
-                        q: "Do you plan to dedicate time to independent study or homework between lessons?",
-                        options: ["Yes, regularly (daily)", "Yes, occasionally (few times a week)", "Maybe sometimes", "No, only during lessons"]
-                    },
-                    {
-                        q: "Do you use any learning applications?",
-                        hint: "e.g. Anki, Duolingo, Quizlet, others"
-                    },
-                    {
-                        q: "Should I explain everything in detail (all grammatical and phonetic nuances, etc.), or should we focus more on the practical application of English? What level of learning precision do you prefer?",
-                        options: ["Very detailed explanations", "Balanced approach", "Practical application focus", "Minimal theory, maximum practice"]
-                    }
-                ]
-            },
-            {
-                section: "⚙️ TECHNICAL ASPECTS",
-                items: [
-                    {
-                        q: "How often would you like to have lessons and at what time?",
-                        hint: "e.g. 2x per week in the evenings, weekends"
-                    },
-                    {
-                        q: "What device will you mainly use during lessons?",
-                        options: ["Phone", "Tablet", "PC/Laptop"]
-                    },
-                    {
-                        q: "Are you open to using additional software (such as HopToDesk) for a better interactive learning experience?",
-                        options: ["Yes, definitely", "Yes, if necessary", "Maybe", "Prefer not to"]
-                    },
-                    {
-                        q: "Do you print materials or do you prefer digital versions?",
-                        options: ["Print materials", "Digital versions", "Both", "No preference"]
-                    }
-                ]
-            },
-            {
-                section: "🌟 PERSONALIZATION",
-                items: [
-                    {
-                        q: "What are your hobbies and interests?"
-                    },
-                    {
-                        q: "What movies, series or music do you like?"
-                    }
-                ]
-            },
-            {
-                section: "💬 ADDITIONAL INFORMATION",
-                items: [
-                    {
-                        q: "Do you have any concerns, boundaries or difficulties (e.g. health-related) that I should know about?"
-                    },
-                    {
-                        q: "Is there anything else you would like to tell me about your expectations or needs?"
-                    }
-                ]
-            }
-        ];
-        
-        const disclaimers = [
-            {
-                title: "💬 Feedback and Constructive Criticism",
-                text: "I am open to constructive criticism expressed with respect. Please don't be afraid to share your thoughts about what you consider inappropriate in my teaching style. Feedback allows me to grow."
-            },
-            {
-                title: "✅ Don't Be Afraid to Make Mistakes",
-                text: "Please don't be afraid to make mistakes. It doesn't matter how incorrectly you speak, what matters is that you speak. Don't expect criticism or unpleasant reactions from me. I'm here to help you, not to be critical. So don't be afraid to say that you don't understand something or forgot something, even if we've explained it several times. I'm not a critical person, quite the opposite, and I want every student to feel comfortable during lessons with me."
-            },
-            {
-                title: "🔄 Flexibility and Adjustments",
-                text: "If during our collaboration you feel that something in our lessons should change (pace, methods, materials), let me know. The lessons are for you, so I want them to be as effective as possible."
-            }
-        ];
-        
+        let currentLanguage = 'en';
         let currentQuestion = 0;
         let totalQuestions = 0;
         let answers = {};
@@ -552,24 +442,210 @@
         let currentDisclaimerIndex = 0;
         let showingDisclaimers = false;
         
-        // Flatten questions
-        questions.forEach(section => {
-            section.items.forEach(item => {
-                flatQuestions.push({
-                    section: section.section,
-                    question: item.q,
-                    hint: item.hint || "",
-                    options: item.options || []
+        const translations = {
+            en: {
+                mainTitle: "📋 Student Interview",
+                subtitle: "Let's get to know each other and plan your perfect learning journey!",
+                questionOf: "Question",
+                of: "of",
+                previous: "← Previous",
+                next: "Next →",
+                finish: "Finish ✓",
+                notes: "Your notes and additional information...",
+                summary: "📊 Interview Summary",
+                importantInfo: "IMPORTANT INFORMATION",
+                print: "🖨️ Print",
+                restart: "🔄 New Interview",
+                noAnswer: "No answer",
+                selected: "Selected:",
+                notesLabel: "Notes:"
+            },
+            pl: {
+                mainTitle: "📋 Wywiad z Uczniem",
+                subtitle: "Poznajmy się i zaplanujmy Twoją idealną ścieżkę nauki!",
+                questionOf: "Pytanie",
+                of: "z",
+                previous: "← Poprzednie",
+                next: "Następne →",
+                finish: "Zakończ ✓",
+                notes: "Twoje notatki i dodatkowe informacje...",
+                summary: "📊 Podsumowanie Wywiadu",
+                importantInfo: "WAŻNE INFORMACJE",
+                print: "🖨️ Drukuj",
+                restart: "🔄 Nowy wywiad",
+                noAnswer: "Brak odpowiedzi",
+                selected: "Wybrane:",
+                notesLabel: "Notatki:"
+            }
+        };
+        
+        const questionsData = {
+            en: [
+                {
+                    section: "🎯 GOALS AND MOTIVATION",
+                    items: [
+                        { q: "Should the lessons be mainly in English? How much English, how much Polish?", options: ["Mostly English, some Polish", "50/50", "Mostly Polish, some English", "Flexible - depends on topic"] },
+                        { q: "What is your main learning goal?", options: ["The specific topic I want to cover right now", "Exam preparation", "Job interview", "Travel", "Living abroad", "Career development", "General improvement"] },
+                        { q: "What type of conversations would you like to have with me? What real-life situations do you want to prepare for?", options: ["Business meetings", "Presentations", "Everyday conversations", "Travel", "Work emails", "Academic writing"] },
+                        { q: "What motivates you to learn English right now?" },
+                        { q: "What do you want to focus on most in learning English? What should be the priority? Is it the most difficult for you? If not, then what is?", options: ["Fluency", "Confidence", "Grammatical accuracy", "Pronunciation", "Vocabulary", "Listening comprehension", "Writing", "Reading"] },
+                        { q: "In what timeframe do you want to achieve your goals?", options: ["1-3 months", "3-6 months", "6-12 months", "1+ year", "No specific deadline"] }
+                    ]
+                },
+                {
+                    section: "📊 LEVEL AND EXPERIENCE",
+                    items: [
+                        { q: "How do you assess your current level according to the CEFR scale?", options: ["A1 - Beginner", "A2 - Elementary", "B1 - Intermediate", "B2 - Upper-intermediate", "C1 - Advanced", "C2 - Proficiency", "I don't know / I'm not sure (diagnostic test needed)"] },
+                        { q: "How do you rate your confidence when speaking in this language? (scale 1-10 or descriptive)", options: ["1-2 (Very low)", "3-4 (Low)", "5-6 (Medium)", "7-8 (Good)", "9-10 (Very confident)"] },
+                        { q: "What were your previous experiences learning English? What worked and what didn't?" },
+                        { q: "Are you familiar with grammatical terminology? (e.g. pronouns, verbs, adjectives, adverbs, tenses, nouns etc)", options: ["Yes, very familiar", "Somewhat familiar", "Basic knowledge", "Not familiar at all"] }
+                    ]
+                },
+                {
+                    section: "🎨 LEARNING STYLE AND PREFERENCES",
+                    items: [
+                        { q: "How do you like to learn? What activities or teaching methods do you like?", options: ["Games (e.g. Minecraft, browser games)", "Videos (e.g. series, funny videos, TikToks)", "Reading articles (e.g. TED, New York Times)", "Role-playing", "Discussions (e.g. small talks)", "Podcasts", "Grammar exercises"] },
+                        { q: "What activities or teaching methods do you not like?" },
+                        { q: "Do you plan to dedicate time to independent study or homework between lessons?", options: ["Yes, regularly (daily)", "Yes, occasionally (few times a week)", "Maybe sometimes", "No, only during lessons"] },
+                        { q: "Do you use any learning applications? (e.g. Anki, Duolingo, Quizlet, others) If yes, then which of them do you like the most and why?" },
+                        { q: "Should I explain everything in detail (all grammatical and phonetic nuances, etc.), or should we focus more on the practical application of English? What level of learning precision do you prefer?", options: ["Very detailed explanations", "Balanced approach", "Practical application focus", "Minimal theory, maximum practice"] }
+                    ]
+                },
+                {
+                    section: "⚙️ TECHNICAL ASPECTS",
+                    items: [
+                        { q: "How often would you like to have lessons and at what time? (e.g. 2x per week in the evenings, weekends)" },
+                        { q: "Are you open to using additional software (such as HopToDesk) for a better interactive learning experience?", options: ["Yes, definitely", "Yes, if necessary", "Maybe", "Prefer not to"] },
+                        { q: "Do you print materials or do you prefer digital versions?", options: ["Print materials", "Digital versions", "Both", "No preference"] }
+                    ]
+                },
+                {
+                    section: "🌟 PERSONALIZATION",
+                    items: [
+                        { q: "What are your hobbies and interests?" },
+                        { q: "What movies, series or music do you like?" }
+                    ]
+                },
+                {
+                    section: "💬 ADDITIONAL INFORMATION",
+                    items: [
+                        { q: "Do you have any concerns, boundaries or difficulties (e.g. health-related) that I should know about?" },
+                        { q: "Is there anything else you would like to tell me about your expectations or needs?" }
+                    ]
+                }
+            ],
+            pl: [
+                {
+                    section: "🎯 CELE I MOTYWACJA",
+                    items: [
+                        { q: "Czy lekcje mają być głównie po angielsku? Ile angielskiego, ile polskiego?", options: ["Głównie angielski, trochę polski", "50/50", "Głównie polski, trochę angielski", "Elastycznie - zależy od tematu"] },
+                        { q: "Jaki jest Twój główny cel nauki?", options: ["Konkretny temat, który chcę teraz przerobić", "Przygotowanie do egzaminu", "Rozmowa kwalifikacyjna", "Podróże", "Życie za granicą", "Rozwój kariery", "Ogólna poprawa"] },
+                        { q: "Jakie rozmowy chciałbyś ze mną prowadzić? Do jakich sytuacji życiowych chcesz się przygotować?", options: ["Spotkania biznesowe", "Prezentacje", "Rozmowy codzienne", "Podróże", "E-maile służbowe", "Pisanie akademickie"] },
+                        { q: "Co Cię motywuje do nauki angielskiego właśnie teraz?" },
+                        { q: "Na czym chcesz się najbardziej skupić w nauce angielskiego? Co powinno być priorytetem? Czy to jest dla Ciebie najtrudniejsze? Jeśli nie, to co jest?", options: ["Płynność", "Pewność siebie", "Poprawność gramatyczna", "Wymowa", "Słownictwo", "Rozumienie ze słuchu", "Pisanie", "Czytanie"] },
+                        { q: "W jakim czasie chcesz osiągnąć swoje cele?", options: ["1-3 miesiące", "3-6 miesięcy", "6-12 miesięcy", "1+ rok", "Brak konkretnego terminu"] }
+                    ]
+                },
+                {
+                    section: "📊 POZIOM I DOŚWIADCZENIE",
+                    items: [
+                        { q: "Jak oceniasz swój obecny poziom według skali CEFR?", options: ["A1 - Początkujący", "A2 - Elementarny", "B1 - Średnio-zaawansowany", "B2 - Zaawansowany", "C1 - Biegły", "C2 - Mistrzostwo", "Nie wiem / Nie jestem pewien (potrzebny test diagnostyczny)"] },
+                        { q: "Jak oceniasz swoją pewność siebie podczas mówienia w tym języku? (skala 1-10 lub opisowo)", options: ["1-2 (Bardzo niska)", "3-4 (Niska)", "5-6 (Średnia)", "7-8 (Dobra)", "9-10 (Bardzo pewny/a)"] },
+                        { q: "Jak wyglądały Twoje wcześniejsze doświadczenia z nauką angielskiego? Co działało, a co nie?" },
+                        { q: "Czy orientujesz się w terminologii gramatycznej? (np. zaimki, czasowniki, przymiotniki, przysłówki, czasy, rzeczowniki itp.)", options: ["Tak, bardzo dobrze", "Trochę się orientuję", "Podstawowa wiedza", "W ogóle się nie orientuję"] }
+                    ]
+                },
+                {
+                    section: "🎨 STYL UCZENIA SIĘ I PREFERENCJE",
+                    items: [
+                        { q: "Jak lubisz się uczyć? Jakie aktywności lub metody nauczania lubisz?", options: ["Gry (np. Minecraft, gry przeglądarkowe)", "Filmy (np. seriale, śmieszne filmiki, TikToki)", "Czytanie artykułów (np. TED, New York Times)", "Odgrywanie ról", "Dyskusje (np. small talk)", "Podcasty", "Ćwiczenia gramatyczne"] },
+                        { q: "Jakich aktywności lub metod nauczania nie lubisz?" },
+                        { q: "Czy planujesz poświęcać czas na samodzielną naukę lub prace domowe między lekcjami?", options: ["Tak, regularnie (codziennie)", "Tak, okazjonalnie (kilka razy w tygodniu)", "Może czasami", "Nie, tylko podczas lekcji"] },
+                        { q: "Czy korzystasz z jakichś aplikacji do nauki? (np. Anki, Duolingo, Quizlet, inne) Jeśli tak, to które z nich lubisz najbardziej i dlaczego?" },
+                        { q: "Czy mam dokładnie wszystko tłumaczyć (wszelkie niuanse gramatyczne, fonetyczne itp.), czy bardziej skupiamy się na praktycznym zastosowaniu angielskiego? Jaki stopień dokładności nauki wolisz?", options: ["Bardzo szczegółowe wyjaśnienia", "Zrównoważone podejście", "Skupienie na praktycznym zastosowaniu", "Minimum teorii, maksimum praktyki"] }
+                    ]
+                },
+                {
+                    section: "⚙️ ASPEKTY TECHNICZNE",
+                    items: [
+                        { q: "Jak często chciałbyś mieć lekcje i o jakiej porze? (np. 2x w tygodniu wieczorami, weekendy)" },
+                        { q: "Czy jesteś otwarty na używanie dodatkowych oprogramowań (jak np. HopToDesk), dla lepszego doświadczenia interaktywnej nauki?", options: ["Tak, zdecydowanie", "Tak, jeśli to konieczne", "Może", "Wolę nie"] },
+                        { q: "Czy drukujesz materiały, czy wolisz wersje cyfrowe?", options: ["Materiały drukowane", "Wersje cyfrowe", "Jedno i drugie", "Bez preferencji"] }
+                    ]
+                },
+                {
+                    section: "🌟 PERSONALIZACJA",
+                    items: [
+                        { q: "Jakie masz hobby i zainteresowania?" },
+                        { q: "Jakie filmy, seriale lub muzykę lubisz?" }
+                    ]
+                },
+                {
+                    section: "💬 DODATKOWE INFORMACJE",
+                    items: [
+                        { q: "Czy masz jakieś obawy, granice lub trudności (np. zdrowotne), o których powinienem wiedzieć?" },
+                        { q: "Czy jest coś jeszcze, co chciałbyś mi powiedzieć o swoich oczekiwaniach lub potrzebach?" }
+                    ]
+                }
+            ]
+        };
+        
+        const disclaimersData = {
+            en: [
+                { title: "💬 Feedback and Constructive Criticism", text: "I am open to constructive criticism expressed with respect. Please don't be afraid to share your thoughts about what you consider inappropriate in my teaching style. Feedback allows me to grow." },
+                { title: "✅ Don't Be Afraid to Make Mistakes", text: "Please don't be afraid to make mistakes. It doesn't matter how incorrectly you speak, what matters is that you speak. Don't expect criticism or unpleasant reactions from me. I'm here to help you, not to be critical. So don't be afraid to say that you don't understand something or forgot something, even if we've explained it several times. I'm not a critical person, quite the opposite, and I want every student to feel comfortable during lessons with me." },
+                { title: "🔄 Flexibility and Adjustments", text: "If during our collaboration you feel that something in our lessons should change (pace, methods, materials), let me know. The lessons are for you, so I want them to be as effective as possible." },
+                { title: "⏰ Lesson Time Flexibility", text: "You might notice that Preply sends notifications when our scheduled lesson time is ending. Please don't worry about these - we decide when our lesson ends, not the timer. If we're in the middle of something important or having a great discussion, and both of us are happy to continue for a few extra minutes, we absolutely can. Your learning experience is more important to me than strict time limits. Of course, if you need to finish on time, just let me know and we'll wrap up promptly. The same applies to me - occasionally I might need to end exactly on time due to another lesson or commitment, but I'll always let you know in advance." }
+            ],
+            pl: [
+                { title: "💬 Feedback i konstruktywna krytyka", text: "Jestem otwarty na konstruktywną krytykę wyrażoną z szacunkiem. Proszę nie obawiaj się dzielić swoimi uwagami na temat tego, co uważasz za nieodpowiednie w moim stylu nauczania. Feedback pozwala mi się rozwijać." },
+                { title: "✅ Nie bój się popełniać błędów", text: "Proszę nie obawiaj się popełniać błędów. Nie ważne jak bardzo niepoprawnie mówisz, ważne żebyś mówił. Nie spodziewaj się po mnie krytycyzmu i niemiłych reakcji. Jestem tu po to aby Ci pomóc, nie po to by być krytykanckim. Nie bój się więc też tego, aby mówić, że czegoś nie rozumiesz lub coś zapomniałeś, nawet jeśli coś tłumaczyliśmy sobie po kilka razy. Nie jestem krytykancą osobą, wręcz przeciwnie, i zależy mi na tym, by każdy uczeń dobrze się czuł podczas lekcji ze mną." },
+                { title: "🔄 Elastyczność i dostosowanie", text: "Jeśli w trakcie współpracy uznasz, że coś w naszych lekcjach powinno się zmienić (tempo, metody, materiały), daj mi znać. Lekcje są dla Ciebie, więc chcę, żeby były jak najbardziej efektywne." },
+                { title: "⏰ Elastyczność czasu lekcji", text: "Możesz zauważyć, że Preply wysyła powiadomienia, gdy kończy się zaplanowany czas lekcji. Proszę się tym nie przejmuj - to my decydujemy kiedy kończymy lekcję, nie timer. Jeśli jesteśmy w trakcie czegoś ważnego lub mamy świetną dyskusję, i oboje chcemy kontynuować przez kilka dodatkowych minut, absolutnie możemy to zrobić. Twoje doświadczenie edukacyjne jest dla mnie ważniejsze niż sztywne limity czasowe. Oczywiście, jeśli musisz skończyć o czasie, po prostu daj mi znać i zakończymy punktualnie. To samo dotyczy mnie - czasami będę musiał skończyć dokładnie o czasie z powodu kolejnej lekcji lub zobowiązania, ale zawsze dam Ci znać z wyprzedzeniem." }
+            ]
+        };
+        
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            
+            document.querySelectorAll('.language-switch button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            document.getElementById('mainTitle').textContent = translations[lang].mainTitle;
+            document.getElementById('subtitle').textContent = translations[lang].subtitle;
+            
+            buildQuestions();
+            
+            if (document.getElementById('summary').classList.contains('active')) {
+                showSummary();
+            } else if (showingDisclaimers) {
+                renderDisclaimer(currentDisclaimerIndex);
+            } else {
+                renderQuestion(currentQuestion);
+            }
+        }
+        
+        function buildQuestions() {
+            flatQuestions = [];
+            questionsData[currentLanguage].forEach(section => {
+                section.items.forEach(item => {
+                    flatQuestions.push({
+                        section: section.section,
+                        question: item.q,
+                        options: item.options || []
+                    });
                 });
             });
-        });
-        
-        totalQuestions = flatQuestions.length;
+            totalQuestions = flatQuestions.length;
+        }
         
         function renderQuestion(index) {
             const container = document.getElementById('questionsContainer');
             const q = flatQuestions[index];
             const isNewSection = index === 0 || flatQuestions[index - 1].section !== q.section;
+            const t = translations[currentLanguage];
             
             let optionsHTML = '';
             if (q.options.length > 0) {
@@ -589,21 +665,19 @@
             container.innerHTML = `
                 <div class="question-container active">
                     ${isNewSection ? `<div class="section-title">${q.section}</div>` : ''}
-                    <div class="question-number">Question ${index + 1} of ${totalQuestions}</div>
+                    <div class="question-number">${t.questionOf} ${index + 1} ${t.of} ${totalQuestions}</div>
                     <div class="question">${q.question}</div>
-                    ${q.hint ? `<div class="hint">${q.hint}</div>` : ''}
                     ${optionsHTML}
-                    <textarea id="answer${index}" placeholder="Your notes and additional information...">${answers[index]?.text || ''}</textarea>
+                    <textarea id="answer${index}" placeholder="${t.notes}">${answers[index]?.text || ''}</textarea>
                     <div class="navigation">
-                        ${index > 0 ? '<button class="btn-prev" onclick="prevQuestion()">← Previous</button>' : '<div></div>'}
+                        ${index > 0 ? `<button class="btn-prev" onclick="prevQuestion()">${t.previous}</button>` : '<div></div>'}
                         ${index < totalQuestions - 1 
-                            ? '<button class="btn-next" onclick="nextQuestion()">Next →</button>' 
-                            : '<button class="btn-next" onclick="startDisclaimers()">Next →</button>'}
+                            ? `<button class="btn-next" onclick="nextQuestion()">${t.next}</button>` 
+                            : `<button class="btn-next" onclick="startDisclaimers()">${t.next}</button>`}
                     </div>
                 </div>
             `;
             
-            // Restore checkbox states
             if (answers[index]?.selected) {
                 answers[index].selected.forEach(val => {
                     const checkbox = Array.from(document.querySelectorAll('input[type="checkbox"]'))
@@ -617,7 +691,8 @@
         
         function renderDisclaimer(index) {
             const container = document.getElementById('questionsContainer');
-            const disclaimer = disclaimers[index];
+            const disclaimer = disclaimersData[currentLanguage][index];
+            const t = translations[currentLanguage];
             
             container.innerHTML = `
                 <div class="question-container active">
@@ -625,9 +700,9 @@
                         <h2>${disclaimer.title}</h2>
                         <p>${disclaimer.text}</p>
                         <div class="navigation" style="justify-content: center;">
-                            ${index < disclaimers.length - 1 
-                                ? '<button class="btn-next" onclick="nextDisclaimer()">Next →</button>' 
-                                : '<button class="btn-finish" onclick="showSummary()">Finish ✓</button>'}
+                            ${index < disclaimersData[currentLanguage].length - 1 
+                                ? `<button class="btn-next" onclick="nextDisclaimer()">${t.next}</button>` 
+                                : `<button class="btn-finish" onclick="showSummary()">${t.finish}</button>`}
                         </div>
                     </div>
                 </div>
@@ -637,7 +712,7 @@
         }
         
         function updateProgress() {
-            const totalSteps = totalQuestions + disclaimers.length;
+            const totalSteps = totalQuestions + disclaimersData[currentLanguage].length;
             const currentStep = showingDisclaimers ? totalQuestions + currentDisclaimerIndex + 1 : currentQuestion + 1;
             const progress = (currentStep / totalSteps) * 100;
             document.getElementById('progressFill').style.width = progress + '%';
@@ -680,7 +755,7 @@
         }
         
         function nextDisclaimer() {
-            if (currentDisclaimerIndex < disclaimers.length - 1) {
+            if (currentDisclaimerIndex < disclaimersData[currentLanguage].length - 1) {
                 currentDisclaimerIndex++;
                 renderDisclaimer(currentDisclaimerIndex);
             }
@@ -691,7 +766,8 @@
             document.querySelector('.progress-bar').style.display = 'none';
             
             const summaryDiv = document.getElementById('summary');
-            let summaryHTML = '<h2 style="text-align: center; margin-bottom: 40px; color: #1a1a1a; font-size: 2em;">📊 Interview Summary</h2>';
+            const t = translations[currentLanguage];
+            let summaryHTML = `<h2 style="text-align: center; margin-bottom: 40px; color: #1a1a1a; font-size: 2em;">${t.summary}</h2>`;
             
             let currentSection = '';
             flatQuestions.forEach((q, index) => {
@@ -711,15 +787,15 @@
                 let answerText = '';
                 if (answers[index]) {
                     if (answers[index].selected.length > 0) {
-                        answerText = '<strong>Selected:</strong> ' + answers[index].selected.join(', ');
+                        answerText = `<strong>${t.selected}</strong> ` + answers[index].selected.join(', ');
                         if (answers[index].text) {
-                            answerText += '<br><br><strong>Notes:</strong> ' + answers[index].text;
+                            answerText += `<br><br><strong>${t.notesLabel}</strong> ` + answers[index].text;
                         }
                     } else {
-                        answerText = answers[index].text || '<em style="color: #999;">No answer</em>';
+                        answerText = answers[index].text || `<em style="color: #999;">${t.noAnswer}</em>`;
                     }
                 } else {
-                    answerText = '<em style="color: #999;">No answer</em>';
+                    answerText = `<em style="color: #999;">${t.noAnswer}</em>`;
                 }
                 
                 summaryHTML += `
@@ -732,10 +808,9 @@
             
             summaryHTML += '</div>';
             
-            // Add disclaimers
             summaryHTML += '<div class="important-info-section">';
-            summaryHTML += '<div class="important-info-title">IMPORTANT INFORMATION</div>';
-            disclaimers.forEach((disclaimer) => {
+            summaryHTML += `<div class="important-info-title">${t.importantInfo}</div>`;
+            disclaimersData[currentLanguage].forEach((disclaimer) => {
                 summaryHTML += `
                     <div class="disclaimer-item">
                         <h3>${disclaimer.title}</h3>
@@ -747,8 +822,8 @@
             
             summaryHTML += `
                 <div style="text-align: center;">
-                    <button class="btn-print" onclick="window.print()">🖨️ Print</button>
-                    <button class="btn-restart" onclick="restart()">🔄 New Interview</button>
+                    <button class="btn-print" onclick="window.print()">${t.print}</button>
+                    <button class="btn-restart" onclick="restart()">${t.restart}</button>
                 </div>
             `;
             
@@ -767,14 +842,13 @@
             renderQuestion(0);
         }
         
-        // Initialize
+        buildQuestions();
         renderQuestion(0);
         
-        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && e.ctrlKey) {
                 if (showingDisclaimers) {
-                    if (currentDisclaimerIndex < disclaimers.length - 1) {
+                    if (currentDisclaimerIndex < disclaimersData[currentLanguage].length - 1) {
                         nextDisclaimer();
                     } else {
                         showSummary();
