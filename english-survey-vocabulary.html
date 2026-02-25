@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Survey — Vocabulary Printout</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Kodchasan:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-main: #1a5fdb;
+    --blue-dark: #1040b0;
+    --blue-mid: #2563eb;
+    --blue-light: #3b82f6;
+    --blue-bg: #dbeafe;
+    --pink: #f472b6;
+    --mint: #6ee7b7;
+    --teal: #34d399;
+    --purple: #a78bfa;
+    --yellow: #fde68a;
+    --white: #ffffff;
+    --text-dark: #1e293b;
+    --text-mid: #334155;
+    --pl-color: #6d28d9;
+    --en-color: #1e40af;
+    --rule: #bfdbfe;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @page {
+    margin: 15mm 12mm;
+    size: A4;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #ffffff;
+    color: var(--text-dark);
+    font-size: 12.5pt;
+    line-height: 1.7;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 30px;
+  }
+
+  /* ── MASTHEAD ── */
+  .masthead {
+    text-align: center;
+    padding: 28px 32px 24px;
+    margin-bottom: 36px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #1a5fdb 0%, #2563eb 50%, #3b82f6 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+
+  .masthead::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: -20px;
+    width: 150px; height: 150px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+
+  .masthead-sub {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-size: 8pt;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 10px;
+  }
+
+  .masthead h1 {
+    font-family: 'Kodchasan', sans-serif;
+    font-size: 28pt;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .masthead h1 em {
+    font-style: normal;
+    color: var(--mint);
+  }
+
+  .masthead-panel {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 12px 20px;
+    display: inline-block;
+    margin-top: 4px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .masthead-desc {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 12.5pt;
+    color: var(--text-dark);
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 36px 0 20px;
+    page-break-after: avoid;
+  }
+
+  .section-header .num {
+    font-family: 'Nunito', sans-serif;
+    font-size: 10pt;
+    font-weight: 800;
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--blue-main), var(--blue-light));
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .section-header h2 {
+    font-family: 'Kodchasan', sans-serif;
+    font-size: 17pt;
+    font-weight: 700;
+    color: var(--blue-main);
+    flex: 1;
+  }
+
+  .section-header::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(to right, var(--blue-light), transparent);
+    border-radius: 2px;
+  }
+
+  /* ── QUESTION CARD ── */
+  .question-card {
+    border-left: 4px solid var(--blue-light);
+    border-radius: 0 12px 12px 0;
+    padding: 16px 18px 16px 20px;
+    margin-bottom: 28px;
+    page-break-inside: avoid;
+    background: #f0f7ff;
+  }
+
+  .q-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 7.5pt;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    margin-bottom: 4px;
+  }
+
+  .q-en {
+    font-family: 'Nunito', sans-serif;
+    font-size: 13.5pt;
+    font-weight: 800;
+    color: var(--en-color);
+    margin-bottom: 3px;
+    line-height: 1.4;
+  }
+
+  .q-pl {
+    font-family: 'Nunito', sans-serif;
+    font-style: italic;
+    font-size: 12pt;
+    font-weight: 600;
+    color: var(--pl-color);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* OPTIONS TABLE */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 20px;
+    margin-bottom: 14px;
+  }
+
+  .options-grid.single-col {
+    grid-template-columns: 1fr;
+  }
+
+  .opt {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 10pt;
+    line-height: 1.5;
+  }
+
+  .opt-letter {
+    font-family: 'Nunito', sans-serif;
+    font-size: 8.5pt;
+    font-weight: 800;
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--blue-main), var(--blue-light));
+    border-radius: 6px;
+    padding: 2px 6px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .opt-en {
+    color: var(--en-color);
+    font-size: 11pt; font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+  }
+
+  .opt-pl {
+    color: var(--pl-color);
+    font-style: italic;
+    font-family: 'Nunito', sans-serif;
+    font-size: 11pt;
+    font-weight: 600;
+  }
+
+  /* EXAMPLE */
+  .example-block {
+    background: #eff6ff;
+    border: 2px solid var(--blue-bg);
+    border-left: 4px solid var(--mint);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 12px;
+  }
+
+  .example-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 7pt;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 5px;
+  }
+
+  .example-en {
+    font-family: 'Nunito', sans-serif;
+    font-size: 12pt;
+    font-weight: 700;
+    color: var(--en-color);
+    font-style: italic;
+  }
+
+  .example-pl {
+    font-family: 'Nunito', sans-serif;
+    font-size: 11.5pt;
+    font-weight: 600;
+    color: var(--pl-color);
+    font-style: normal;
+    margin-top: 3px;
+  }
+
+  /* INFO CARD (non-question pages) */
+  .info-card {
+    border: 2px solid var(--blue-bg);
+    border-left: 4px solid var(--pink);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    page-break-inside: avoid;
+    background: #fdf4ff;
+  }
+
+  .info-card .info-title {
+    font-family: 'Kodchasan', sans-serif;
+    font-size: 14pt;
+    font-weight: 700;
+    color: var(--blue-main);
+    margin-bottom: 8px;
+  }
+
+  .info-card .info-en {
+    font-family: 'Nunito', sans-serif;
+    font-size: 12pt;
+    font-weight: 700;
+    color: var(--en-color);
+    margin-bottom: 5px;
+    line-height: 1.6;
+  }
+
+  .info-card .info-pl {
+    font-family: 'Nunito', sans-serif;
+    font-size: 11.5pt;
+    font-weight: 600;
+    font-style: italic;
+    color: var(--pl-color);
+    line-height: 1.6;
+  }
+
+  /* VOCAB BOX */
+  .vocab-box {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 2px dashed var(--rule);
+  }
+
+  .vocab-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 7pt;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    margin-bottom: 6px;
+  }
+
+  .vocab-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 2px;
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+
+  .vocab-en {
+    font-weight: 700;
+    color: var(--en-color);
+    min-width: 150px;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .vocab-pl {
+    color: var(--pl-color);
+    font-style: italic;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+  }
+
+  /* DIVIDER */
+  .ornament {
+    text-align: center;
+    color: var(--blue-light);
+    font-size: 18pt;
+    margin: 30px 0;
+    letter-spacing: 0.5em;
+  }
+
+  .part-break {
+    page-break-before: always;
+    padding-top: 20px;
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    border-top: 3px solid var(--blue-bg);
+    padding-top: 16px;
+    margin-top: 40px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 8pt;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+  }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .question-card { background: #f0f7ff; }
+    .example-block { background: #eff6ff; }
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-sub">Materiał dydaktyczny · Vocabulary Printout</div>
+  <h1>English Learning Survey:<br><em>Słownictwo i Frazy</em></h1>
+  <div class="masthead-panel">
+    <div class="masthead-desc">Tłumaczenie pytań ankiety z przykładowymi odpowiedziami — do nauki słownictwa i struktur zdaniowych</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ PART ONE ══ -->
+
+<div class="section-header">
+  <div class="num">I</div>
+  <h2>Part One — Część Pierwsza</h2>
+</div>
+<div style="font-family:'Nunito',sans-serif; font-weight:600; font-size:12pt; color:var(--text-mid); margin-bottom:24px;">
+  <strong>EN:</strong> "In this part, we will discuss the most relevant information that will help us adjust your learning journey to your goals and needs."<br>
+  <strong>PL:</strong> „W tej części omówimy najważniejsze informacje, które pomogą nam dopasować Twoją drogę nauki do celów i potrzeb."
+  <div class="vocab-box">
+    <div class="vocab-title">Kluczowe słowa</div>
+    <div class="vocab-row"><span class="vocab-en">relevant</span><span class="vocab-pl">istotny, odpowiedni</span></div>
+    <div class="vocab-row"><span class="vocab-en">to adjust</span><span class="vocab-pl">dostosować</span></div>
+    <div class="vocab-row"><span class="vocab-en">learning journey</span><span class="vocab-pl">droga nauki, ścieżka edukacji</span></div>
+    <div class="vocab-row"><span class="vocab-en">goals and needs</span><span class="vocab-pl">cele i potrzeby</span></div>
+  </div>
+</div>
+
+<!-- Q1 -->
+<div class="question-card">
+  <div class="q-label">Pytanie 1 · Question 1</div>
+  <div class="q-en">Should the lessons be mainly in English? How much English, how much Polish?</div>
+  <div class="q-pl">Czy lekcje powinny być głównie po angielsku? Ile angielskiego, ile polskiego?</div>
+
+  <div class="options-grid">
+    <div class="opt"><span class="opt-letter">A</span><div><div class="opt-en">Mostly English, some Polish</div><div class="opt-pl">Głównie angielski, trochę polskiego</div></div></div>
+    <div class="opt"><span class="opt-letter">B</span><div><div class="opt-en">50/50</div><div class="opt-pl">Pół na pół</div></div></div>
+    <div class="opt"><span class="opt-letter">C</span><div><div class="opt-en">Mostly Polish, some English</div><div class="opt-pl">Głównie polski, trochę angielskiego</div></div></div>
+    <div class="opt"><span class="opt-letter">D</span><div><div class="opt-en">Flexible — depends on topic</div><div class="opt-pl">Elastycznie — zależy od tematu</div></div></div>
+  </div>
+
+  <div class="example-block">
+    <div class="example-label">Przykładowa odpowiedź / Sample answer</div>
+    <div class="example-en">"I'd prefer mostly English with some Polish explanations when needed, so option A."</div>
+    <div class="example-pl">„Wolę głównie angielski, z polskimi wyjaśnieniami kiedy potrzeba — więc opcja A."</div>
+  </div>
+
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo z pytania</div>
+    <div class="vocab-row"><span class="vocab-en">mainly / mostly</span><span class="vocab-pl">głównie</span></div>
+    <div class="vocab-row"><span class="vocab-en">flexible</span><span class="vocab-pl">elastyczny</span></div>
+    <div class="vocab-row"><span class="vocab-en">it depends on…</span><span class="vocab-pl">to zależy od…</span></div>
+  </div>
+</div>
+
+<!-- Q2 -->
+<div class="question-card">
+  <div class="q-label">Pytanie 2 · Question 2</div>
+  <div class="q-en">Are you familiar with grammatical terminology? (e.g. pronouns, verbs, adjectives, adverbs, tenses, nouns...)</div>
+  <div class="q-pl">Czy znasz terminologię gramatyczną? (np. zaimki, czasowniki, przymiotniki, przysłówki, czasy, rzeczowniki…)</div>
+
+  <div class="options-grid">
+    <div class="opt"><span class="opt-letter">A</span><div><div class="opt-en">Yes, very familiar</div><div class="opt-pl">Tak, znam bardzo dobrze</div></div></div>
+    <div class="opt"><span class="opt-letter">B</span><div><div class="opt-en">Somewhat familiar</div><div class="opt-pl">Znam w pewnym stopniu</div></div></div>
+    <div class="opt"><span class="opt-letter">C</span><div><div class="opt-en">Basic knowledge</div><div class="opt-pl">Podstawowa znajomość</div></div></div>
+    <div class="opt"><span class="opt-letter">D</span><div><div class="opt-en">Not familiar at all</div><div class="opt-pl">W ogóle nie znam</div></div></div>
+  </div>
+
+  <div class="example-block">
+    <div class="example-label">Przykładowa odpowiedź / Sample answer</div>
+    <div class="example-en">"I'm somewhat familiar — I know basic terms like verb and noun but I get confused with things like subjunctive or participles."</div>
+    <div class="example-pl">„Znam w pewnym stopniu — wiem, co to czasownik i rzeczownik, ale mylę się przy rzeczach takich jak tryb łączący czy imiesłowy."</div>
+  </div>
+
+  <div class="vocab-box">
+    <div class="vocab-title">Terminologia gramatyczna — Grammar terminology</div>
+    <div class="vocab-row"><span class="vocab-en">pronoun</span><span class="vocab-pl">zaimek</span></div>
+    <div class="vocab-row"><span class="vocab-en">verb</span><span class="vocab-pl">czasownik</span></div>
+    <div class="vocab-row"><span class="vocab-en">adjective</span><span class="vocab-pl">przymiotnik</span></div>
+    <div class="vocab-row"><span class="vocab-en">adverb</span><span class="vocab-pl">przysłówek</span></div>
+    <div class="vocab-row"><span class="vocab-en">tense</span><span class="vocab-pl">czas gramatyczny</span></div>
+    <div class="vocab-row"><span class="vocab-en">noun</span><span class="vocab-pl">rzeczownik</span></div>
+    <div class="vocab-row"><span class="vocab-en">to be familiar with</span><span class="vocab-pl">znać, być zaznajomionym z</span></div>
+  </div>
+</div>
+
+<!-- Q3 -->
+<div class="question-card">
+  <div class="q-label">Pytanie 3 · Question 3</div>
+  <div class="q-en">Should I explain everything in detail, or should we focus more on the practical application of English?</div>
+  <div class="q-pl">Czy mam wszystko szczegółowo tłumaczyć, czy skupimy się bardziej na praktycznym zastosowaniu angielskiego?</div>
+
+  <div class="options-grid">
+    <div class="opt"><span class="opt-letter">A</span><div><div class="opt-en">Very detailed explanations</div><div class="opt-pl">Bardzo szczegółowe wyjaśnienia</div></div></div>
+    <div class="opt"><span class="opt-letter">B</span><div><div class="opt-en">Balanced approach</div><div class="opt-pl">Zrównoważone podejście</div></div></div>
+    <div class="opt"><span class="opt-letter">C</span><div><div class="opt-en">Practical application focus</div><div class="opt-pl">Nacisk na praktyczne zastosowanie</div></div></div>
+    <div class="opt"><span class="opt-letter">D</span><div><div class="opt-en">Minimal theory, maximum practice</div><div class="opt-pl">Minimum teorii, maksimum praktyki</div></div></div>
+  </div>
+
+  <div class="example-block">
+    <div class="example-label">Przykładowa odpowiedź / Sample answer</div>
+    <div class="example-en">"I'd go with a balanced approach — some theory helps me understand why, but I mostly want to practise speaking."</div>
+    <div class="example-pl">„Wybrałbym/wybrałabym zrównoważone podejście — trochę teorii pomaga zrozumieć dlaczego, ale głównie chcę ćwiczyć mówienie."</div>
+  </div>
+
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">in detail</span><span class="vocab-pl">szczegółowo</span></div>
+    <div class="vocab-row"><span class="vocab-en">practical application</span><span class="vocab-pl">praktyczne zastosowanie</span></div>
+    <div class="vocab-row"><span class="vocab-en">balanced approach</span><span class="vocab-pl">zrównoważone podejście</span></div>
+    <div class="vocab-row"><span class="vocab-en">to focus on</span><span class="vocab-pl">skupiać się na</span></div>
+  </div>
+</div>
+
+<!-- Q4 -->
+<div class="question-card">
+  <div class="q-label">Pytanie 4 · Question 4</div>
+  <div class="q-en">What is your main learning goal? <em style="font-size:9pt; color:var(--blue-light)">(You can select more than one answer)</em></div>
+  <div class="q-pl">Jaki jest Twój główny cel nauki? <em style="font-size:9pt;">(Możesz wybrać więcej niż jedną odpowiedź)</em></div>
+
+  <div class="options-grid">
+    <div class="opt"><span class="opt-letter">A</span><div><div class="opt-en">This specific topic</div><div class="opt-pl">Konkretny temat</div></div></div>
+    <div class="opt"><span class="opt-letter">B</span><div><div class="opt-en">Exam preparation</div><div class="opt-pl">Przygotowanie do egzaminu</div></div></div>
+    <div class="opt"><span class="opt-letter">C</span><div><div class="opt-en">General improvement</div><div class="opt-pl">Ogólna poprawa</div></div></div>
+    <div class="opt"><span class="opt-letter">D</span><div><div class="opt-en">Career development</div><div class="opt-pl">Rozwój zawodowy</div></div></div>
+    <div class="opt"><span class="opt-letter">E</span><div><div class="opt-en">Living abroad</div><div class="opt-pl">Życie za granicą</div></div></div>
+    <div class="opt"><span class="opt-letter">F</span><div><div class="opt-en">Other</div><div class="opt-pl">Inne</div></div></div>
+  </div>
+
+  <div class="example-block">
+    <div class="example-label">Przykładowa odpowiedź / Sample answer</div>
+    <div class="example-en">"My main goal is general improvement and career development — I use English at work and I want to sound more professional."</div>
+    <div class="example-pl">„Moim głównym celem jest ogólna poprawa i rozwój zawodowy — używam angielskiego w pracy i chcę brzmieć bardziej profesjonalnie."</div>
+  </div>
+
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">career development</span><span class="vocab-pl">rozwój zawodowy / kariery</span></div>
+    <div class="vocab-row"><span class="vocab-en">living abroad</span><span class="vocab-pl">życie za granicą</span></div>
+    <div class="vocab-row"><span class="vocab-en">exam preparation</span><span class="vocab-pl">przygotowanie do egzaminu</span></div>
+    <div class="vocab-row"><span class="vocab-en">general improvement</span><span class="vocab-pl">ogólna poprawa</span></div>
+  </div>
+</div>
+
+<!-- Q5 -->
+<div class="question-card">
+  <div class="q-label">Pytanie 5 · Question 5</div>
+  <div class="q-en">In what timeframe do you want to achieve your goals?</div>
+  <div class="q-pl">W jakim czasie chcesz osiągnąć swoje cele?</div>
+
+  <div class="options-grid">
+    <div class="opt"><span class="opt-letter">A</span><div><div class="opt-en">1–3 months</div><div class="opt-pl">1–3 miesiące</div></div></div>
+    <div class="opt"><span class="opt-letter">B</span><div><div class="opt-en">4–6 months</div><div class="opt-pl">4–6 miesięcy</div></div></div>
+    <div class="opt"><span class="opt-letter">C</span><div><div class="opt-en">7–12 months</div><div class="opt-pl">7–12 miesięcy</div></div></div>
+    <div class="opt"><span class="opt-letter">D</span><div><div class="opt-en">1+ year</div><div class="opt-pl">Ponad rok</div></div></div>
+    <div class="opt"><span class="opt-letter">E</span><div><div class="opt-en">No specific deadline</div><div class="opt-pl">Bez konkretnego terminu</div></div></div>
+  </div>
+
+  <div class="example-block">
+    <div class="example-label">Przykładowa odpowiedź / Sample answer</div>
+    <div class="example-en">"I'm aiming for 7–12 months — I have a job interview abroad next autumn and I want to be confident by then."</div>
+    <div class="example-pl">„Celuje w 7–12 miesięcy — mam rozmowę o pracę za granicą jesienią i chcę być pewny/pewna siebie do tego czasu."</div>
+  </div>
+
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">timeframe</span><span class="vocab-pl">ramy czasowe, czas</span></div>
+    <div class="vocab-row"><span class="vocab-en">deadline</span><span class="vocab-pl">termin, ostateczny termin</span></div>
+    <div class="vocab-row"><span class="vocab-en">to achieve a goal</span><span class="vocab-pl">osiągnąć cel</span></div>
+    <div class="vocab-row"><span class="vocab-en">I'm aiming for…</span><span class="vocab-pl">Celuję w… / Dążę do…</span></div>
+  </div>
+</div>
+
+<!-- Q6 -->
+<div class="question-card">
+  <div class="q-label">Pytanie 6 · Question 6</div>
+  <div class="q-en">How do you assess your current level according to the CEFR scale?</div>
+  <div class="q-pl">Jak oceniasz swój obecny poziom według skali CEFR?</div>
+
+  <div class="options-grid">
+    <div class="opt"><span class="opt-letter">A</span><div><div class="opt-en">A1 — Beginner</div><div class="opt-pl">Początkujący</div></div></div>
+    <div class="opt"><span class="opt-letter">B</span><div><div class="opt-en">A2 — Elementary</div><div class="opt-pl">Elementarny</div></div></div>
+    <div class="opt"><span class="opt-letter">C</span><div><div class="opt-en">B1 — Intermediate</div><div class="opt-pl">Średniozaawansowany</div></div></div>
+    <div class="opt"><span class="opt-letter">D</span><div><div class="opt-en">B2 — Upper-intermediate</div><div class="opt-pl">Wyższy średniozaawansowany</div></div></div>
+    <div class="opt"><span class="opt-letter">E</span><div><div class="opt-en">C1 — Advanced</div><div class="opt-pl">Zaawansowany</div></div></div>
+    <div class="opt"><span class="opt-letter">F</span><div><div class="opt-en">I don't know</div><div class="opt-pl">Nie wiem</div></div></div>
+  </div>
+
+  <div class="example-block">
+    <div class="example-label">Przykładowa odpowiedź / Sample answer</div>
+    <div class="example-en">"I think I'm around B1 — I can hold a conversation but I make a lot of grammatical mistakes and struggle with complex topics."</div>
+    <div class="example-pl">„Myślę, że jestem na poziomie około B1 — potrafię prowadzić rozmowę, ale popełniam dużo błędów gramatycznych i mam trudności ze złożonymi tematami."</div>
+  </div>
+
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">to assess</span><span class="vocab-pl">oceniać</span></div>
+    <div class="vocab-row"><span class="vocab-en">current level</span><span class="vocab-pl">obecny poziom</span></div>
+    <div class="vocab-row"><span class="vocab-en">CEFR (Common European Framework of Reference)</span><span class="vocab-pl">Europejski System Opisu Kształcenia Językowego</span></div>
+    <div class="vocab-row"><span class="vocab-en">to struggle with</span><span class="vocab-pl">mieć trudności z</span></div>
+    <div class="vocab-row"><span class="vocab-en">I think I'm around…</span><span class="vocab-pl">Myślę, że jestem na poziomie około…</span></div>
+  </div>
+</div>
+
+<!-- Q7 -->
+<div class="question-card">
+  <div class="q-label">Pytanie 7 · Question 7</div>
+  <div class="q-en">How do you rate your confidence when speaking in this language?</div>
+  <div class="q-pl">Jak oceniasz swoją pewność siebie podczas mówienia w tym języku?</div>
+
+  <div class="options-grid">
+    <div class="opt"><span class="opt-letter">A</span><div><div class="opt-en">1–2 (Very low)</div><div class="opt-pl">Bardzo niska</div></div></div>
+    <div class="opt"><span class="opt-letter">B</span><div><div class="opt-en">3–4 (Low)</div><div class="opt-pl">Niska</div></div></div>
+    <div class="opt"><span class="opt-letter">C</span><div><div class="opt-en">5–6 (Medium)</div><div class="opt-pl">Średnia</div></div></div>
+    <div class="opt"><span class="opt-letter">D</span><div><div class="opt-en">7–8 (Good)</div><div class="opt-pl">Dobra</div></div></div>
+    <div class="opt"><span class="opt-letter">E</span><div><div class="opt-en">9–10 (Very confident)</div><div class="opt-pl">Bardzo wysoka</div></div></div>
+  </div>
+
+  <div class="example-block">
+    <div class="example-label">Przykładowa odpowiedź / Sample answer</div>
+    <div class="example-en">"I'd give myself a 4 — I understand most of what I hear, but when it's my turn to speak I freeze up and forget words."</div>
+    <div class="example-pl">„Dałbym/dałabym sobie 4 — rozumiem większość tego co słyszę, ale kiedy muszę mówić, blokuję się i zapominam słów."</div>
+  </div>
+
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">confidence</span><span class="vocab-pl">pewność siebie</span></div>
+    <div class="vocab-row"><span class="vocab-en">to rate</span><span class="vocab-pl">oceniać (w skali)</span></div>
+    <div class="vocab-row"><span class="vocab-en">to freeze up</span><span class="vocab-pl">zaciąć się, zablokować</span></div>
+    <div class="vocab-row"><span class="vocab-en">I'd give myself a…</span><span class="vocab-pl">Dałbym/dałabym sobie…</span></div>
+  </div>
+</div>
+
+<!-- Q8 -->
+<div class="question-card">
+  <div class="q-label">Pytanie 8 · Question 8</div>
+  <div class="q-en">Do you have any concerns, boundaries or difficulties (e.g. health-related) that I should know about?</div>
+  <div class="q-pl">Czy masz jakieś obawy, granice lub trudności (np. zdrowotne), o których powinienem/powinnam wiedzieć?</div>
+
+  <div class="example-block">
+    <div class="example-label">Przykładowe odpowiedzi / Sample answers</div>
+    <div class="example-en">"I have ADHD, so I tend to lose focus during longer explanations — shorter tasks work better for me."</div>
+    <div class="example-pl">„Mam ADHD, więc mam tendencję do rozpraszania się podczas dłuższych wyjaśnień — krótsze zadania działają u mnie lepiej."</div>
+    <div style="margin-top:8px;">
+    <div class="example-en">"No concerns — I'm ready to go!"</div>
+    <div class="example-pl">„Żadnych obaw — jestem gotowy/gotowa!"</div>
+    </div>
+  </div>
+
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">concerns</span><span class="vocab-pl">obawy, troski</span></div>
+    <div class="vocab-row"><span class="vocab-en">boundaries</span><span class="vocab-pl">granice</span></div>
+    <div class="vocab-row"><span class="vocab-en">health-related</span><span class="vocab-pl">związany ze zdrowiem</span></div>
+    <div class="vocab-row"><span class="vocab-en">I tend to…</span><span class="vocab-pl">Mam tendencję do… / Zwykle…</span></div>
+    <div class="vocab-row"><span class="vocab-en">to lose focus</span><span class="vocab-pl">tracić koncentrację</span></div>
+  </div>
+</div>
+
+<!-- Q9 -->
+<div class="question-card">
+  <div class="q-label">Pytanie 9 · Question 9</div>
+  <div class="q-en">How do you like to learn? What activities or teaching methods do you like?</div>
+  <div class="q-pl">Jak lubisz się uczyć? Jakie aktywności lub metody nauczania lubisz?</div>
+
+  <div class="options-grid">
+    <div class="opt"><span class="opt-letter">A</span><div><div class="opt-en">Games (Minecraft, browser games)</div><div class="opt-pl">Gry (Minecraft, gry przeglądarkowe)</div></div></div>
+    <div class="opt"><span class="opt-letter">B</span><div><div class="opt-en">Videos (series, funny videos, TikTok)</div><div class="opt-pl">Filmy (seriale, śmieszne filmy, TikTok)</div></div></div>
+    <div class="opt"><span class="opt-letter">C</span><div><div class="opt-en">Role-playing</div><div class="opt-pl">Odgrywanie ról</div></div></div>
+    <div class="opt"><span class="opt-letter">D</span><div><div class="opt-en">Discussions (small talks)</div><div class="opt-pl">Dyskusje (rozmowy)</div></div></div>
+    <div class="opt"><span class="opt-letter">E</span><div><div class="opt-en">Something else</div><div class="opt-pl">Coś innego</div></div></div>
+  </div>
+
+  <div class="example-block">
+    <div class="example-label">Przykładowa odpowiedź / Sample answer</div>
+    <div class="example-en">"I love learning through videos and discussions — I find role-playing a bit awkward but I'm open to trying it."</div>
+    <div class="example-pl">„Uwielbiam uczyć się przez filmy i dyskusje — odgrywanie ról wydaje mi się trochę niezręczne, ale jestem otwarty/otwarta na próbowanie."</div>
+  </div>
+
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">role-playing</span><span class="vocab-pl">odgrywanie ról</span></div>
+    <div class="vocab-row"><span class="vocab-en">small talk</span><span class="vocab-pl">swobodna rozmowa, pogaduszki</span></div>
+    <div class="vocab-row"><span class="vocab-en">teaching methods</span><span class="vocab-pl">metody nauczania</span></div>
+    <div class="vocab-row"><span class="vocab-en">I'm open to…</span><span class="vocab-pl">Jestem otwarty/otwarta na…</span></div>
+    <div class="vocab-row"><span class="vocab-en">awkward</span><span class="vocab-pl">niezręczny, krępujący</span></div>
+  </div>
+</div>
+
+<!-- Q10 -->
+<div class="question-card">
+  <div class="q-label">Pytanie 10 · Question 10</div>
+  <div class="q-en">What activities or teaching methods do you not like?</div>
+  <div class="q-pl">Jakich aktywności lub metod nauczania nie lubisz?</div>
+
+  <div class="example-block">
+    <div class="example-label">Przykładowe odpowiedzi / Sample answers</div>
+    <div class="example-en">"I don't enjoy grammar drills — they feel repetitive and boring to me. I'd rather learn grammar through natural conversation."</div>
+    <div class="example-pl">„Nie lubię ćwiczeń gramatycznych — wydają mi się powtarzalne i nudne. Wolę uczyć się gramatyki przez naturalną rozmowę."</div>
+    <div style="margin-top:8px;">
+    <div class="example-en">"I'd prefer to avoid translation exercises — I want to think in English, not translate from Polish."</div>
+    <div class="example-pl">„Wolałbym/wolałabym unikać ćwiczeń z tłumaczenia — chcę myśleć po angielsku, a nie tłumaczyć z polskiego."</div>
+    </div>
+  </div>
+
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">drills</span><span class="vocab-pl">ćwiczenia (powtarzalne)</span></div>
+    <div class="vocab-row"><span class="vocab-en">repetitive</span><span class="vocab-pl">powtarzalny</span></div>
+    <div class="vocab-row"><span class="vocab-en">I'd rather…</span><span class="vocab-pl">Wolę… / Wolałbym…</span></div>
+    <div class="vocab-row"><span class="vocab-en">I'd prefer to avoid…</span><span class="vocab-pl">Wolałbym/wolałabym unikać…</span></div>
+  </div>
+</div>
+
+<!-- ══════════════════ INFORMATIONAL PAGES ══ -->
+
+<div class="ornament">✦ ✦ ✦</div>
+
+<div class="section-header">
+  <div class="num">✎</div>
+  <h2>Ważne wiadomości od nauczyciela — Important Teacher Notes</h2>
+</div>
+
+<div class="info-card">
+  <div class="info-title">Feedback and Constructive Criticism · Opinie i konstruktywna krytyka</div>
+  <div class="info-en">"I am open to constructive criticism expressed with respect. Please don't be afraid to share your thoughts about what you consider inappropriate in my teaching style. Feedback allows me to grow."</div>
+  <div class="info-pl">„Jestem otwarty/otwarta na konstruktywną krytykę wyrażoną z szacunkiem. Proszę, nie bój się dzielić swoimi przemyśleniami na temat tego, co uważasz za nieodpowiednie w moim stylu nauczania. Opinia pozwala mi się rozwijać."</div>
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">constructive criticism</span><span class="vocab-pl">konstruktywna krytyka</span></div>
+    <div class="vocab-row"><span class="vocab-en">expressed with respect</span><span class="vocab-pl">wyrażona z szacunkiem</span></div>
+    <div class="vocab-row"><span class="vocab-en">inappropriate</span><span class="vocab-pl">nieodpowiedni, niestosowny</span></div>
+    <div class="vocab-row"><span class="vocab-en">to allow someone to grow</span><span class="vocab-pl">pozwalać komuś się rozwijać</span></div>
+  </div>
+</div>
+
+<div class="info-card">
+  <div class="info-title">Don't Be Afraid to Make Mistakes · Nie bój się błędów</div>
+  <div class="info-en">"It doesn't matter how incorrectly you speak, what matters is that you speak. Don't be afraid to say that you don't understand something or forgot something, even if we've explained it several times. I'm not a critical person, quite the opposite, and I want every student to feel comfortable during lessons with me."</div>
+  <div class="info-pl">„Nie ma znaczenia, jak niepoprawnie mówisz — ważne, że mówisz. Nie bój się powiedzieć, że czegoś nie rozumiesz lub zapomniałeś/zapomniałaś, nawet jeśli omawialiśmy to kilka razy. Nie jestem osobą krytyczną, wręcz przeciwnie — chcę, żeby każdy uczeń czuł się komfortowo podczas lekcji ze mną."</div>
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">it doesn't matter</span><span class="vocab-pl">nie ma znaczenia</span></div>
+    <div class="vocab-row"><span class="vocab-en">what matters is…</span><span class="vocab-pl">ważne jest, że… / liczy się…</span></div>
+    <div class="vocab-row"><span class="vocab-en">quite the opposite</span><span class="vocab-pl">wręcz przeciwnie</span></div>
+    <div class="vocab-row"><span class="vocab-en">to feel comfortable</span><span class="vocab-pl">czuć się komfortowo / swobodnie</span></div>
+  </div>
+</div>
+
+<div class="info-card">
+  <div class="info-title">Flexibility and Adjustments · Elastyczność i zmiany</div>
+  <div class="info-en">"If during our collaboration you feel that something in our lessons should change (pace, methods, materials), let me know. The lessons are for you, so I want them to be as effective as possible."</div>
+  <div class="info-pl">„Jeśli podczas naszej współpracy poczujesz, że coś w naszych lekcjach powinno się zmienić (tempo, metody, materiały), daj mi znać. Lekcje są dla Ciebie, więc chcę, żeby były jak najbardziej efektywne."</div>
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">collaboration</span><span class="vocab-pl">współpraca</span></div>
+    <div class="vocab-row"><span class="vocab-en">pace</span><span class="vocab-pl">tempo</span></div>
+    <div class="vocab-row"><span class="vocab-en">let me know</span><span class="vocab-pl">daj mi znać</span></div>
+    <div class="vocab-row"><span class="vocab-en">as effective as possible</span><span class="vocab-pl">jak najbardziej efektywny</span></div>
+  </div>
+</div>
+
+<div class="info-card">
+  <div class="info-title">Lesson Time Flexibility · Elastyczny czas lekcji</div>
+  <div class="info-en">"You might notice that Preply sends notifications when our scheduled lesson time is ending. Please don't worry about these — we decide when our lesson ends, not the timer."</div>
+  <div class="info-pl">„Możesz zauważyć, że Preply wysyła powiadomienia, gdy czas zaplanowanej lekcji dobiega końca. Proszę, nie przejmuj się tym — to my decydujemy, kiedy lekcja się kończy, a nie timer."</div>
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">you might notice</span><span class="vocab-pl">możesz zauważyć</span></div>
+    <div class="vocab-row"><span class="vocab-en">scheduled lesson</span><span class="vocab-pl">zaplanowana lekcja</span></div>
+    <div class="vocab-row"><span class="vocab-en">don't worry about…</span><span class="vocab-pl">nie przejmuj się… / nie martw się…</span></div>
+    <div class="vocab-row"><span class="vocab-en">timer</span><span class="vocab-pl">minutnik, odliczanie czasu</span></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ PART TWO ══ -->
+
+<div class="part-break"></div>
+<div class="ornament">❧</div>
+
+<div class="section-header">
+  <div class="num">II</div>
+  <h2>Part Two — Część Druga</h2>
+</div>
+<div style="font-family:'Nunito',sans-serif; font-weight:600; font-size:12pt; color:var(--text-mid); margin-bottom:24px;">
+  „I will ask you a few more questions to personalise your learning materials even better."<br>
+  <span style="color:var(--pl-color);">„Zadam jeszcze kilka pytań, żeby jeszcze lepiej dopasować Twoje materiały do nauki."</span>
+</div>
+
+<!-- Q11 -->
+<div class="question-card">
+  <div class="q-label">Pytanie 11 · Question 11</div>
+  <div class="q-en">What were your previous experiences learning English? What worked and what didn't?</div>
+  <div class="q-pl">Jakie były Twoje wcześniejsze doświadczenia z nauką angielskiego? Co działało, a co nie?</div>
+
+  <div class="example-block">
+    <div class="example-label">Przykładowa odpowiedź / Sample answer</div>
+    <div class="example-en">"I had school lessons for years but they were very focused on grammar rules and tests, not speaking. Watching series in English helped me a lot more than any textbook."</div>
+    <div class="example-pl">„Miałem/miałam lekcje w szkole przez lata, ale skupiały się na zasadach gramatycznych i testach, a nie na mówieniu. Oglądanie seriali po angielsku pomogło mi znacznie bardziej niż jakikolwiek podręcznik."</div>
+  </div>
+
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">previous experience</span><span class="vocab-pl">wcześniejsze doświadczenie</span></div>
+    <div class="vocab-row"><span class="vocab-en">what worked / what didn't</span><span class="vocab-pl">co działało / co nie działało</span></div>
+    <div class="vocab-row"><span class="vocab-en">focused on</span><span class="vocab-pl">skupiony na</span></div>
+    <div class="vocab-row"><span class="vocab-en">textbook</span><span class="vocab-pl">podręcznik</span></div>
+  </div>
+</div>
+
+<!-- Q12 -->
+<div class="question-card">
+  <div class="q-label">Pytanie 12 · Question 12</div>
+  <div class="q-en">Do you plan to dedicate time to independent study or homework between lessons?</div>
+  <div class="q-pl">Czy planujesz poświęcać czas na samodzielną naukę lub pracę domową między lekcjami?</div>
+
+  <div class="options-grid">
+    <div class="opt"><span class="opt-letter">A</span><div><div class="opt-en">Yes, regularly (daily)</div><div class="opt-pl">Tak, regularnie (codziennie)</div></div></div>
+    <div class="opt"><span class="opt-letter">B</span><div><div class="opt-en">Yes, occasionally (few times a week)</div><div class="opt-pl">Tak, okazjonalnie (kilka razy w tygodniu)</div></div></div>
+    <div class="opt"><span class="opt-letter">C</span><div><div class="opt-en">Maybe sometimes</div><div class="opt-pl">Może czasami</div></div></div>
+    <div class="opt"><span class="opt-letter">D</span><div><div class="opt-en">No, only during lessons</div><div class="opt-pl">Nie, tylko podczas lekcji</div></div></div>
+  </div>
+
+  <div class="example-block">
+    <div class="example-label">Przykładowa odpowiedź / Sample answer</div>
+    <div class="example-en">"I can manage a few times a week — maybe 20–30 minutes reviewing vocabulary or watching something in English."</div>
+    <div class="example-pl">„Dam radę kilka razy w tygodniu — może 20–30 minut na powtarzanie słownictwa albo oglądanie czegoś po angielsku."</div>
+  </div>
+
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">to dedicate time to</span><span class="vocab-pl">poświęcać czas na</span></div>
+    <div class="vocab-row"><span class="vocab-en">independent study</span><span class="vocab-pl">samodzielna nauka</span></div>
+    <div class="vocab-row"><span class="vocab-en">occasionally</span><span class="vocab-pl">okazjonalnie, od czasu do czasu</span></div>
+    <div class="vocab-row"><span class="vocab-en">I can manage…</span><span class="vocab-pl">Dam radę… / Potrafię…</span></div>
+  </div>
+</div>
+
+<!-- Q13 -->
+<div class="question-card">
+  <div class="q-label">Pytanie 13 · Question 13</div>
+  <div class="q-en">Do you print note materials or do you prefer digital versions?</div>
+  <div class="q-pl">Czy drukujesz materiały do notatek, czy wolisz wersje cyfrowe?</div>
+
+  <div class="options-grid">
+    <div class="opt"><span class="opt-letter">A</span><div><div class="opt-en">Print materials</div><div class="opt-pl">Materiały drukowane</div></div></div>
+    <div class="opt"><span class="opt-letter">B</span><div><div class="opt-en">Digital versions</div><div class="opt-pl">Wersje cyfrowe</div></div></div>
+    <div class="opt"><span class="opt-letter">C</span><div><div class="opt-en">Both</div><div class="opt-pl">Oboje</div></div></div>
+    <div class="opt"><span class="opt-letter">D</span><div><div class="opt-en">No preference</div><div class="opt-pl">Brak preferencji</div></div></div>
+    <div class="opt"><span class="opt-letter">E</span><div><div class="opt-en">I mainly make notes</div><div class="opt-pl">Głównie robię notatki</div></div></div>
+  </div>
+
+  <div class="example-block">
+    <div class="example-label">Przykładowa odpowiedź / Sample answer</div>
+    <div class="example-en">"I prefer digital — I have everything on my tablet and I like to highlight and annotate things directly."</div>
+    <div class="example-pl">„Preferuję cyfrowe — mam wszystko na tablecie i lubię bezpośrednio zaznaczać i opisywać rzeczy."</div>
+  </div>
+
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">to prefer</span><span class="vocab-pl">preferować, woleć</span></div>
+    <div class="vocab-row"><span class="vocab-en">no preference</span><span class="vocab-pl">brak preferencji, obojętne mi</span></div>
+    <div class="vocab-row"><span class="vocab-en">to highlight</span><span class="vocab-pl">podkreślać, zaznaczać</span></div>
+    <div class="vocab-row"><span class="vocab-en">to annotate</span><span class="vocab-pl">opisywać, dodawać adnotacje</span></div>
+  </div>
+</div>
+
+<!-- Q14 -->
+<div class="question-card">
+  <div class="q-label">Pytanie 14 · Question 14</div>
+  <div class="q-en">What are your hobbies and interests?</div>
+  <div class="q-pl">Jakie masz hobby i zainteresowania?</div>
+
+  <div class="example-block">
+    <div class="example-label">Przykładowe odpowiedzi / Sample answers</div>
+    <div class="example-en">"I'm really into photography and hiking. I also play chess online and I follow Formula 1 closely."</div>
+    <div class="example-pl">„Bardzo interesuję się fotografią i wędrówkami. Gram też w szachy online i uważnie śledzę Formułę 1."</div>
+  </div>
+
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">hobbies and interests</span><span class="vocab-pl">hobby i zainteresowania</span></div>
+    <div class="vocab-row"><span class="vocab-en">I'm really into…</span><span class="vocab-pl">Bardzo interesuję się… / Pasjonuję się…</span></div>
+    <div class="vocab-row"><span class="vocab-en">I'm passionate about…</span><span class="vocab-pl">Jestem pasjonatem/pasjonatką…</span></div>
+    <div class="vocab-row"><span class="vocab-en">I follow… closely</span><span class="vocab-pl">Uważnie śledzę…</span></div>
+  </div>
+</div>
+
+<!-- Q15 -->
+<div class="question-card">
+  <div class="q-label">Pytanie 15 · Question 15</div>
+  <div class="q-en">What movies, series or music do you like?</div>
+  <div class="q-pl">Jakie filmy, seriale lub muzykę lubisz?</div>
+
+  <div class="example-block">
+    <div class="example-label">Przykładowa odpowiedź / Sample answer</div>
+    <div class="example-en">"I love crime dramas — shows like True Detective or Mindhunter. For music, I mostly listen to indie rock and some jazz. I don't watch many movies but I enjoyed Interstellar."</div>
+    <div class="example-pl">„Uwielbiam kryminalne dramaty — seriale jak True Detective lub Mindhunter. Jeśli chodzi o muzykę, słucham głównie indie rocka i trochę jazzu. Nie oglądam wielu filmów, ale podobał mi się Interstellar."</div>
+  </div>
+
+  <div class="vocab-box">
+    <div class="vocab-title">Słownictwo</div>
+    <div class="vocab-row"><span class="vocab-en">crime drama</span><span class="vocab-pl">kryminał dramatyczny</span></div>
+    <div class="vocab-row"><span class="vocab-en">I mostly listen to…</span><span class="vocab-pl">Słucham głównie…</span></div>
+    <div class="vocab-row"><span class="vocab-en">I enjoyed…</span><span class="vocab-pl">Podobał mi się… / Podobała mi się…</span></div>
+    <div class="vocab-row"><span class="vocab-en">I'm a fan of…</span><span class="vocab-pl">Jestem fanem/fanką…</span></div>
+  </div>
+</div>
+
+<div class="ornament">✦ ✦ ✦</div>
+
+<div style="text-align:center; font-family:'Kodchasan', sans-serif; font-size:18pt; color:var(--blue-main); margin-bottom:8px;">
+  "This will help us make your learning more effective<br>and better adapted to your needs."
+</div>
+<div style="text-align:center; font-family:'Nunito',sans-serif; font-style:italic; font-weight:600; font-size:11pt; color:var(--pl-color); margin-bottom:24px;">
+  „To pomoże nam uczynić Twoją naukę bardziej efektywną<br>i lepiej dostosowaną do Twoich potrzeb."
+</div>
+
+<div class="footer">
+  English Learning Survey · Vocabulary &amp; Phrase Printout · Materiał do nauki
+</div>
+
+</body>
+</html>
