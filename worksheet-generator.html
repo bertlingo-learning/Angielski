@@ -421,6 +421,20 @@ body {
 }
 
 /* ── Panel rozmiaru obrazka (tryb kadru + wysokosc) ── */
+/* Wiersz flagi PL - siedzi w prawej kolumnie siatki pola (jak input),
+   jedna linia, nic sie nie zawija ani nie rozpycha. */
+.task-edit-flag-row {
+  display: flex; align-items: center; gap: 0.5rem;
+  min-width: 0;
+  font-size: 0.78rem; line-height: 1.3;
+  color: var(--text-dim); cursor: pointer;
+  white-space: nowrap;
+}
+.task-edit-flag-row input {
+  accent-color: var(--accent); cursor: pointer; flex-shrink: 0;
+  width: 15px; height: 15px;
+}
+.task-edit-flag-row span { overflow: hidden; text-overflow: ellipsis; }
 .task-edit-imgsize {
   display: grid;
   gap: 0.6rem;
@@ -1213,7 +1227,7 @@ pies	dog
       <div class="tsv-example-wrap" id="tsvExampleBox">
         <div class="tsv-example-head">
           <div class="tsv-example-info">
-            <strong>Przykładowe dane TSV</strong> dopasowane do różnych typów zadań. Kolumna <code>tasks</code> (opcjonalna) ogranicza wiersz do konkretnych typów. Puste = wiersz idzie do wszystkich zaznaczonych typów. Skróty: <code>f</code>=flashcards, <code>m</code>=matching, <code>s</code>=scramble, <code>q</code>=quiz, <code>u</code>=unscramble, <code>c</code>=cornell, <code>g</code>=gapfill, <code>t</code>=translate, <code>w</code>=writing. Możesz podać kilka tagów po przecinku (np. <code>f,m</code>), ale zwykle czytelniej jest dać jeden tag na wiersz. Quiz z własnymi odpowiedziami: w kolumnie <code>en</code> oddziel opcje kreską, np. <code>cat|cut|cot|cap</code> - pierwsza jest poprawna, pytanie używa dokładnie tych opcji (globalna liczba opcji go nie dotyczy), a w pozostałych zadaniach wiersz działa jak samo <code>cat</code>. Kolumna <code>distractors</code> (opcjonalna): atrapy oddzielone kreską, np. <code>commuter|commute</code>. W zadaniu Matching dokładają do prawej kolumny dodatkowe słowa bez pary, których nie da się połączyć - utrudnienie. Zbierane są z całej części sekcji. Klamerki <code>{…}</code> w EN działają tylko w Gap Fill - jeśli wiersz ma tagi i żaden z nich nie jest <code>g</code>, klamerki są automatycznie usuwane (możesz kopiować zdania z Gap Fill pod inne tagi bez czyszczenia).
+            <strong>Przykładowe dane TSV</strong> dopasowane do różnych typów zadań. Kolumna <code>tasks</code> (opcjonalna) ogranicza wiersz do konkretnych typów. Puste = wiersz idzie do wszystkich zaznaczonych typów. Skróty: <code>f</code>=flashcards, <code>m</code>=matching, <code>s</code>=scramble, <code>q</code>=quiz, <code>u</code>=unscramble, <code>c</code>=cornell, <code>g</code>=gapfill, <code>t</code>=translate, <code>w</code>=writing. Możesz podać kilka tagów po przecinku (np. <code>f,m</code>), ale zwykle czytelniej jest dać jeden tag na wiersz. Quiz z własnymi odpowiedziami: w kolumnie <code>en</code> oddziel opcje kreską, np. <code>cat|cut|cot|cap</code> - pierwsza jest poprawna, pytanie używa dokładnie tych opcji (globalna liczba opcji go nie dotyczy), a w pozostałych zadaniach wiersz działa jak samo <code>cat</code>. Kolumna <code>distractors</code> (opcjonalna): atrapy oddzielone kreską, np. <code>commuter|commute</code>. W zadaniu Matching dokładają do prawej kolumny dodatkowe słowa bez pary, których nie da się połączyć - utrudnienie. Zbierane są z całej części sekcji. Klamerki <code>{…}</code> w EN działają tylko w Gap Fill - w każdym innym zadaniu (także gdy wiersz ma tagi mieszane, np. <code>g,m</code>) są automatycznie czyszczone z widoku. Kolumna <code>note</code> (opcjonalna): notatka do podzadania, pokazuje się po jego rozwiązaniu (w fiszkach: na odwrocie) - np. kontekst, alternatywne odpowiedzi. Karta zapisuje też do TSV linię <code>#progress</code> ze stanem rozwiązania - wklejona z powrotem przenosi postęp do nowo wygenerowanej karty.
           </div>
           <button type="button" class="tsv-example-use" id="tsvExampleUse" title="Wklej te dane do pola">📋 Użyj tych danych</button>
         </div>
@@ -1619,7 +1633,7 @@ Napisz krótki email do przyjaciela o weekendzie.	Use past simple. Include at le
 // Jedno zrodlo prawdy o numerze wersji. Uzywane w naglowku generatora
 // ORAZ w badge "Worksheet vX.Y" na samej karcie pracy - dzieki temu
 // wiadomo, w jakiej wersji generatora powstala dana karta.
-const WS_GEN_VERSION = '3.0';
+const WS_GEN_VERSION = '3.4';
 
 // LOGO KARTY PRACY - jeden staly URL, zawsze widoczne na gorze i dole karty.
 // Chcesz inne logo? Podmien ponizszy adres (jedyne miejsce w kodzie).
@@ -1700,6 +1714,10 @@ const STATE = {
   // sekcji jest przeliczana tak, jakby tej sekcji nie bylo (zadnych dziur).
   // Instrukcja jest NIEZALEZNA - moze zostac wlaczona mimo braku naglowka.
   taskHeaders: { flashcards: true, matching: true, scramble: true, quiz: true, unscramble: true, cornell: true, gapfill: true, translate: true, writing: true },
+  // Flaga PL przy zdaniu zrodlowym (gap fill / translate / writing).
+  // Wylaczana per zadanie, np. gdy zadanie jest niestandardowe ("popraw bledy")
+  // i zrodlowa linia wcale nie jest po polsku.
+  taskFlags: { gapfill: true, translate: true, writing: true },
   taskOrder: ['flashcards', 'matching', 'scramble', 'quiz', 'unscramble', 'cornell', 'gapfill', 'translate', 'writing'],
   // Edytowalne tytuly sekcji w wygenerowanej karcie pracy.
   // Domyslnie sama nazwa zadania (bez "· polecenia"), zeby nie dublowac instrukcji ktora jest pod spodem.
@@ -1796,6 +1814,12 @@ function parseTSV(text) {
         // Tytul/podtytul karty - zapisywane przy pobieraniu TSV z karty,
         // odtwarzane w polach generatora przy ponownym wczytaniu.
         parsedMeta[key.slice(1)] = cells.slice(1).join(' ').trim();
+      } else if (key === '#progress' && cells[1]) {
+        // Stan rozwiazania karty - przekazywany dalej do nowo generowanej
+        // karty (zasiewa jej zapis postepu, jesli ta nie ma wlasnego).
+        try {
+          parsedMeta.progress = JSON.parse(decodeURIComponent(cells[1].trim()));
+        } catch (e) { /* uszkodzona linia #progress - ignorujemy */ }
       } else if (key === '#extra' && cells[1]) {
         // Pelny pakiet wygladu (czcionki, tytuly/instrukcje, przelaczniki,
         // sekcje linkow/HTML) zakodowany w jednej linii przez karte.
@@ -2015,11 +2039,21 @@ function rowsForTask(taskKey) {
   const instances = detectTaskInstances()[base] || [];
   const inst = instances.find(x => x.num === num);
   const origKey = inst ? inst.origKey : taskKey;
-  return STATE.rows.filter(r => {
+  let out = STATE.rows.filter(r => {
     // Brak tagow = wiersz idzie do KAZDEJ instancji 1 (kompatybilnosc wsteczna).
     if (r._tasks.length === 0) return num === 1;
     return r._tasks.includes(origKey);
   });
+  // ── KLAMERKI TYLKO DLA GAP FILL (warstwa renderowania) ──
+  // Wiersz z tagami np. "g,m" musi zachowac klamry w danych (gap fill ich
+  // potrzebuje), ale kazde INNE zadanie dostaje klon z czystym tekstem.
+  // Klon dziedziczy _gi, wiec oceny trudnosci dalej wskazuja ten sam wiersz.
+  if (base !== 'gapfill') {
+    out = out.map(r => /\{[^}]+\}/.test(r.en || '')
+      ? Object.assign({}, r, { en: r.en.replace(/\{([^}]+)\}/g, '$1') })
+      : r);
+  }
+  return out;
 }
 
 // Wiersze dla matchingu z gwarancja: wiersze MAJACE atrapy (distractors) laduja
@@ -2124,6 +2158,9 @@ function updateTSVStatus() {
   }
 
   STATE.rows = result.rows;
+  // Stabilny indeks globalny wiersza - diffRowIdx nie moze polegac na
+  // tozsamosci obiektu, bo rowsForTask klonuje wiersze przy czyszczeniu klamr.
+  STATE.rows.forEach((r, i) => { r._gi = i; });
   STATE.headers = result.headers;
 
   // Wykryj instancje 2+ z tagow i zsynchronizuj UI generatora (dodaj/usun karty).
@@ -2135,6 +2172,10 @@ function updateTSVStatus() {
   // Wartosci wpisujemy przez inputy + zdarzenie 'input', zeby caly istniejacy
   // lancuch (STATE, hex-label, podglad, panel rozmiaru) zadzialal sam.
   if (result.parsedMeta) {
+    // Stan rozwiazania z TSV (#progress) - trafi do nastepnej wygenerowanej
+    // karty. Brak linii = czyscimy, zeby stary stan nie przyklejal sie do
+    // zupelnie nowych danych.
+    STATE.importedProgress = result.parsedMeta.progress || null;
     // Pelny pakiet wygladu (#extra): czcionki, tytuly/instrukcje, przelaczniki,
     // sekcje linkow/HTML. Stosowany PO syncTaskInstancesUI (karty juz istnieja).
     if (result.parsedMeta.extra) applyExtraSettings(result.parsedMeta.extra);
@@ -2694,6 +2735,14 @@ function initTaskCard(card) {
         <button type="button" class="task-edit-reset" data-reset="instr" title="Przywróć domyślną instrukcję">RESET</button>
       </div>
     </div>
+    ${['gapfill', 'translate', 'writing'].includes(taskKeyBase(task)) ? `
+    <div class="task-edit-field">
+      <span class="task-edit-label">Flaga</span>
+      <label class="task-edit-flag-row" title="Wyłącz np. przy niestandardowym zadaniu (popraw błędy), gdy zdanie źródłowe nie jest po polsku">
+        <input type="checkbox" class="task-edit-flag"${STATE.taskFlags[task] !== false ? ' checked' : ''}>
+        <span>🇵🇱 przy zdaniu źródłowym</span>
+      </label>
+    </div>` : ''}
     <div class="task-edit-field">
       <span class="task-edit-label">Obrazek</span>
       <div class="task-edit-field-row">
@@ -2789,6 +2838,10 @@ function initTaskCard(card) {
   titleInput.addEventListener('input', e => {
     const v = e.target.value.trim();
     STATE.taskTitles[task] = v || defaultTitle;
+  });
+  const flagChk = editFields.querySelector('.task-edit-flag');
+  if (flagChk) flagChk.addEventListener('change', e => {
+    STATE.taskFlags[task] = e.target.checked;
   });
   instrInput.addEventListener('input', e => {
     STATE.taskCustomInstr[task] = e.target.value;
@@ -2968,6 +3021,9 @@ function syncTaskInstancesUI() {
       // Domyslnie: tytuly/instrukcje/obrazki nie sa ustawione, taskInstructions defaultowo true.
       if (!(key in STATE.taskInstructions)) STATE.taskInstructions[key] = true;
       if (!(key in STATE.taskHeaders)) STATE.taskHeaders[key] = true;
+      if (base === 'gapfill' || base === 'translate' || base === 'writing') {
+        if (!(key in STATE.taskFlags)) STATE.taskFlags[key] = true;
+      }
       if (!(key in STATE.taskTitles)) {
         // Domyslny tytul: bazowy + " " + numer (np. "Word scramble 2")
         const baseTitleMatch = (STATE.taskTitles[base] || '').match(/^(.+)$/);
@@ -3244,6 +3300,17 @@ function applyExtraSettings(extra) {
   applyToggles(extra.headOn, STATE.taskHeaders, '.task-instr-toggle[data-toggle="head"]');
   updateInstrMaster();
   updateHeadMaster();
+
+  // ── FLAGA PL (gap fill / translate / writing) ──
+  if (extra.flags && typeof extra.flags === 'object') {
+    Object.keys(extra.flags).forEach(k => {
+      if (k in STATE.taskFlags) STATE.taskFlags[k] = !!extra.flags[k];
+    });
+    document.querySelectorAll('.task-edit-flag').forEach(chk => {
+      const task = chk.closest('.task-card') && chk.closest('.task-card').dataset.task;
+      if (task && task in STATE.taskFlags) chk.checked = STATE.taskFlags[task];
+    });
+  }
 
   // ── SEKCJE LINKOW / HTML ──
   if (Array.isArray(extra.customs)) {
@@ -3786,6 +3853,31 @@ function wrapEmoji(escaped) {
 // obramowanie CSS przylegało dokładnie do krawędzi flagi.
 // Używane jako oznaczenia językowe PL / EN w typach zadań które tego potrzebują (translate, writing).
 const FLAG_PL_SVG = '<svg viewBox="5 17 62 38" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-label="PL"><rect x="5" y="17" width="62" height="19" fill="#fff"/><rect x="5" y="36" width="62" height="19" fill="#d22f27"/></svg>';
+
+// Flaga PL per zadanie - '' gdy wylaczona przelacznikiem na kafelku.
+function sectionFlag(taskKey) {
+  return (STATE.taskFlags && STATE.taskFlags[taskKey] === false) ? '' : FLAG_PL_SVG;
+}
+// Klasa dokladana do kontenera zdania zrodlowego, gdy flaga jest ukryta.
+function flagOffCls(taskKey) {
+  return (STATE.taskFlags && STATE.taskFlags[taskKey] === false) ? ' no-flag' : '';
+}
+// Notatka do podzadania (kolumna "note" w TSV) - pokazywana po rozwiazaniu.
+function noteHTML(r, cls) {
+  const n = (r && r.note || '').trim();
+  return n ? `<div class="${cls || 'ws-note'}">📝 ${escapeHtml(n)}</div>` : '';
+}
+// Notatka SEKCYJNA (fiszki, matching): kafelki sa za ciasne na notatki przy
+// wierszach, wiec notatki z kolumny "note" zbieraja sie w jeden blok na koncu
+// sekcji, widoczny po jej ukonczeniu (klasa ws-done). Kazda pozycja jest
+// podpisana slowem, ktorego dotyczy: "jump – skakać: notatka".
+function sectionNotesHTML(rows) {
+  const items = (rows || [])
+    .filter(r => r && (r.note || '').trim())
+    .map(r => `<div class="ws-section-note-item">📝 <strong>${escapeHtml(r.en)} – ${escapeHtml(r.pl)}</strong>: ${escapeHtml(r.note.trim())}</div>`);
+  if (!items.length) return '';
+  return `<div class="ws-section-note">${items.join('')}</div>`;
+}
 const FLAG_UK_SVG = '<svg viewBox="5 17 62 38" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-label="EN"><rect x="5" y="17" width="62" height="38" fill="#1e50a0"/><polygon fill="#fff" points="40 28.856 40 32 50.181 32 67 21.691 67 17 59.346 17 40 28.856"/><polygon fill="#d22f27" points="67 17 67 17 63.173 17 40 31.203 40 32 43.482 32 67 17.586 67 17"/><polygon fill="#fff" points="59.347 55 67 55 67 55 67 50.308 50.182 40 40 40 40 43.143 59.347 55"/><polygon fill="#d22f27" points="67 55 67 52.653 46.355 40 41.568 40 66.042 55 67 55 67 55"/><polygon fill="#fff" points="32 43.144 32 40 21.819 40 5 50.309 5 55 12.654 55 32 43.144"/><polygon fill="#d22f27" points="5 55 5 55 8.827 55 32 40.797 32 40 28.518 40 5 54.414 5 55"/><polygon fill="#fff" points="12.653 17 5 17 5 17 5 21.692 21.818 32 32 32 32 28.857 12.653 17"/><polygon fill="#d22f27" points="5 17 5 19.347 25.646 32 30.432 32 5.958 17 5 17 5 17"/><rect x="5" y="31" width="62" height="10" fill="#fff"/><rect x="31" y="17" width="10" height="38" fill="#fff"/><rect x="5" y="33" width="62" height="6" fill="#d22f27"/><rect x="33" y="17" width="6" height="38" fill="#d22f27"/></svg>';
 
 
@@ -4137,6 +4229,7 @@ function buildWorksheetHTML() {
       instrs: STATE.taskCustomInstr,
       instrOn: STATE.taskInstructions,
       headOn: STATE.taskHeaders,
+      flags: STATE.taskFlags,
       customs: STATE.taskOrder
         .map((k, pos) => {
           const c = STATE.customSections[k];
@@ -4154,6 +4247,7 @@ function buildWorksheetHTML() {
   return buildWorksheetTemplate({
     title,
     subtitle,
+    importedProgress: STATE.importedProgress || null,
     preset: 'custom',
     accent,
     bg,
@@ -4256,7 +4350,8 @@ const DIFF_LEVELS = ['new', 1, 2, 3, 4];
 // Zwraca globalny indeks wiersza w STATE.rows (potrzebny, bo buildery pracuja
 // na PRZEFILTROWANYCH tablicach rowsForTask, a oceny zapisujemy per wiersz danych).
 function diffRowIdx(r) {
-  return STATE.rows.indexOf(r);
+  // _gi = indeks nadany przy parsowaniu; klon wiersza (strip klamr) go dziedziczy.
+  return (r && r._gi != null) ? r._gi : STATE.rows.indexOf(r);
 }
 
 // Kompaktowy rzad przyciskow oceny (5 poziomow: nowe + 4 oceny).
@@ -4337,6 +4432,7 @@ function buildFlashcardsSection(num, options = {}) {
       </div>
       ${sectionInstr(taskKey, 'Kliknij kartę, żeby odsłonić tłumaczenie. Spróbuj najpierw zgadnąć w głowie!')}
       <div class="flashcards-grid">${cards}</div>
+      ${sectionNotesHTML(rows)}
       <div class="ws-actions">
         <button class="ws-btn-solve" onclick="solveFlashcards_${num}()">Pokaż wszystkie odpowiedzi</button>
       </div>
@@ -4496,6 +4592,7 @@ function buildMatchingSection(num, options = {}) {
           ${enList}
         </div>
       </div>
+      ${sectionNotesHTML(pairs)}
       <div class="ws-actions">
         <button class="ws-btn-solve" onclick="solveMatching_${num}()">Pokaż odpowiedzi</button>
       </div>
@@ -4743,6 +4840,7 @@ function buildScrambleSection(num, options = {}) {
           <button class="scramble-solve-btn" onclick="solveScrambleOne_${num}(${i})" title="Rozwiąż to słowo" aria-label="Rozwiąż">✨</button>
           <button class="scramble-tts-btn tts-btn" onclick="ttsBtnClick(event, ${JSON.stringify(r.en).replace(/"/g, '&quot;')})" title="Posłuchaj" aria-label="Czytaj">🔊</button>
         </div>
+        ${noteHTML(r)}
         ${diffRow(diffRowIdx(r))}
       </div>`;
   }).join('');
@@ -4902,6 +5000,7 @@ function buildQuizSection(num, options = {}) {
           <button class="tts-btn quiz-solve-btn" onclick="solveQuizOne_${num}(${i})" title="Rozwiąż to pytanie" aria-label="Rozwiąż">✨</button>
         </div>
         <div class="quiz-options" data-opts="${opts.length}">${optHTML}</div>
+        ${noteHTML(r)}
         ${diffRow(diffRowIdx(r))}
       </div>`;
   }).join('');
@@ -5057,6 +5156,7 @@ function buildUnscrambleSection(num, options = {}) {
           <button type="button" class="unsc-solve-btn" onclick="solveUnscrambleOne_${num}(${i})">✨ Rozwiąż</button>
           <button type="button" class="unsc-clear-btn" onclick="clearUnscramble_${num}(${i})">Wyczyść</button>
         </div>
+        ${noteHTML(r)}
         ${diffRow(diffRowIdx(r))}
       </div>`;
   }).filter(s => s.length > 0).join('');
@@ -5440,6 +5540,7 @@ function buildCornellSection(num, options = {}) {
       </div>
       <div class="cornell-a" id="cornell-a-${num}-${i}">
         <div class="cornell-a-inner">${escapeHtml(r.en)}</div>
+        ${noteHTML(r, 'ws-note ws-note-open')}
         ${STATE.difficultyEnabled ? `<div class="ws-diff-row ws-diff-row-cornell">${diffWidget(diffRowIdx(r), { label: true })}</div>` : ''}
       </div>
     </div>`).join('');
@@ -5550,8 +5651,8 @@ function buildGapfillSection(num, options = {}) {
     const totalGaps = gapIdx;
     return `
       <div class="gap-card" data-idx="${i}" data-total-gaps="${totalGaps}">
-        <div class="gap-translation">
-          <span class="gap-translation-label">${FLAG_PL_SVG}</span> <span class="gap-translation-text">${escapeHtml(r.pl)}</span>
+        <div class="gap-translation${flagOffCls(taskKey)}">
+          <span class="gap-translation-label">${sectionFlag(taskKey)}</span> <span class="gap-translation-text">${escapeHtml(r.pl)}</span>
         </div>
         <div class="gap-sentence">${sentenceHTML}
           <span class="gap-actions">
@@ -5560,6 +5661,7 @@ function buildGapfillSection(num, options = {}) {
             <button class="tts-btn tts-btn-gap" onclick="ttsBtnClick(event, ${JSON.stringify(enClean).replace(/"/g, '&quot;')})" title="Posłuchaj całego zdania" aria-label="Czytaj">🔊</button>
           </span>
         </div>
+        ${noteHTML(r)}
         ${diffRow(diffRowIdx(r))}
       </div>`;
   }).join('');
@@ -5717,8 +5819,8 @@ function buildTranslateSection(num, options = {}) {
   const items = rows.map((r, i) => {
     return `
       <div class="trans-card" data-idx="${i}">
-        <div class="trans-pl">
-          <span class="trans-pl-label">${FLAG_PL_SVG}</span>
+        <div class="trans-pl${flagOffCls(taskKey)}">
+          <span class="trans-pl-label">${sectionFlag(taskKey)}</span>
           <span class="trans-pl-text">${escapeHtml(r.pl)}</span>
         </div>
         <div class="trans-input-row">
@@ -5733,6 +5835,7 @@ function buildTranslateSection(num, options = {}) {
         <div class="trans-correct" id="trans-c-${num}-${i}">
           <span class="trans-correct-label">Wzór:</span> <span class="trans-correct-text">${escapeHtml(r.en)}</span>
         </div>
+        ${noteHTML(r)}
         ${diffRow(diffRowIdx(r))}
       </div>`;
   }).join('');
@@ -5866,7 +5969,7 @@ function buildWritingSection(num, options = {}) {
   const taskKey = options.taskKey || 'writing';
   const rows = rowsForTask(taskKey);
   const items = rows.map((r, i) => {
-    const plBlock = r.pl ? `<div class="write-prompt-pl"><span class="write-prompt-flag">${FLAG_PL_SVG}</span> ${escapeHtml(r.pl)}</div>` : '';
+    const plBlock = r.pl ? `<div class="write-prompt-pl${flagOffCls(taskKey)}"><span class="write-prompt-flag">${sectionFlag(taskKey)}</span> ${escapeHtml(r.pl)}</div>` : '';
     const enBlock = r.en ? `<div class="write-prompt-en"><span class="write-prompt-flag">${FLAG_UK_SVG}</span> ${escapeHtml(r.en)} <button class="tts-btn tts-btn-write" onclick="ttsBtnClick(event, ${JSON.stringify(r.en).replace(/"/g, '&quot;')})" title="Posłuchaj polecenia" aria-label="Czytaj">🔊</button></div>` : '';
     return `
       <div class="write-card" data-idx="${i}">
@@ -5945,7 +6048,7 @@ function buildWritingJS(num, options = {}) {
 // ============================================================
 // MAIN TEMPLATE - the worksheet HTML
 // ============================================================
-function buildWorksheetTemplate({ title, subtitle, preset, accent, bg, textColor, isCustomAccent, styleMeta, sectionCount, taskOrder, sectionsHTML, sectionsJS, rowsJSON, ttsConfig, logoConfig, difficulty, reviewOnly }) {
+function buildWorksheetTemplate({ title, subtitle, importedProgress, preset, accent, bg, textColor, isCustomAccent, styleMeta, sectionCount, taskOrder, sectionsHTML, sectionsJS, rowsJSON, ttsConfig, logoConfig, difficulty, reviewOnly }) {
   const presetTheme = getPresetTheme(preset, accent, bg, textColor, isCustomAccent);
   const fontImports = presetTheme.fontImports;
   const css = buildWorksheetCSS(presetTheme);
@@ -6088,6 +6191,9 @@ const WS_TAG_BY_BASE = { flashcards: 'f', matching: 'm', scramble: 's', quiz: 'q
 // Kolory i obrazki sekcji - dopisywane do pobieranego TSV (#accent/#bg/#text/#img),
 // zeby generator przy ponownym wczytaniu odtworzyl wyglad bez klikania.
 const WS_STYLE_META = ${JSON.stringify(styleMeta || null)};
+// Stan rozwiazania odziedziczony z poprzedniej karty (linia #progress w TSV).
+// Uzywany tylko, gdy ta karta nie ma jeszcze wlasnego zapisu w localStorage.
+const WS_IMPORTED_PROGRESS = ${JSON.stringify(importedProgress || null)};
 // Tryb "tylko powtorka": karta bez zadan, sama powtorka ze WSZYSTKIMI slowami.
 const WS_REVIEW_ONLY = ${reviewOnly ? 'true' : 'false'};
 const WS_TITLE = ${JSON.stringify(title)};
@@ -7285,10 +7391,10 @@ function _wsCollectWriting() {
   return data;
 }
 
-function saveProgress() {
-  if (_wsResetting) return; // nie zapisuj w trakcie resetu - inaczej nadpisalibysmy czysty stan
-  try {
-    const state = {
+// Buduje pelny obiekt stanu karty (wszystkie typy zadan). Uzywany przez
+// zapis do localStorage ORAZ przez eksport TSV (#progress) - jedna prawda.
+function wsBuildProgressState() {
+  return {
       v: 2,                                    // wersja schematu (1 = stara, 2 = nowa)
       done: Array.from(_wsDone),
       // Oceny trudnosci per wiersz WS_DATA (0 = brak oceny).
@@ -7303,7 +7409,12 @@ function saveProgress() {
       translate: _wsCollectTranslate(),
       writing: _wsCollectWriting()
     };
-    wsLSset(WS_STORAGE_KEY, JSON.stringify(state));
+}
+
+function saveProgress() {
+  if (_wsResetting) return; // nie zapisuj w trakcie resetu - inaczej nadpisalibysmy czysty stan
+  try {
+    wsLSset(WS_STORAGE_KEY, JSON.stringify(wsBuildProgressState()));
   } catch (e) { /* localStorage może być pełny lub niedostępny */ }
 }
 
@@ -7652,6 +7763,13 @@ function downloadTSV() {
   // Pelny pakiet wygladu (czcionki, tytuly/instrukcje sekcji, przelaczniki,
   // sekcje linkow/HTML) - jedna zakodowana linia, generator ja odtworzy.
   if (WS_STYLE_META && WS_STYLE_META.extra) lines.push('#extra\\t' + WS_STYLE_META.extra);
+  // Stan rozwiazania karty (#progress): pelny obiekt postepu - dopasowane pary,
+  // wpisane odpowiedzi, odkryte fiszki itd. Generator przekaze go do nowej
+  // karty, wiec mozna edytowac karte "w trakcie" bez utraty tego, co juz
+  // zostalo zrobione.
+  try {
+    lines.push('#progress\\t' + encodeURIComponent(JSON.stringify(wsBuildProgressState())));
+  } catch (e) { /* stan nie do zserializowania - pomijamy po cichu */ }
   // Metadane stylu: kolory + obrazki sekcji (odtwarzane przez generator).
   if (WS_STYLE_META) {
     if (WS_STYLE_META.accent) lines.push('#accent\\t' + WS_STYLE_META.accent);
@@ -7735,6 +7853,11 @@ ${sectionsJS}
 
 // Load saved progress
 window.addEventListener('load', () => {
+  // Zasiew postepu z TSV (#progress): tylko gdy karta nie ma WLASNEGO zapisu -
+  // lokalny postep tej samej karty zawsze wygrywa z importowanym.
+  if (WS_IMPORTED_PROGRESS && !wsLSget(WS_STORAGE_KEY)) {
+    wsLSset(WS_STORAGE_KEY, JSON.stringify(WS_IMPORTED_PROGRESS));
+  }
   loadProgress();
   wsPaintAllDiff();
   if (typeof wsUpdateReviewCount === 'function') wsUpdateReviewCount();
@@ -7745,6 +7868,8 @@ window.addEventListener('load', () => {
   document.querySelectorAll('.ws-section').forEach(sec => {
     const num = parseInt(sec.dataset.section);
     if (isNaN(num)) return;
+    // Sekcje statyczne (linki / HTML) nie maja czego czyscic - bez przycisku.
+    if (sec.classList.contains('ws-section-static')) return;
     if (sec.querySelector('.ws-btn-clear-sec')) return; // idempotentnie
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -8943,13 +9068,16 @@ ${t.sharp ? `
 .scramble-backspace:disabled { opacity: 0.35; cursor: default; }
 .scramble-input-row {
   display: flex; gap: 0.5rem;
-  align-items: stretch;
+  align-items: center;
 }
 .scramble-input {
   flex: 1;
   font-family: var(--ws-body);
   font-size: 1.08rem;
-  padding: 0.8rem 1.05rem;
+  /* Stala wysokosc pola - przyciski obok sa kwadratami 3rem x 3rem,
+     wiec pole i przyciski maja zawsze IDENTYCZNA wysokosc. */
+  height: 3rem;
+  padding: 0 1.05rem;
   background: var(--ws-bg);
   border: 1.5px solid var(--ws-border-strong);
   color: var(--ws-text);
@@ -8967,15 +9095,20 @@ ${t.sharp ? `
   animation: wsBuzz 0.5s, wsFlashWrong 0.6s ease-out;
 }
 .scramble-check, .scramble-hint-btn, .scramble-solve-btn {
-  font-family: var(--ws-body); font-weight: 600;
+  /* KWADRATY 3rem x 3rem = dokladnie wysokosc pola wpisywania, wysrodkowane
+     na jego poziomej osi. Rozmiar jest STALY - nie skaluje sie z polem. */
+  font-family: var(--ws-body); font-weight: 700;
   border: 1.5px solid var(--ws-border-strong);
   background: var(--ws-bg);
   color: var(--ws-text);
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
-  width: 50px;
+  width: 3rem; height: 3rem;
+  align-self: center;
+  flex-shrink: 0;
+  display: grid; place-items: center;
   transition: all 0.18s;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
 }
 .scramble-check:hover { border-color: var(--ws-accent); color: var(--ws-accent); }
 .scramble-hint-btn:hover { border-color: var(--ws-accent); color: var(--ws-accent); }
@@ -9593,10 +9726,13 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   pointer-events: none;
 }
 
-/* Scramble - dodatkowy przycisk w rzędzie */
-.scramble-tts-btn {
-  width: 50px; height: auto;
-  align-self: stretch;
+/* Scramble - przycisk TTS w rzedzie: identyczny kwadrat 3rem jak reszta.
+   Podwojny selektor bije .tts-btn. */
+.scramble-tts-btn.tts-btn {
+  width: 3rem; height: 3rem;
+  align-self: center;
+  border-radius: 8px;
+  font-size: 1.05rem;
 }
 
 /* Quiz - obok każdej opcji */
@@ -10198,6 +10334,9 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   border-radius: 12px;
   padding: 1.25rem 1.4rem;
   transition: border-color 0.25s, background 0.25s;
+  /* Pasek zdania PL (ujemne marginesy) jest przycinany do zaokraglonego
+     obrysu karty - tlo nie nachodzi na border, rogi czyste. */
+  overflow: hidden;
 }
 .gap-card.done {
   border-color: var(--ws-accent);
@@ -10273,6 +10412,10 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   margin-bottom: 0.7rem;
   font-size: 0.98rem;
   color: var(--ws-text-dim);
+  /* Flaga i tekst na wspolnej osi poziomej (flex zamiast inline + baseline). */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 .gap-translation-label {
   display: inline-flex;
@@ -10306,6 +10449,8 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   border-radius: 12px;
   padding: 1.25rem 1.4rem;
   transition: border-color 0.25s, background 0.25s;
+  /* Jak w gap-card: przycinanie paska PL do obrysu karty. */
+  overflow: hidden;
 }
 .trans-card.done {
   border-color: var(--ws-ok);
@@ -10325,7 +10470,8 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
 }
 .trans-pl {
   display: flex;
-  align-items: baseline;
+  /* Flaga wysrodkowana wzgledem tekstu, nie na linii bazowej. */
+  align-items: center;
   gap: 0.65rem;
   margin-bottom: 0.85rem;
 }
@@ -10360,7 +10506,9 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   flex: 1;
   font-family: var(--ws-body);
   font-size: 1.05rem;
-  padding: 0.7rem 0.9rem;
+  /* Stala wysokosc jak w Scramble - kwadratowe przyciski 3rem pasuja 1:1. */
+  height: 3rem;
+  padding: 0 0.9rem;
   background: var(--ws-bg);
   border: 1.5px solid var(--ws-border-strong);
   border-radius: 9px;
@@ -10393,7 +10541,9 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   flex-shrink: 0;
 }
 .trans-check, .trans-hint-btn, .trans-solve-btn, .tts-btn-trans {
-  width: 2.4rem; height: 2.4rem;
+  /* Kwadraty 3rem = wysokosc pola, wysrodkowane na jego osi. */
+  width: 3rem; height: 3rem;
+  align-self: center;
   border-radius: 8px;
   border: 1.5px solid var(--ws-border-strong);
   background: var(--ws-bg);
@@ -10404,6 +10554,72 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   display: grid; place-items: center;
   transition: transform 0.15s, border-color 0.15s, background 0.15s;
 }
+/* ── NOTATKI DO PODZADAN (kolumna "note" w TSV) ──
+   Domyslnie ukryte; pokazuja sie po rozwiazaniu/odslonieciu podzadania.
+   Zaokraglenie z motywu (--ws-radius-sm), wiec tryb ostrych rogow dziala
+   takze tutaj. Bez paska z lewej - czysty, miekki blok. */
+.ws-note {
+  display: none;
+  margin-top: 0.55rem;
+  padding: 0.5rem 0.8rem;
+  background: var(--ws-accent-soft);
+  border-radius: var(--ws-radius-sm);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--ws-text);
+  animation: wsNoteIn 0.3s ease-out;
+}
+@keyframes wsNoteIn { from { opacity: 0; } to { opacity: 1; } }
+.gap-card.done .ws-note,
+.trans-card.done .ws-note,
+.scramble-card.done .ws-note,
+.unsc-card.done .ws-note,
+.quiz-card.answered .ws-note { display: block; }
+/* Cornell: notatka w bloku odpowiedzi, wyrownana do tekstu odpowiedzi
+   (ten sam lewy margines co cornell-a-inner) i z oddechem od ramki. */
+.ws-note-open { display: block; margin: 0.15rem 1.1rem 0.95rem 4rem; }
+@media (max-width: 560px) { .ws-note-open { margin-left: 1.1rem; } }
+/* Notatka sekcyjna (fiszki / matching): jeden blok na koncu sekcji,
+   odsloniety po jej ukonczeniu. */
+.ws-section-note {
+  display: none;
+  margin-top: 1rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--ws-accent-soft);
+  border-radius: var(--ws-radius-sm);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--ws-text);
+  animation: wsNoteIn 0.3s ease-out;
+}
+.ws-section.ws-done .ws-section-note { display: block; }
+.ws-section-note-item + .ws-section-note-item { margin-top: 0.35rem; }
+
+/* ── ZDANIE ZRODLOWE (gap fill / translate / writing) ──
+   Gorna strefa karty ("zrodlo") na CALEJ szerokosci: lekko ciemniejsze,
+   zalezne od akcentu tlo + pozioma linia (jak <hr>) oddzielajaca od
+   odpowiedzi. Ujemne marginesy rozciagaja tlo do krawedzi karty, a poziomy
+   padding rowny paddingowi karty trzyma tekst PL DOKLADNIE w tej samej
+   linii co tekst odpowiedzi pod spodem - zero sciskania, zero wciecia. */
+.gap-translation, .trans-pl {
+  background: var(--ws-accent-soft);
+  background: color-mix(in srgb, var(--ws-accent) 7%, var(--ws-box-bg));
+  border-bottom: 1px solid var(--ws-border-strong);
+  /* gap-card i trans-card: padding 1.25rem 1.4rem, radius 12px (wewn. ~10px).
+     Ujemne marginesy rozciagaja tlo do krawedzi karty, poziomy padding rowny
+     paddingowi karty trzyma tekst PL w JEDNEJ linii z odpowiedzia ponizej. */
+  margin: -1.25rem -1.4rem 0.85rem -1.4rem;
+  padding: 0.85rem 1.4rem 0.7rem 1.4rem;
+  /* Bez wlasnego zaokraglenia - rogi wycina overflow:hidden karty,
+     wiec pasek styka sie z borderem idealnie, bez przeswitow i nachodzenia. */
+  border-radius: 0;
+}
+/* write-card ma juz wlasny separator (kreskowana linia pod .write-prompt),
+   wiec zdanie PL zostaje tam bez dodatkowego tla. */
+.no-flag .gap-translation-label,
+.no-flag .trans-pl-label,
+.no-flag .write-prompt-flag { display: none; }
+
 .trans-check { color: var(--ws-ok); border-color: var(--ws-ok); }
 .trans-check:hover { background: var(--ws-ok-bg); transform: scale(1.05); }
 .trans-hint-btn { color: var(--ws-accent); border-color: var(--ws-accent); }
@@ -10421,26 +10637,14 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
    sciskaly samo pole. Tutaj pole bierze pelna szerokosc (wlasny "akapit"),
    a przyciski zawijaja sie do osobnego rzedu pod spodem. */
 @media (max-width: 560px) {
-  .trans-input-row { flex-wrap: wrap; align-items: stretch; }
+  /* Telefon: pole na cala szerokosc, przyciski w osobnym rzedzie pod spodem -
+     ale dalej jako KWADRATY 3rem (nie rozciagamy ich na szerokosc). */
+  .trans-input-row { flex-wrap: wrap; }
   .trans-input { flex: 1 1 100%; width: 100%; }
   .trans-input-actions { width: 100%; justify-content: flex-end; }
-  .trans-check, .trans-hint-btn, .trans-solve-btn, .tts-btn-trans { width: 2.7rem; height: 2.7rem; }
 
-  .scramble-input-row { flex-wrap: wrap; align-items: stretch; }
+  .scramble-input-row { flex-wrap: wrap; justify-content: flex-end; }
   .scramble-input { flex: 1 1 100%; width: 100%; }
-  /* Przyciski scramble (sprawdz / hint / solve / tts / backspace) razem w rzedzie
-     pod polem - rozciagamy je rownomiernie, zeby ladnie wypelnily szerokosc. */
-  .scramble-input-row > .scramble-check,
-  .scramble-input-row > .scramble-hint-btn,
-  .scramble-input-row > .scramble-solve-btn,
-  .scramble-input-row > .scramble-tts-btn {
-    flex: 1 1 auto;
-    /* Rzad przyciskow pod polem mial wysokosc "z contentu" i byl scisniety
-       w pionie - wymuszamy normalny, wygodny rozmiar dotykowy. */
-    min-height: 2.7rem;
-    padding-top: 0.45rem;
-    padding-bottom: 0.45rem;
-  }
 }
 .trans-correct {
   margin-top: 1rem;
@@ -11117,7 +11321,9 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
 // kolory, tlo, czcionki, przelaczniki, sekcje materialow, obrazki, kolejnosc.
 // Zapis odpalany z opoznieniem po kazdej zmianie; przywracanie raz, na starcie.
 // ============================================================
-const WSGEN_LS_KEY = 'wsgen-autosave-v1';
+// v2: stary klucz v1 porzucony celowo - snapshoty 3.1 przywracaly wylaczone
+// zadania i blokade auto-wyboru, przez co zadania "znikaly" z nowych kart.
+const WSGEN_LS_KEY = 'wsgen-autosave-v2';
 let _wsgenRestoring = false; // podczas przywracania nie zapisujemy w kolko
 
 function wsgenBuildSnapshot() {
@@ -11140,6 +11346,7 @@ function wsgenBuildSnapshot() {
     tasks: Object.fromEntries(Object.entries(STATE.tasks).filter(([k]) => !STATE.customSections[k])),
     taskOrder: STATE.taskOrder.filter(k => !STATE.customSections[k]),
     userOverrodeTasks: STATE.userOverrodeTasks,
+    importedProgress: STATE.importedProgress || null,
     images: { url: { ...STATE.taskImages }, fit: { ...STATE.taskImageFit }, h: { ...STATE.taskImageHeight }, y: { ...STATE.taskImagePosY } },
     extra: {
       fonts: { ...STATE.fontCustom },
@@ -11147,6 +11354,7 @@ function wsgenBuildSnapshot() {
       instrs: { ...STATE.taskCustomInstr },
       instrOn: { ...STATE.taskInstructions },
       headOn: { ...STATE.taskHeaders },
+      flags: { ...STATE.taskFlags },
       customs: STATE.taskOrder.map((k, pos) => {
         const c = STATE.customSections[k];
         if (!c) return null;
@@ -11175,6 +11383,8 @@ document.addEventListener('click', wsgenScheduleSave, true);
 function wsgenRestore() {
   let snap = null;
   try { snap = JSON.parse(localStorage.getItem(WSGEN_LS_KEY) || 'null'); } catch (e) {}
+  // Sprzatanie po v1 (patrz komentarz przy kluczu).
+  try { localStorage.removeItem('wsgen-autosave-v1'); } catch (e) {}
   if (!snap || snap.v !== 1) return;
   _wsgenRestoring = true;
   try {
@@ -11227,20 +11437,15 @@ function wsgenRestore() {
     }
     // 6. Pelny pakiet wygladu (czcionki, tytuly/instrukcje, przelaczniki, sekcje materialow).
     if (snap.extra) applyExtraSettings(snap.extra);
-    // 7. Zaznaczenia i kolejnosc zwyklych zadan (PO TSV, bo auto-wybor mogl je ustawic).
-    if (snap.tasks) {
-      Object.keys(snap.tasks).forEach(k => {
-        if (!(k in STATE.tasks)) return;
-        STATE.tasks[k] = !!snap.tasks[k];
-        const card = document.querySelector('.task-card[data-task="' + k + '"]');
-        if (card) {
-          const cb = card.querySelector(':scope > input[type="checkbox"]');
-          if (cb) cb.checked = STATE.tasks[k];
-          card.classList.toggle('checked', STATE.tasks[k]);
-        }
-      });
-      STATE.userOverrodeTasks = !!snap.userOverrodeTasks;
-    }
+    // 6b. Stan rozwiazania z TSV - dispatch tsv juz go ustawil, jesli linia
+    // #progress byla w tekscie; snapshot przywraca go takze, gdy nie byla.
+    if (snap.importedProgress) STATE.importedProgress = snap.importedProgress;
+    // 7. CELOWO nie przywracamy wlaczen/wylaczen zadan ani flagi
+    // userOverrodeTasks. Ktore zadania sa aktywne, wynika z DANYCH (tagow) -
+    // przywracanie starych odznaczen sprawialo, ze zadanie z tagiem w swiezych
+    // danych (np. Translate z tagiem t) zostawalo wylaczone po starej sesji
+    // i "znikalo" z karty. Auto-wybor po wczytaniu TSV rzadzi.
+    STATE.userOverrodeTasks = false;
     if (Array.isArray(snap.taskOrder) && snap.taskOrder.length) {
       const valid = new Set(STATE.taskOrder);
       const seen = new Set();
