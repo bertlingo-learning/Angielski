@@ -1227,7 +1227,7 @@ pies	dog
       <div class="tsv-example-wrap" id="tsvExampleBox">
         <div class="tsv-example-head">
           <div class="tsv-example-info">
-            <strong>Przykładowe dane TSV</strong> dopasowane do różnych typów zadań. Kolumna <code>tasks</code> (opcjonalna) ogranicza wiersz do konkretnych typów. Puste = wiersz idzie do wszystkich zaznaczonych typów. Skróty: <code>f</code>=flashcards, <code>m</code>=matching, <code>s</code>=scramble, <code>q</code>=quiz, <code>u</code>=unscramble, <code>c</code>=cornell, <code>g</code>=gapfill, <code>t</code>=translate, <code>w</code>=writing. Możesz podać kilka tagów po przecinku (np. <code>f,m</code>), ale zwykle czytelniej jest dać jeden tag na wiersz. Quiz z własnymi odpowiedziami: w kolumnie <code>en</code> oddziel opcje kreską, np. <code>cat|cut|cot|cap</code> - pierwsza jest poprawna, pytanie używa dokładnie tych opcji (globalna liczba opcji go nie dotyczy), a w pozostałych zadaniach wiersz działa jak samo <code>cat</code>. Kolumna <code>distractors</code> (opcjonalna): atrapy oddzielone kreską, np. <code>commuter|commute</code>. W zadaniu Matching dokładają do prawej kolumny dodatkowe słowa bez pary, których nie da się połączyć - utrudnienie. Zbierane są z całej części sekcji. Klamerki <code>{…}</code> w EN działają tylko w Gap Fill - w każdym innym zadaniu (także gdy wiersz ma tagi mieszane, np. <code>g,m</code>) są automatycznie czyszczone z widoku. Kolumna <code>note</code> (opcjonalna): notatka do podzadania, pokazuje się po jego rozwiązaniu (w fiszkach: na odwrocie) - np. kontekst, alternatywne odpowiedzi. Karta zapisuje też do TSV linię <code>#progress</code> ze stanem rozwiązania - wklejona z powrotem przenosi postęp do nowo wygenerowanej karty.
+            <strong>Przykładowe dane TSV</strong> dopasowane do różnych typów zadań. Kolumna <code>tasks</code> (opcjonalna) ogranicza wiersz do konkretnych typów. Puste = wiersz idzie do wszystkich zaznaczonych typów. Skróty: <code>f</code>=flashcards, <code>m</code>=matching, <code>s</code>=scramble, <code>q</code>=quiz, <code>u</code>=unscramble, <code>c</code>=cornell, <code>g</code>=gapfill, <code>t</code>=translate, <code>w</code>=writing. Możesz podać kilka tagów po przecinku (np. <code>f,m</code>), ale zwykle czytelniej jest dać jeden tag na wiersz. Quiz z własnymi odpowiedziami: w kolumnie <code>en</code> oddziel opcje kreską, np. <code>cat|cut|cot|cap</code> - pierwsza jest poprawna, pytanie używa dokładnie tych opcji (globalna liczba opcji go nie dotyczy), a w pozostałych zadaniach wiersz działa jak samo <code>cat</code>. Kolumna <code>distractors</code> (opcjonalna): atrapy oddzielone kreską, np. <code>commuter|commute</code>. W zadaniu Matching dokładają do prawej kolumny dodatkowe słowa bez pary, których nie da się połączyć - utrudnienie. Zbierane są z całej części sekcji. Klamerki <code>{…}</code> w EN działają tylko w Gap Fill - w każdym innym zadaniu (także gdy wiersz ma tagi mieszane, np. <code>g,m</code>) są automatycznie czyszczone z widoku. Kolumna <code>note</code> (opcjonalna): notatka do podzadania, pokazuje się po jego rozwiązaniu (w fiszkach: na odwrocie) - np. kontekst, alternatywne odpowiedzi. Karta zapisuje też do TSV linię <code>#progress</code> ze stanem rozwiązania - wklejona z powrotem przenosi postęp do nowo wygenerowanej karty. Kolejność zadań bez <code>#order</code> = auto-order: o układzie karty decyduje kolejność PIERWSZEGO wystąpienia tagu w danych (możesz układać grupy wierszy w arkuszu, a karta to odwzoruje); jawny <code>#order</code> i ręczne strzałki mają pierwszeństwo.
           </div>
           <button type="button" class="tsv-example-use" id="tsvExampleUse" title="Wklej te dane do pola">📋 Użyj tych danych</button>
         </div>
@@ -1590,7 +1590,7 @@ Napisz krótki email do przyjaciela o weekendzie.	Use past simple. Include at le
       <div class="tts-info">
         ⓘ Przy każdym elemencie karty pojawi się pięć małych przycisków z symbolami (bez cyfr):
         <strong style="color:#6b7280">✦ · nowe słowo</strong>,
-        <strong style="color:#dc2626">✕ · nie umiem / nie pamiętam</strong>,
+        <strong style="color:#ab55ff">↻ · do powtórki</strong>,
         <strong style="color:#ff8018">▲ · trudne</strong>,
         <strong style="color:#16a34a">⬤ · dobre</strong>,
         <strong style="color:#2563eb">✓ · łatwe</strong>.
@@ -1633,7 +1633,7 @@ Napisz krótki email do przyjaciela o weekendzie.	Use past simple. Include at le
 // Jedno zrodlo prawdy o numerze wersji. Uzywane w naglowku generatora
 // ORAZ w badge "Worksheet vX.Y" na samej karcie pracy - dzieki temu
 // wiadomo, w jakiej wersji generatora powstala dana karta.
-const WS_GEN_VERSION = '3.4';
+const WS_GEN_VERSION = '3.7';
 
 // LOGO KARTY PRACY - jeden staly URL, zawsze widoczne na gorze i dole karty.
 // Chcesz inne logo? Podmien ponizszy adres (jedyne miejsce w kodzie).
@@ -1687,6 +1687,9 @@ const STATE = {
   bgSvgCode: '',
   bgSvgSize: null,
   bgSvgOpacity: 1,
+  // Czy user przestawial kolejnosc zadan recznie (strzalki) - wtedy auto-order
+  // z danych przestaje nadpisywac uklad. Reset kolejnosci zdejmuje flage.
+  userReorderedTasks: false,
   // Czcionki: JEDEN ujednolicony tryb (dawne presety usuniete z UI).
   // fontKey zostaje na 'custom' na stale - resolveFontSet('custom') czyta
   // STATE.fontCustom, a FONT_SETS.grotesque sluzy tylko jako awaryjny fallback.
@@ -1930,7 +1933,19 @@ function parseTSV(text) {
   }
 
   if (rows.length === 0) return { headers, rows: [], error: 'Nie wykryto wierszy z danymi PL/EN. Czy nagłówki to "pl" i "en"?', parsedOrder, parsedMeta };
-  return { headers, rows, error: null, parsedOrder, parsedMeta };
+  // ── AUTO-ORDER ──
+  // Domyslna kolejnosc zadan = kolejnosc PIERWSZEGO wystapienia tagu w danych
+  // (wiersz po wierszu, a w wierszu tag po tagu, wiec przecinki tez sie licza).
+  // Uklad grup w arkuszu staje sie ukladem karty - bez recznego #order.
+  // Jawny #order zawsze wygrywa z auto-orderem.
+  const autoOrder = [];
+  const _aoSeen = new Set();
+  rows.forEach(r => {
+    (r._tasks || []).forEach(k => {
+      if (!_aoSeen.has(k)) { _aoSeen.add(k); autoOrder.push(k); }
+    });
+  });
+  return { headers, rows, error: null, parsedOrder, parsedMeta, autoOrder };
 }
 
 // Parse "f,m" -> ['flashcards','matching']. Empty -> [] (means: include in all selected types).
@@ -2247,18 +2262,26 @@ function updateTSVStatus() {
   // przez parseTaskTags (skroty f/m/g2..., pelne nazwy, tez zapis 'gapfill:2').
   // Rozpoznane klucze ida na poczatek w podanej kolejnosci, reszta (w tym
   // nierozpoznane nowe typy) doklejana jest na koncu w dotychczasowym ukladzie.
-  if (result.parsedOrder && result.parsedOrder.length) {
-    const wanted = parseTaskTags(result.parsedOrder.join(',').replace(/:/g, ''));
-    const valid = new Set(STATE.taskOrder);
-    const seen = new Set();
-    const merged = [];
-    wanted.forEach(k => {
-      if (valid.has(k) && !seen.has(k)) { seen.add(k); merged.push(k); }
-    });
-    STATE.taskOrder.forEach(k => { if (!seen.has(k)) { seen.add(k); merged.push(k); } });
-    STATE.taskOrder = merged;
-    reorderGridDom();
-    syncOrderInputs();
+  {
+    // Zrodlo kolejnosci: jawny #order > auto-order z ukladu danych.
+    // Auto-order jest pomijany, gdy user PRZESTAWIL zadania recznie strzalkami
+    // (flaga userReorderedTasks) - reczny uklad nie moze byc nadpisywany
+    // przy kazdej edycji danych.
+    const wantedSrc = (result.parsedOrder && result.parsedOrder.length)
+      ? parseTaskTags(result.parsedOrder.join(',').replace(/:/g, ''))
+      : ((!STATE.userReorderedTasks && result.autoOrder && result.autoOrder.length) ? result.autoOrder : null);
+    if (wantedSrc) {
+      const valid = new Set(STATE.taskOrder);
+      const seen = new Set();
+      const merged = [];
+      wantedSrc.forEach(k => {
+        if (valid.has(k) && !seen.has(k)) { seen.add(k); merged.push(k); }
+      });
+      STATE.taskOrder.forEach(k => { if (!seen.has(k)) { seen.add(k); merged.push(k); } });
+      STATE.taskOrder = merged;
+      reorderGridDom();
+      syncOrderInputs();
+    }
   }
   // Sekcje materialow odtworzone z #extra maja zapamietane pozycje - #order
   // zna tylko zwykle zadania, wiec po jego scaleniu wstawiamy je z powrotem
@@ -2936,6 +2959,8 @@ function moveTask(task, dir) {
   const active = activeTaskOrder();
   const i = active.indexOf(task);
   if (i === -1) return;
+  // Reczna zmiana kolejnosci: od teraz auto-order z danych nie nadpisuje ukladu.
+  STATE.userReorderedTasks = true;
   setTaskPosition(task, i + 1 + dir);
 }
 
@@ -3366,6 +3391,9 @@ function applyExtraSettings(extra) {
 }
 
 document.getElementById('reorderReset').addEventListener('click', () => {
+  // Reset zdejmuje flage recznego ukladu - auto-order znow moze dzialac
+  // przy nastepnym wczytaniu danych.
+  STATE.userReorderedTasks = false;
   const defaultOrder = ['flashcards', 'matching', 'scramble', 'quiz', 'unscramble', 'cornell', 'gapfill', 'translate', 'writing'];
   // Zachowaj klucze instancji 2+ (np. 'matching:2') - doklejamy je na koncu.
   const extras = STATE.taskOrder.filter(t => !defaultOrder.includes(t));
@@ -4270,7 +4298,11 @@ function buildWorksheetHTML() {
       show: true,
       url: WS_LOGO_URL
     },
-    difficulty: STATE.difficultyEnabled || STATE.reviewOnly,
+    // Trudnosc jest ZAWSZE wbudowana w karte (dane, zapis, powtorka).
+    // Wylaczenie w generatorze = tryb UKRYTY: uczen nie widzi zadnych ocen,
+    // a prowadzacy otwiera je w osobnej, synchronizujacej sie karcie (#teacher).
+    difficulty: true,
+    diffHidden: !(STATE.difficultyEnabled || STATE.reviewOnly),
     reviewOnly: STATE.reviewOnly
   });
 }
@@ -4340,10 +4372,10 @@ function sectionImage(taskName) {
 // ============================================================
 // Tytuly poziomow. "new" = nowe slowo/wyrazenie (szary znacznik, przed ocenami).
 // Pozostale to klasyczne Anki: again / hard / good / easy.
-const DIFF_TITLES = { 'new': 'Nowe słowo dla mnie', 1: 'Nie umiem', 2: 'Trudne', 3: 'Dobre', 4: 'Łatwe' };
+const DIFF_TITLES = { 'new': 'Nowe słowo dla mnie', 1: 'Do powtórki', 2: 'Trudne', 3: 'Dobre', 4: 'Łatwe' };
 // Symbole zamiast cyfr - wypelnione ksztalty rozroznialne takze bez koloru
 // (czern-biel / daltonizm). NIE sa to emoji, wiec renderuja sie spojnie.
-const DIFF_SYMBOLS = { 'new': '✦', 1: '✕', 2: '▲', 3: '⬤', 4: '✓' };
+const DIFF_SYMBOLS = { 'new': '✦', 1: '↻', 2: '▲', 3: '⬤', 4: '✓' };
 // Kolejnosc poziomow w rzedzie przyciskow.
 const DIFF_LEVELS = ['new', 1, 2, 3, 4];
 
@@ -4358,7 +4390,9 @@ function diffRowIdx(r) {
 // opts.label = maly napis "trudność" z przodu, opts.cls = dodatkowa klasa CSS.
 // Zwraca '' gdy funkcja wylaczona. Symbole sa w <span> dla spojnej animacji skali.
 function diffWidget(gi, opts = {}) {
-  if (!STATE.difficultyEnabled || gi < 0) return '';
+  // Widgety trudnosci renderuja sie ZAWSZE - w trybie ukrytym chowa je CSS
+  // (body.ws-diff-hidden), a panel prowadzacego (#teacher) z nich korzysta.
+  if (gi < 0) return '';
   const btns = DIFF_LEVELS.map(l => {
     const cls = (l === 'new') ? 'ws-diff-new' : 'ws-diff-' + l;
     return `<button type="button" class="ws-diff-btn ${cls}" data-level="${l}" onclick="wsSetDiff(event, ${gi}, '${l}')" title="${DIFF_TITLES[l]}" aria-label="Trudność: ${DIFF_TITLES[l]}"><span class="ws-diff-num">${DIFF_SYMBOLS[l]}</span></button>`;
@@ -4411,7 +4445,7 @@ function buildFlashcardsSection(num, options = {}) {
         </div>`;
     // Przy wlaczonym sledzeniu trudnosci: przyciski oceny NAD fiszka (poza jej
     // obszarem, zeby nie zabieraly miejsca na karcie).
-    if (STATE.difficultyEnabled) {
+    if (true) { // nakladki/plakietki ocen zawsze w HTML; tryb ukryty chowa CSS
       const gi = diffRowIdx(r);
       return `
         <div class="flashcard-cell">
@@ -4529,7 +4563,7 @@ function buildMatchingSection(num, options = {}) {
     // atrapy nie da sie ocenic, wiec nie generuje wpisu w TSV.
     if (item.distractor) {
       const enBtn = `<button class="match-item match-en match-distractor" data-idx="-1" onclick="pickMatch_${num}(this, 'en')">${escapeHtml(item.en)}</button>`;
-      if (STATE.difficultyEnabled) {
+      if (true) { // nakladki/plakietki ocen zawsze w HTML; tryb ukryty chowa CSS
         // WAŻNE: plakietka atrapy wyglada IDENTYCZNIE jak przy zwyklym kafelku
         // (ten sam pytajnik, te same klasy), zeby atrapa NIE zdradzala sie przed
         // polaczeniem. Roznica jest tylko funkcjonalna: klik nie otwiera oceny
@@ -5832,9 +5866,6 @@ function buildTranslateSection(num, options = {}) {
             <button class="tts-btn tts-btn-trans" onclick="ttsBtnClick(event, ${JSON.stringify(r.en).replace(/"/g, '&quot;')})" title="Posłuchaj poprawnego tłumaczenia" aria-label="Czytaj">🔊</button>
           </div>
         </div>
-        <div class="trans-correct" id="trans-c-${num}-${i}">
-          <span class="trans-correct-label">Wzór:</span> <span class="trans-correct-text">${escapeHtml(r.en)}</span>
-        </div>
         ${noteHTML(r)}
         ${diffRow(diffRowIdx(r))}
       </div>`;
@@ -5880,9 +5911,6 @@ function buildTranslateJS(num, options = {}) {
       textarea.disabled = true;
       const card = textarea.closest('.trans-card');
       card.classList.add('done');
-      // pokaż wzorzec (na wypadek gdyby user wpisał wariant z innym układem słów ale akceptowalny)
-      const correct = card.querySelector('.trans-correct');
-      if (correct) correct.classList.add('show');
       const idx = parseInt(card.dataset.idx);
       _transDone_${num}.add(idx);
       if (_transDone_${num}.size === _transTotal_${num}) {
@@ -5936,8 +5964,6 @@ function buildTranslateJS(num, options = {}) {
       ta.classList.add('trans-correct');
       ta.disabled = true;
       card.classList.add('done');
-      const correct = card.querySelector('.trans-correct');
-      if (correct) correct.classList.add('show');
       _transDone_${num}.add(parseInt(card.dataset.idx));
     });
     showSectionFeedback(${num}, true, '✓ Wszystkie odpowiedzi pokazane');
@@ -6048,7 +6074,7 @@ function buildWritingJS(num, options = {}) {
 // ============================================================
 // MAIN TEMPLATE - the worksheet HTML
 // ============================================================
-function buildWorksheetTemplate({ title, subtitle, importedProgress, preset, accent, bg, textColor, isCustomAccent, styleMeta, sectionCount, taskOrder, sectionsHTML, sectionsJS, rowsJSON, ttsConfig, logoConfig, difficulty, reviewOnly }) {
+function buildWorksheetTemplate({ title, subtitle, importedProgress, preset, accent, bg, textColor, isCustomAccent, styleMeta, sectionCount, taskOrder, sectionsHTML, sectionsJS, rowsJSON, ttsConfig, logoConfig, difficulty, reviewOnly, diffHidden }) {
   const presetTheme = getPresetTheme(preset, accent, bg, textColor, isCustomAccent);
   const fontImports = presetTheme.fontImports;
   const css = buildWorksheetCSS(presetTheme);
@@ -6093,7 +6119,7 @@ ${bgEffectHTML}
   ${difficulty ? `<div class="ws-diff-legend" aria-hidden="false">
     <span class="ws-diff-legend-title">Oznacz trudność:</span>
     <span class="ws-diff-key"><span class="ws-diff-chip" style="background:#9ca3af">✦</span>nowe słowo</span>
-    <span class="ws-diff-key"><span class="ws-diff-chip" style="background:#dc2626">✕</span>nie umiem / nie pamiętam</span>
+    <span class="ws-diff-key"><span class="ws-diff-chip" style="background:#ab55ff">↻</span>do powtórki</span>
     <span class="ws-diff-key"><span class="ws-diff-chip" style="background:#ff8018">▲</span>trudne</span>
     <span class="ws-diff-key"><span class="ws-diff-chip" style="background:#16a34a">⬤</span>dobre</span>
     <span class="ws-diff-key"><span class="ws-diff-chip" style="background:#2563eb">✓</span>łatwe</span>
@@ -6126,7 +6152,7 @@ ${bgEffectHTML}
         <div class="ws-review-levels">
           <label class="ws-review-lvl"><input type="checkbox" value="none"${reviewOnly ? ' checked' : ''} onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#cbd5e1;color:#475569">○</span> nieocenione</label>
           <label class="ws-review-lvl"><input type="checkbox" value="new" checked onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#9ca3af">✦</span> nowe słowo</label>
-          <label class="ws-review-lvl"><input type="checkbox" value="1" checked onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#dc2626">✕</span> nie umiem / nie pamiętam</label>
+          <label class="ws-review-lvl"><input type="checkbox" value="1" checked onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#ab55ff">↻</span> do powtórki</label>
           <label class="ws-review-lvl"><input type="checkbox" value="2" checked onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#ff8018">▲</span> trudne</label>
           <label class="ws-review-lvl"><input type="checkbox" value="3" onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#16a34a">⬤</span> dobre</label>
           <label class="ws-review-lvl"><input type="checkbox" value="4" onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#2563eb">✓</span> łatwe</label>
@@ -6144,7 +6170,7 @@ ${bgEffectHTML}
           <div class="ws-review-legend-title">Legenda ocen</div>
           <div class="ws-review-legend">
             <span class="ws-review-legend-item"><span class="ws-review-chip" style="background:#9ca3af">✦</span> nowe słowo</span>
-            <span class="ws-review-legend-item"><span class="ws-review-chip" style="background:#dc2626">✕</span> nie umiem / nie pamiętam</span>
+            <span class="ws-review-legend-item"><span class="ws-review-chip" style="background:#ab55ff">↻</span> do powtórki</span>
             <span class="ws-review-legend-item"><span class="ws-review-chip" style="background:#ff8018">▲</span> trudne</span>
             <span class="ws-review-legend-item"><span class="ws-review-chip" style="background:#16a34a">⬤</span> dobre</span>
             <span class="ws-review-legend-item"><span class="ws-review-chip" style="background:#2563eb">✓</span> łatwe</span>
@@ -6171,6 +6197,7 @@ ${bgEffectHTML}
     <button class="ws-btn-finish-early" onclick="wsFinishEarly()" title="Zakończ teraz i świętuj, nawet jeśli nie wszystko zrobione">🎉 Zakończ wcześniej</button>
     <button class="ws-btn-reset-foot" onclick="resetWorksheet()">Reset</button>
     <button class="ws-btn-download-tsv" onclick="downloadTSV()" title="Pobierz dane jako plik TSV">⤓ TSV</button>
+    ${diffHidden ? `<button class="ws-btn-teacher" onclick="wsOpenTeacher()" title="Otwiera osobną kartę z ocenami trudności (widoczną tylko u Ciebie), zsynchronizowaną z tą kartą na żywo">Ocena trudności</button>` : ''}
   </footer>
 </div>
 
@@ -6212,12 +6239,19 @@ const WS_STORAGE_KEY = 'ws-progress-' + _wsHash(${JSON.stringify(title)} + '|' +
 const WS_TTS = ${JSON.stringify(ttsConfig)};
 // ── ŚLEDZENIE TRUDNOŚCI (nowe + 4 oceny jak w Anki) ─────
 const WS_DIFF_ENABLED = ${difficulty ? 'true' : 'false'};
-const WS_DIFF_LABELS = { 'new': 'nowe słowo', 1: 'nie umiem / nie pamiętam', 2: 'trudne', 3: 'dobre', 4: 'łatwe' };
-const WS_DIFF_COLORS = { 'new': '#9ca3af', 1: '#dc2626', 2: '#ff8018', 3: '#16a34a', 4: '#2563eb' };
+// Tryb UKRYTYCH ocen: caly system trudnosci dziala (zapis, TSV, sync), ale
+// zaden element ocen nie jest widoczny dla ucznia. Prowadzacy ocenia w osobnej
+// karcie przegladarki (ten sam plik + #teacher), zsynchronizowanej na zywo.
+let WS_DIFF_HIDDEN = ${diffHidden ? 'true' : 'false'};
+// Czy ta karta dziala jako PANEL PROWADZACEGO (osobna zakladka).
+const WS_TEACHER = (location.hash === '#teacher');
+if (WS_DIFF_HIDDEN && !WS_TEACHER && document.body) document.body.classList.add('ws-diff-hidden');
+const WS_DIFF_LABELS = { 'new': 'nowe słowo', 1: 'do powtórki', 2: 'trudne', 3: 'dobre', 4: 'łatwe' };
+const WS_DIFF_COLORS = { 'new': '#9ca3af', 1: '#ab55ff', 2: '#ff8018', 3: '#16a34a', 4: '#2563eb' };
 // Symbole pokazywane na przyciskach i plakietkach (NIE cyfry, NIE emoji).
-const WS_DIFF_SYMBOLS = { 'new': '✦', 1: '✕', 2: '▲', 3: '⬤', 4: '✓' };
+const WS_DIFF_SYMBOLS = { 'new': '✦', 1: '↻', 2: '▲', 3: '⬤', 4: '✓' };
 // Wartosc zapisywana do kolumny TSV "difficulty" (czytelna i odwracalna przy imporcie).
-const WS_DIFF_TSV = { 'new': 'nowe słowo', 1: 'nie umiem / nie pamiętam', 2: 'trudne', 3: 'dobre', 4: 'łatwe' };
+const WS_DIFF_TSV = { 'new': 'nowe słowo', 1: 'do powtórki', 2: 'trudne', 3: 'dobre', 4: 'łatwe' };
 
 // Jesli zaimportowany TSV mial juz kolumne "difficulty" (np. "2 - trudne",
 // samo "3", albo "nowe"), wczytaj te oceny jako stan poczatkowy - dziala round-trip.
@@ -6234,7 +6268,7 @@ if (WS_DIFF_ENABLED) {
     const m = /^\\s*([1-4])/.exec(raw);
     if (m) { r._diff = parseInt(m[1], 10); return; }
     // Nowe etykiety slowne.
-    if (raw.indexOf('nie umiem') !== -1 || raw.indexOf('nie pami') !== -1) { r._diff = 1; return; }
+    if (raw.indexOf('do powt') !== -1 || raw.indexOf('nie umiem') !== -1 || raw.indexOf('nie pami') !== -1) { r._diff = 1; return; }
     if (raw.indexOf('trudne') !== -1) { r._diff = 2; return; }
     if (raw.indexOf('dobre') !== -1) { r._diff = 3; return; }
     if (raw.indexOf('łatwe') !== -1 || raw.indexOf('latwe') !== -1) { r._diff = 4; return; }
@@ -6296,6 +6330,7 @@ function wsSetDiff(event, rowIdx, level) {
   wsHideDiffOverlays();
   if (typeof wsUpdateReviewCount === 'function') wsUpdateReviewCount();
   if (typeof wsScheduleSave === 'function') wsScheduleSave();
+  if (typeof wsDiffBroadcast === 'function') wsDiffBroadcast();
 }
 
 // Odswieza wyglad wszystkich widgetow i plakietek danego wiersza.
@@ -6338,7 +6373,7 @@ function wsPaintAllDiff() {
 // polaczeniu pary i pozostaje widoczna BEZ LIMITU CZASU - znika dopiero
 // po wybraniu oceny albo po kliknieciu gdziekolwiek poza nakladka/plakietka.
 function wsShowDiffOverlay(wrap) {
-  if (!WS_DIFF_ENABLED || !wrap) return;
+  if (!WS_DIFF_ENABLED || WS_DIFF_HIDDEN || !wrap) return;
   wsHideDiffOverlays();
   const ov = wrap.querySelector('.ws-diff-overlay');
   if (!ov) return;
@@ -6617,7 +6652,6 @@ function wsClearSection(num) {
   });
   // Element ".trans-correct" wystepuje TAKZE jako odslaniany wzor (div .show) -
   // chowamy go. Nie myli sie z inputem, bo input zostal juz wyczyszczony powyzej.
-  sec.querySelectorAll('div.trans-correct.show').forEach(d => d.classList.remove('show'));
 
   // ── WRITING ── wyczysc pola, odblokuj przycisk "Gotowe" i wyzeruj licznik slow.
   sec.querySelectorAll('.write-card').forEach(card => card.classList.remove('done'));
@@ -6865,7 +6899,9 @@ function _wsTtsText(r) {
 function wsBuildReview() {
   const result = document.getElementById('wsReviewResult');
   if (!result) return;
-  const checked = Array.from(document.querySelectorAll('.ws-review-lvl input:checked')).map(c => c.value);
+  const checked = WS_DIFF_HIDDEN
+    ? ['none', 'new', '1', '2', '3', '4']
+    : Array.from(document.querySelectorAll('.ws-review-lvl input:checked')).map(c => c.value);
   if (!checked.length) {
     result.innerHTML = '<p class="ws-review-empty">Zaznacz przynajmniej jeden poziom, żeby zobaczyć powtórkę.</p>';
     return;
@@ -6958,17 +6994,31 @@ function wsBuildReview() {
       }
     }
 
+    // Notatka (kolumna "note"): zwykly, od razu widoczny blok pod haslem -
+    // bez zaslony (duza zaslona by przerazala) i bez animacji. Drukuje sie.
+    const noteBlock = (r.note && String(r.note).trim())
+      ? '<div class="ws-review-note">📝 ' + _wsEsc(String(r.note).trim()) + '</div>'
+      : '';
+    // Tryb ukrytych ocen: stopka (oceny + TTS) bylaby pustym rzedem z samym
+    // glosniczkiem - zamiast tego TTS wskakuje do glownego rzedu obok
+    // odpowiedzi, a stopki nie ma wcale. Prosciej i zwarcie.
+    const ttsBtnHtml = '<button type="button" class="ws-review-item-tts' + (WS_DIFF_HIDDEN ? ' ws-review-item-tts-inline' : '') + '" onclick="ttsBtnClick(event, ' + ttsText + ')" title="Posłuchaj" aria-label="Czytaj">🔊</button>';
+    const footBlock = WS_DIFF_HIDDEN
+      ? ''
+      : '<div class="ws-review-row-foot">'
+        + '<span class="ws-diff' + '" data-row="' + i + '"' + selAttr + ' aria-label="Zmień ocenę">' + rateBtns + '</span>'
+        + ttsBtnHtml
+        + '</div>';
     return '<div class="ws-review-item' + gapCls + '" data-row="' + i + '">'
       + printRating
       + '<div class="ws-review-row-main">'
       +   '<span class="ws-review-item-pl">' + _wsEsc(r.pl) + unscHint + '</span>'
       +   '<span class="ws-review-item-arrow">→</span>'
       +   '<span class="ws-review-item-answer">' + answerInner + '</span>'
+      +   (WS_DIFF_HIDDEN ? ttsBtnHtml : '')
       + '</div>'
-      + '<div class="ws-review-row-foot">'
-      +   '<span class="ws-diff' + '" data-row="' + i + '"' + selAttr + ' aria-label="Zmień ocenę">' + rateBtns + '</span>'
-      +   '<button type="button" class="ws-review-item-tts" onclick="ttsBtnClick(event, ' + ttsText + ')" title="Posłuchaj" aria-label="Czytaj">🔊</button>'
-      + '</div>'
+      + noteBlock
+      + footBlock
       + '</div>';
   }).join('');
 
@@ -7088,6 +7138,7 @@ function wsReviewRate(event, rowIdx, level) {
   // Scalamy ocene na wszystkie identyczne dane (te same pl+en).
   _wsApplyDiffToLinked(rowIdx, lvl);
   if (typeof wsScheduleSave === 'function') wsScheduleSave();
+  if (typeof wsDiffBroadcast === 'function') wsDiffBroadcast();
   wsSound('tap');
   // Odswiez licznik w naglowku.
   const el = document.getElementById('wsReviewCount');
@@ -7413,10 +7464,59 @@ function wsBuildProgressState() {
 
 function saveProgress() {
   if (_wsResetting) return; // nie zapisuj w trakcie resetu - inaczej nadpisalibysmy czysty stan
+  // PANEL PROWADZACEGO: jego DOM nie zawiera odpowiedzi ucznia, wiec pelny
+  // zapis nadpisalby je pustkami. Panel zapisuje WYLACZNIE oceny, scalone
+  // z tym, co juz lezy w zapisie.
+  if (WS_TEACHER) { wsTeacherSaveDiff(); return; }
   try {
     wsLSset(WS_STORAGE_KEY, JSON.stringify(wsBuildProgressState()));
   } catch (e) { /* localStorage może być pełny lub niedostępny */ }
 }
+
+function wsTeacherSaveDiff() {
+  try {
+    var st = {};
+    try { st = JSON.parse(wsLSget(WS_STORAGE_KEY) || '{}') || {}; } catch (e) { st = {}; }
+    st.diff = WS_DATA.map(function(r) { return r._diff || 0; });
+    wsLSset(WS_STORAGE_KEY, JSON.stringify(st));
+  } catch (e) {}
+}
+
+// ── SYNCHRONIZACJA OCEN MIEDZY ZAKLADKAMI (karta ucznia <-> panel) ──
+// Kanal glowny: BroadcastChannel (natychmiastowy). Zapasowy: zdarzenie
+// 'storage' (odpala sie w INNYCH zakladkach przy kazdym zapisie localStorage).
+// Odbior jest idempotentny, wiec podwojne dostarczenie nie szkodzi.
+var _wsDiffBC = null;
+try { _wsDiffBC = new BroadcastChannel('wsdiff:' + WS_STORAGE_KEY); } catch (e) {}
+function wsDiffBroadcast() {
+  if (!_wsDiffBC) return;
+  try { _wsDiffBC.postMessage({ t: 'wsdiff', arr: WS_DATA.map(function(r) { return r._diff || 0; }) }); } catch (e) {}
+}
+function _wsApplyRemoteDiff(arr) {
+  if (!Array.isArray(arr)) return;
+  arr.forEach(function(v, i) { if (WS_DATA[i]) WS_DATA[i]._diff = v || 0; });
+  WS_DATA.forEach(function(r, i) { wsPaintDiff(i); }); // takze zdjecie ocen (0)
+  if (typeof wsUpdateReviewCount === 'function') wsUpdateReviewCount();
+  // Karta ucznia dolicza otrzymane oceny do wlasnego zapisu (jest zrodlem
+  // prawdy o odpowiedziach); panel zapisze je swoja sciezka merge-only.
+  if (typeof wsScheduleSave === 'function') wsScheduleSave();
+}
+if (_wsDiffBC) {
+  _wsDiffBC.onmessage = function(e) {
+    if (!e || !e.data) return;
+    if (e.data.t === 'wsdiff') _wsApplyRemoteDiff(e.data.arr);
+    if (e.data.t === 'wsdiffvis' && !WS_TEACHER && typeof wsSetDiffVisibility === 'function') {
+      wsSetDiffVisibility(!!e.data.show);
+    }
+  };
+}
+window.addEventListener('storage', function(e) {
+  if (e.key !== WS_STORAGE_KEY || !e.newValue) return;
+  try {
+    var st = JSON.parse(e.newValue);
+    if (st && Array.isArray(st.diff)) _wsApplyRemoteDiff(st.diff);
+  } catch (err) {}
+});
 
 function _wsRestoreMatching(data) {
   if (!data) return;
@@ -7615,8 +7715,6 @@ function _wsRestoreTranslate(data) {
       }
       if (cardData.done) {
         card.classList.add('done');
-        const correct = card.querySelector('.trans-correct');
-        if (correct) correct.classList.add('show');
       }
     });
   });
@@ -7851,6 +7949,71 @@ if (window.matchMedia) {
 // Section-specific scripts
 ${sectionsJS}
 
+// ── PANEL PROWADZACEGO (#teacher) ──────────────────────
+// Ta sama karta otwarta z hashem #teacher zamienia sie w prosty panel ocen:
+// lista hasel + te same przyciski trudnosci co w powtorce. Oceny leca na zywo
+// do karty ucznia (BroadcastChannel/storage) i sa zapisywane merge-only.
+function wsOpenTeacher() {
+  try { window.open(location.href.split('#')[0] + '#teacher', '_blank'); } catch (e) {}
+}
+// Przelacza widocznosc ocen na KARCIE UCZNIA na zywo (wolane po odbiorze
+// komunikatu z panelu). Zero re-renderu: klasa na body + przebudowa listy
+// powtorki, zeby stopka z ocenami pojawila sie / znikla.
+function wsSetDiffVisibility(show) {
+  WS_DIFF_HIDDEN = !show;
+  if (!WS_TEACHER) document.body.classList.toggle('ws-diff-hidden', WS_DIFF_HIDDEN);
+  if (typeof wsBuildReview === 'function') { try { wsBuildReview(); } catch (e) {} }
+  WS_DATA.forEach(function(r, i) { wsPaintDiff(i); });
+  if (typeof wsUpdateReviewCount === 'function') wsUpdateReviewCount();
+}
+
+function wsTeacherBoot() {
+  document.body.classList.remove('ws-diff-hidden'); // panel MA pokazywac oceny
+  document.body.classList.add('ws-teacher');
+  var seen = {};
+  var rowsHtml = WS_DATA.map(function(r, i) {
+    if (!r || !r.pl || !r.en) return '';
+    var k = r._diffKey || ('idx' + i);
+    if (seen[k]) return '';
+    seen[k] = true;
+    var en = String(r.en).replace(/\{([^}]+)\}/g, '$1');
+    var btns = ['new', 1, 2, 3, 4].map(function(L) {
+      var sel = (r._diff === L) ? ' sel' : '';
+      var arg = (L === 'new') ? "'new'" : L;
+      return '<button type="button" class="ws-diff-btn ws-diff-' + L + sel + '" data-level="' + L + '"'
+        + ' title="' + _wsEsc(WS_DIFF_LABELS[L]) + '"'
+        + ' onclick="wsSetDiff(event, ' + i + ', ' + arg + ')">'
+        + '<span class="ws-diff-num">' + WS_DIFF_SYMBOLS[L] + '</span></button>';
+    }).join('');
+    return '<div class="ws-tp-row">'
+      + '<div class="ws-tp-word"><span class="ws-tp-pl">' + _wsEsc(r.pl) + '</span>'
+      + '<span class="ws-tp-en">' + _wsEsc(en) + '</span></div>'
+      + '<span class="ws-diff" data-row="' + i + '"' + (r._diff ? ' data-sel="' + r._diff + '"' : '') + '>' + btns + '</span>'
+      + '</div>';
+  }).join('');
+  var panel = document.createElement('div');
+  panel.className = 'ws-teacher-panel';
+  panel.innerHTML = '<div class="ws-tp-head">'
+    + '<div class="ws-tp-title">Ocena trudności · ' + _wsEsc(WS_TITLE) + '</div>'
+    + '<div class="ws-tp-sub">Widok prowadzącego. Oceny zapisują się i synchronizują na żywo z kartą pracy otwartą w drugiej zakładce. Ta strona nie zmienia odpowiedzi ucznia.</div>'
+    + '<button type="button" class="ws-tp-visbtn" id="wsTpVisBtn" onclick="wsTeacherToggleVis()">Pokaż oceny na karcie pracy</button>'
+    + '</div>'
+    + '<div class="ws-tp-list">' + rowsHtml + '</div>';
+  document.body.appendChild(panel);
+}
+
+// Chwilowe ujawnienie ocen na karcie ucznia (np. wspolne omowienie na koniec
+// lekcji). Stan zyje w tej sesji panelu - odswiezenie karty wraca do ukrycia.
+var _wsTpVisible = false;
+function wsTeacherToggleVis() {
+  _wsTpVisible = !_wsTpVisible;
+  if (_wsDiffBC) {
+    try { _wsDiffBC.postMessage({ t: 'wsdiffvis', show: _wsTpVisible }); } catch (e) {}
+  }
+  var b = document.getElementById('wsTpVisBtn');
+  if (b) b.textContent = _wsTpVisible ? 'Ukryj oceny na karcie pracy' : 'Pokaż oceny na karcie pracy';
+}
+
 // Load saved progress
 window.addEventListener('load', () => {
   // Zasiew postepu z TSV (#progress): tylko gdy karta nie ma WLASNEGO zapisu -
@@ -7860,6 +8023,9 @@ window.addEventListener('load', () => {
   }
   loadProgress();
   wsPaintAllDiff();
+  // Zakladka panelu: po wczytaniu ocen budujemy panel; reszta strony znika
+  // (CSS body.ws-teacher), a globalny autosave jest w tym trybie merge-only.
+  if (WS_TEACHER) { wsTeacherBoot(); return; }
   if (typeof wsUpdateReviewCount === 'function') wsUpdateReviewCount();
   // Do kazdej sekcji dokladamy przycisk "Wyczyść sekcję" (czysci interaktywne pola
   // i cofa "ukonczono", nie ruszajac ocen trudnosci). Robimy to tu, zeby nie
@@ -9288,6 +9454,11 @@ ${t.sharp ? `
   gap: 0.7rem;
 }
 .ws-review-item-pl { font-weight: 600; color: var(--ws-text); }
+/* Tryb ukrytych ocen: TTS w glownym rzedzie (4. kolumna siatki). */
+body.ws-diff-hidden .ws-review-row-main {
+  grid-template-columns: minmax(9rem, 15rem) 1.2rem 1fr auto;
+}
+.ws-review-item-tts-inline { align-self: center; }
 /* Znacznik oceny przed słowem - tylko na wydruku (na ekranie używamy stopki). */
 .ws-review-print-rating { display: none; }
 .ws-review-item-arrow { color: var(--ws-text-dim); text-align: center; }
@@ -9420,6 +9591,17 @@ ${t.sharp ? `
   gap: 0.7rem; margin-top: 0.6rem;
   padding-top: 0.55rem; border-top: 1px dashed var(--ws-border);
 }
+/* Notatka pod haslem w powtorce: zwykly blok, bez zaslony i bez animacji.
+   Na wydruku zostaje (stopka z ocenami znika, notatka nie). */
+.ws-review-note {
+  margin-top: 0.45rem;
+  padding: 0.4rem 0.7rem;
+  background: var(--ws-accent-soft);
+  border-radius: var(--ws-radius-sm);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--ws-text);
+}
 /* Oceny uzywaja tej samej klasy .ws-diff/.ws-diff-btn co zadania - identyczny
    wyglad i zero skakania (triki translateZ/backface sa w .ws-diff-btn). */
 .ws-review-row-foot .ws-diff { display: inline-flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; }
@@ -9444,10 +9626,12 @@ ${t.sharp ? `
    Ukladamy w KOLUMNIE: polskie haslo u gory, zasl0nieta odpowiedz pelna
    szerokoscia POD spodem (strzalka zbedna), stopka z ocenami zawija sie. */
 @media (max-width: 600px) {
-  .ws-review-row-main {
+  .ws-review-row-main,
+  body.ws-diff-hidden .ws-review-row-main {
     grid-template-columns: 1fr;
     gap: 0.45rem;
   }
+  .ws-review-item-tts-inline { justify-self: start; }
   .ws-review-item-arrow { display: none; }
   .ws-review-item:not(.ws-review-item-gap) .ws-review-item-answer {
     padding-right: 0;
@@ -10567,9 +10751,7 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   font-size: 0.9rem;
   line-height: 1.5;
   color: var(--ws-text);
-  animation: wsNoteIn 0.3s ease-out;
 }
-@keyframes wsNoteIn { from { opacity: 0; } to { opacity: 1; } }
 .gap-card.done .ws-note,
 .trans-card.done .ws-note,
 .scramble-card.done .ws-note,
@@ -10590,7 +10772,6 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   font-size: 0.9rem;
   line-height: 1.5;
   color: var(--ws-text);
-  animation: wsNoteIn 0.3s ease-out;
 }
 .ws-section.ws-done .ws-section-note { display: block; }
 .ws-section-note-item + .ws-section-note-item { margin-top: 0.35rem; }
@@ -10613,6 +10794,17 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   /* Bez wlasnego zaokraglenia - rogi wycina overflow:hidden karty,
      wiec pasek styka sie z borderem idealnie, bez przeswitow i nachodzenia. */
   border-radius: 0;
+}
+/* Po rozwiazaniu podzadania pasek zrodlowy przebarwia sie SPOJNIE z reszta
+   karty: translate -> zielono (ws-ok), gap fill -> akcentowo. */
+.trans-card.done .trans-pl {
+  background: var(--ws-ok-bg);
+  background: color-mix(in srgb, var(--ws-ok) 10%, var(--ws-box-bg));
+  border-bottom-color: var(--ws-ok);
+}
+.gap-card.done .gap-translation {
+  background: color-mix(in srgb, var(--ws-accent) 13%, var(--ws-box-bg));
+  border-bottom-color: var(--ws-accent);
 }
 /* write-card ma juz wlasny separator (kreskowana linia pod .write-prompt),
    wiec zdanie PL zostaje tam bez dodatkowego tla. */
@@ -10646,29 +10838,7 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   .scramble-input-row { flex-wrap: wrap; justify-content: flex-end; }
   .scramble-input { flex: 1 1 100%; width: 100%; }
 }
-.trans-correct {
-  margin-top: 1rem;
-  padding-top: 0.85rem;
-  border-top: 1px solid var(--ws-border);
-  font-size: 0.98rem;
-  color: var(--ws-text-dim);
-  display: none;
-  animation: wsFadeIn 0.4s ease-out;
-}
-.trans-correct.show { display: block; }
-.trans-correct-label {
-  font-family: var(--ws-mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--ws-ok);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-right: 0.35rem;
-}
-.trans-correct-text {
-  color: var(--ws-text);
-  font-style: italic;
-}
+/* (Blok "Wzór" usuniety - poprawna odpowiedz i tak laduje w polu wpisywania.) */
 
 /* ===== WRITING ===== */
 .write-grid {
@@ -10841,12 +11011,97 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
 .ws-diff-btn:hover { transform: translateZ(0) scale(1.14); }
 .ws-diff-btn:active { transform: translateZ(0) scale(0.92); }
 .ws-diff-new { color: #9ca3af; border-color: #9ca3af; }
-.ws-diff-1 { color: #dc2626; border-color: #dc2626; }
+/* ══ TRYB UKRYTYCH OCEN (body.ws-diff-hidden) ══
+   Caly system trudnosci zostaje w karcie i dziala pod spodem, ale zaden jego
+   element nie jest widoczny: widgety przy zadaniach, nakladki i plakietki
+   matchingu, legenda, filtry i legenda powtorki, znaczniki na wydruku. */
+body.ws-diff-hidden .ws-diff,
+body.ws-diff-hidden .ws-diff-overlay,
+body.ws-diff-hidden .ws-diff-badge,
+body.ws-diff-hidden .ws-diff-legend,
+body.ws-diff-hidden .ws-review-levels,
+body.ws-diff-hidden .ws-review-legend-wrap,
+body.ws-diff-hidden .ws-review-print-rating,
+body.ws-diff-hidden .ws-review-sort { display: none !important; }
+
+/* Dyskretny przycisk w stopce - otwiera panel prowadzacego. */
+.ws-btn-teacher {
+  /* Rozmiary identyczne z sasiadami w stopce (Reset / TSV) - rozni sie tylko
+     kreskowana ramka i przygaszeniem, zeby pozostal dyskretny. */
+  font-family: var(--ws-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.55rem 1rem;
+  background: transparent;
+  border: 1px dashed var(--ws-border-strong);
+  color: var(--ws-text-dim);
+  border-radius: 9px;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.15s, color 0.15s, border-color 0.15s;
+}
+.ws-btn-teacher:hover { opacity: 1; color: var(--ws-accent); border-color: var(--ws-accent); }
+
+/* ══ PANEL PROWADZACEGO (body.ws-teacher) ══
+   Cala normalna zawartosc karty znika; zostaje prosta lista hasel z ocenami. */
+body.ws-teacher > *:not(.ws-teacher-panel) { display: none !important; }
+.ws-teacher-panel {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1.6rem 1.2rem 3rem;
+}
+.ws-tp-head { margin-bottom: 1.2rem; }
+.ws-tp-title {
+  font-family: var(--ws-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ws-text);
+}
+.ws-tp-sub {
+  margin-top: 0.35rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--ws-text-dim);
+}
+.ws-tp-visbtn {
+  margin-top: 0.7rem;
+  font-family: var(--ws-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  background: var(--ws-accent-soft);
+  border: 1.5px solid var(--ws-accent);
+  color: var(--ws-accent);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ws-tp-visbtn:hover { background: var(--ws-accent); color: #fff; }
+.ws-tp-list { display: flex; flex-direction: column; gap: 0.4rem; }
+.ws-tp-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+  padding: 0.5rem 0.8rem;
+  background: var(--ws-box-bg);
+  border: 1px solid var(--ws-border);
+  border-radius: var(--ws-radius-sm);
+}
+.ws-tp-word { display: flex; flex-direction: column; min-width: 0; }
+.ws-tp-pl { font-weight: 600; color: var(--ws-text); }
+.ws-tp-en { font-size: 0.88rem; color: var(--ws-text-dim); }
+.ws-tp-row .ws-diff { display: inline-flex; gap: 0.3rem; flex-shrink: 0; }
+@media (max-width: 560px) {
+  .ws-tp-row { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+}
+
+.ws-diff-1 { color: #ab55ff; border-color: #ab55ff; }
 .ws-diff-2 { color: #ff8018; border-color: #ff8018; }
 .ws-diff-3 { color: #16a34a; border-color: #16a34a; }
 .ws-diff-4 { color: #2563eb; border-color: #2563eb; }
 .ws-diff-new.sel { background: #9ca3af; color: #fff; }
-.ws-diff-1.sel { background: #dc2626; color: #fff; }
+.ws-diff-1.sel { background: #ab55ff; color: #fff; }
 .ws-diff-2.sel { background: #ff8018; color: #fff; }
 .ws-diff-3.sel { background: #16a34a; color: #fff; }
 .ws-diff-4.sel { background: #2563eb; color: #fff; }
@@ -11236,6 +11491,22 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
     column-gap: 0.7rem;
   }
   .ws-review-item .ws-review-row-main { grid-column: 2; }
+  /* Tryb ukrytych ocen: nie ma znacznika, wiec nie ma tez pustej kolumny. */
+  body.ws-diff-hidden .ws-review-item { grid-template-columns: 1fr; }
+  body.ws-diff-hidden .ws-review-item .ws-review-row-main,
+  body.ws-diff-hidden .ws-review-note { grid-column: 1; }
+  .ws-review-item-tts { display: none !important; }
+  /* Notatka na wydruku: w kolumnie tresci (pod haslem i odpowiedzia),
+     kompaktowo, z lekka ramka zamiast tla (tla czesto nie drukuja sie). */
+  .ws-review-note {
+    grid-column: 2;
+    margin-top: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background: none !important;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    font-size: 0.8rem;
+  }
   .ws-review-print-rating {
     display: inline-flex !important;
     align-items: center; justify-content: center;
@@ -11255,7 +11526,7 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   }
   /* Tło plakietki = kolor danej oceny (te same co przyciski .sel). */
   .ws-review-print-rating.ws-diff-new { background: #9ca3af !important; }
-  .ws-review-print-rating.ws-diff-1   { background: #dc2626 !important; }
+  .ws-review-print-rating.ws-diff-1   { background: #ab55ff !important; }
   .ws-review-print-rating.ws-diff-2   { background: #ff8018 !important; }
   .ws-review-print-rating.ws-diff-3   { background: #16a34a !important; }
   .ws-review-print-rating.ws-diff-4   { background: #2563eb !important; }
