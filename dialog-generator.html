@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cover &amp; Recall — generator zakrywania słów</title>
+<title>Cover &amp; Recall — zakrywanie słów w dowolnym tekście</title>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,6 +23,10 @@
   --teal:#12676b;
   --teal-dk:#0a4144;
   --teal-lt:#e0f0ef;
+  --cover:#3ba3a6;
+  --cover-marked:#f0b53c;
+  --done-line:rgba(59,163,166,.55);
+  --marked-line:rgba(227,148,0,.6);
   --rust:#c9452c;
   --rust-dk:#8d2c19;
   --amber:#e39400;
@@ -154,16 +158,40 @@ textarea:focus{outline:none;border-color:var(--teal);background:#fff}
 .btn.shine:hover::after{animation:sweep .45s ease-out}
 @keyframes sweep{to{left:150%}}
 
+.btn.icon{
+  padding:0;width:2.9rem;height:2.9rem;
+  display:inline-flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.btn.icon svg{width:1.35rem;height:1.35rem;display:block}
+.btn.icon.flip svg{transition:transform .25s ease}
+.collapsed > .tool-top .btn.icon.flip svg,
+.bank.collapsed .btn.icon.flip svg{transform:rotate(180deg)}
+.btn.icon::before{
+  content:attr(data-tip);
+  position:absolute;top:calc(100% + .5rem);left:50%;transform:translateX(-50%);
+  white-space:nowrap;font-size:.85rem;font-weight:500;
+  padding:.35rem .7rem;border-radius:8px;
+  background-color:var(--ink);color:#fff;
+  opacity:0;pointer-events:none;transition:opacity .15s ease;
+  z-index:60;
+}
+.btn.icon:hover::before,.btn.icon:focus-visible::before{opacity:1}
+.bank .btn.icon::before{top:auto;bottom:calc(100% + .5rem)}
+
 /* ══════════ TOOLBAR ══════════ */
 .toolbar{
-  position:sticky;top:0;z-index:40;
-  background:rgba(255,255,255,.9);
+  position:sticky;top:.7rem;z-index:40;
+  background:rgba(255,255,255,.92);
   backdrop-filter:blur(14px);
-  border-radius:0 0 20px 20px;
+  border-radius:20px;
   box-shadow:0 5px 16px rgba(19,36,48,.09);
   padding:1rem 1.2rem;
   margin-bottom:var(--gap-in);
 }
+.tool-top{display:flex;gap:.9rem;align-items:center}
+.tool-body{margin-top:.85rem;padding-top:.85rem;border-top:2px solid #e5edf1}
+.toolbar.collapsed .tool-body{display:none}
 .tool-row{display:flex;gap:.65rem;flex-wrap:wrap;align-items:center}
 .tool-row + .tool-row{margin-top:.85rem;padding-top:.85rem;border-top:2px solid #e5edf1}
 
@@ -244,24 +272,31 @@ textarea:focus{outline:none;border-color:var(--teal);background:#fff}
 .other{white-space:pre-wrap}
 
 /* ── word + tiles ── */
-.w{position:relative;display:inline-block;white-space:nowrap}
-.w.marked-preview .chr{
-  border-bottom:2px solid var(--rust);
+.w{position:relative;display:inline-block;white-space:nowrap;line-height:1}
+.w::after{
+  content:'';position:absolute;z-index:3;
+  left:0;right:0;bottom:-.2em;height:.085em;
+  border-radius:2px;
+  background-color:transparent;
+  transition:background-color .2s ease;
 }
+body.show-marked .w.marked:not(.covered)::after{background-color:var(--marked-line)}
+body.paint .w{cursor:cell}
+body.paint .w:hover{background-color:rgba(59,163,166,.16);border-radius:.18em}
 .ch{position:relative;display:inline-block;line-height:1}
 .chr{position:relative;z-index:1}
 
 .tile{
   position:absolute;top:-.13em;bottom:-.15em;left:-1px;right:-1px;
   z-index:2;border-radius:0;
-  background-color:var(--teal);
+  background-color:var(--cover);
   opacity:0;pointer-events:none;
   transform:translateY(-118%);
   transition:transform .26s cubic-bezier(.2,.85,.3,1),opacity .2s ease;
 }
 /* zaokrąglone tylko końce całego paska */
-.ch:first-child .tile{border-top-left-radius:.1em;border-bottom-left-radius:.1em;left:-.03em}
-.ch:last-child .tile{border-top-right-radius:.1em;border-bottom-right-radius:.1em;right:-.03em}
+.ch:first-child .tile{border-top-left-radius:.3em;border-bottom-left-radius:.3em;left:-.05em}
+.ch:last-child .tile{border-top-right-radius:.3em;border-bottom-right-radius:.3em;right:-.05em}
 .w.covered{cursor:grab;touch-action:none}
 .w.covered:active{cursor:grabbing}
 .w.covered .tile{opacity:1;transform:none;pointer-events:auto}
@@ -275,14 +310,48 @@ textarea:focus{outline:none;border-color:var(--teal);background:#fff}
 
 /* marked words get a warmer tile so the teacher can tell them apart */
 .w.covered.was-marked .tile{
-  background-color:var(--amber);
+  background-color:var(--cover-marked);
 }
-.w.covered.done .chr{color:var(--rust);font-weight:600}
+.w.covered.done{
+  /* linia rysowana przez .w::after */
+}
+.w.covered.done::after{background-color:var(--done-line)}
 
 .stage-empty{
   text-align:center;color:var(--ink-soft);
   font-family:var(--ui);font-size:1.05rem;padding:2rem 0;
 }
+
+.bank{
+  position:fixed;left:0;right:0;bottom:0;z-index:70;
+  display:none;padding:0 1.4rem;
+}
+.bank.on{display:block}
+.bank-inner{
+  max-width:1140px;margin:0 auto;
+  padding:.85rem 1.3rem 1.1rem;
+  border-radius:20px 20px 0 0;
+  background-color:rgba(255,255,255,.95);
+  backdrop-filter:blur(14px);
+  box-shadow:0 -6px 20px rgba(19,36,48,.12);
+}
+.bank-head{display:flex;align-items:center;gap:.9rem;font-weight:600;font-size:1rem}
+.bank-head .n{color:var(--ink-soft);font-weight:500}
+.bank-head .acts{margin-left:auto;display:flex;gap:.5rem}
+.bank-list{
+  display:flex;flex-wrap:wrap;gap:.5rem;
+  margin-top:.8rem;max-height:26vh;overflow-y:auto;
+}
+.bank.collapsed .bank-list{display:none}
+.chip{
+  font-size:1.1rem;font-weight:500;
+  padding:.32rem .85rem;border-radius:10px;
+  background-color:#dcefee;color:#0d5154;
+  transition:background-color .2s ease,color .2s ease;
+}
+.chip.marked{background-color:#fbeacd;color:#7a5300}
+.chip.used{background-color:#eaf0f3;color:#a2b6bf;text-decoration:line-through}
+.bank-empty{color:var(--ink-soft);font-size:.98rem;margin-top:.7rem}
 
 /* ══════════ HINT BAR ══════════ */
 .hintbar{
@@ -326,26 +395,26 @@ footer{
 }
 </style>
 </head>
-<body>
+<body class="show-marked">
 
 <div class="wrap">
 
   <header>
     <h1>Cover &amp; <span class="grad">Recall</span></h1>
-    <p class="lede">Wklej dialog, zakryj słowa i odsłaniaj je literka po literce.</p>
+    <p class="lede">Wklej dowolny tekst: dialog, notatkę, listę zdań. Zakryj słowa i odsłaniaj je literka po literce.</p>
   </header>
 
   <section>
     <div class="card">
       <div class="card-head">
         <h2>Twój tekst</h2>
-        <p>Dialog, monolog, cokolwiek. Format <strong>Imię: kwestia</strong> zamienia się w oznaczone role.</p>
+        <p>Format <strong>Imię: kwestia</strong> zamienia się w oznaczone role, ale zwykły akapit też zadziała.</p>
       </div>
       <textarea id="input" spellcheck="false"></textarea>
       <p class="brace-tip">Chcesz zakryć konkretne słowa? Owiń je w klamry: <code>{would you mind}</code>. Klamry nie pojawią się w tekście, a słowa zostaną zakryte dopiero po kliknięciu przycisku.</p>
       <div class="editor-actions">
         <button class="btn blue" id="apply">Wczytaj tekst</button>
-        <button class="btn ghost" id="sample">Wstaw przykładowy dialog</button>
+        <button class="btn ghost" id="sample">Wstaw przykładowy tekst</button>
         <button class="btn ghost" id="clearText">Wyczyść</button>
         <button class="btn ghost" id="toggleEditor">Ukryj edytor</button>
       </div>
@@ -353,31 +422,42 @@ footer{
   </section>
 
   <section>
-    <div class="toolbar">
-      <div class="tool-row">
-        <button class="btn amber shine" id="coverMarked">Zakryj wybrane słowa</button>
-        <button class="btn shine" id="coverRandom">Zakryj losowe słowa</button>
-        <button class="btn ghost" id="coverAll">Zakryj wszystko</button>
-        <button class="btn rust" id="revealAll">Odsłoń wszystko</button>
-        <button class="btn ghost" id="uncoverAll">Zdejmij zakrycia</button>
-      </div>
-      <div class="tool-row">
-        <span class="tool-label">Ile losować:</span>
-        <div class="seg" id="intensity">
-          <button data-r="0.12">Mało</button>
-          <button data-r="0.25" class="on">Średnio</button>
-          <button data-r="0.45">Dużo</button>
-        </div>
-        <label class="switch"><input type="checkbox" id="skipShort" checked> pomijaj słowa 1–2 literowe</label>
-        <label class="switch"><input type="checkbox" id="previewMarked"> podgląd zaznaczeń</label>
-        <span class="tool-label" style="margin-left:.4rem">Tekst:</span>
-        <div class="seg">
-          <button id="fontDown">A −</button>
-          <button id="fontUp">A +</button>
-        </div>
+    <div class="toolbar" id="toolbar">
+      <div class="tool-top">
+        <button class="btn ghost icon flip" id="toolToggle" data-tip="Zwiń panel" aria-label="Zwiń panel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg></button>
+        <span class="tool-label" id="toolTitle">Panel</span>
         <div class="counter">
           <div class="bar"><span id="barFill"></span></div>
           <span class="count-pill" id="count">0 / 0</span>
+        </div>
+      </div>
+      <div class="tool-body" id="toolBody">
+        <div class="tool-row">
+          <button class="btn amber shine" id="coverMarked">Zakryj wybrane</button>
+          <button class="btn shine" id="coverRandom">Zakryj losowe</button>
+          <button class="btn ghost icon" id="coverAll" data-tip="Zakryj wszystkie słowa" aria-label="Zakryj wszystkie słowa"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="6" width="18" height="12" rx="3"/></svg></button>
+          <button class="btn rust icon" id="revealAll" data-tip="Odsłoń wszystko" aria-label="Odsłoń wszystko"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="3"/></svg></button>
+          <button class="btn ghost icon" id="undo" data-tip="Cofnij ostatnie słowo" aria-label="Cofnij"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h9a7 7 0 0 1 7 7v3"/></svg></button>
+          <button class="btn ghost icon" id="recover" data-tip="Przywróć wszystkie zasłony" aria-label="Zakryj ponownie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v7"/><path d="m8.5 7 3.5 3.5L15.5 7"/><rect x="3" y="13" width="18" height="7" rx="2.5"/></svg></button>
+          <button class="btn ghost icon" id="uncoverAll" data-tip="Zdejmij zasłony, wróć do czystego tekstu" aria-label="Zdejmij zakrycia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+        </div>
+        <div class="tool-row">
+          <span class="tool-label">Ile losować:</span>
+          <div class="seg" id="intensity">
+            <button data-r="0.12">Mało</button>
+            <button data-r="0.25" class="on">Średnio</button>
+            <button data-r="0.45">Dużo</button>
+          </div>
+          <label class="switch"><input type="checkbox" id="skipShort" checked> pomijaj słowa 1–2 literowe</label>
+          <label class="switch"><input type="checkbox" id="wholeWord"> klik odsłania całe słowo</label>
+          <label class="switch"><input type="checkbox" id="paintMode"> tryb zakrywania</label>
+          <label class="switch"><input type="checkbox" id="showMarked" checked> podkreśl {klamry}</label>
+          <label class="switch"><input type="checkbox" id="bankOn"> bank słów</label>
+          <span class="tool-label" style="margin-left:.4rem">Tekst:</span>
+          <div class="seg">
+            <button id="fontDown">A −</button>
+            <button id="fontUp">A +</button>
+          </div>
         </div>
       </div>
     </div>
@@ -385,7 +465,7 @@ footer{
     <div class="stage" id="stage"></div>
 
     <div class="hintbar">
-      <span><b>Klik</b> odsłania jedną literę <span class="sep">·</span> <b>przeciągnięcie</b> kolejne <span class="sep">·</span> <b>dwuklik</b> całe słowo <span class="sep">·</span> <b>prawy przycisk</b> zakrywa z powrotem</span>
+      <span><b>Klik</b> odsłania jedną literę <span class="sep">·</span> <b>przeciągnięcie</b> kolejne <span class="sep">·</span> <b>dwuklik</b> całe słowo <span class="sep">·</span> <b>prawy przycisk</b> zakrywa z powrotem <span class="sep">·</span> <b>Cofnij</b> odwraca ostatni ruch <span class="sep">·</span> w <b>trybie zakrywania</b> klikasz to, co ma zniknąć</span>
       <span class="acts">
         <button class="btn blue" id="save">Zapisz stan</button>
         <button class="btn ghost" id="reset">Wyczyść zapis</button>
@@ -395,14 +475,28 @@ footer{
 
   <section>
     <div class="card finish">
-      <h2>Cały dialog odtworzony?</h2>
+      <h2>Cały tekst odtworzony?</h2>
       <p>To zasługuje na porządny finał.</p>
       <button class="btn amber shine" id="celebrate">Celebrate!</button>
     </div>
   </section>
 
-  <footer>Cover &amp; Recall — narzędzie do odtwarzania dialogów. Działa offline, wystarczy ten jeden plik.</footer>
+  <footer>Cover &amp; Recall — odtwarzanie tekstu z pamięci. Działa offline, wystarczy ten jeden plik.</footer>
 
+</div>
+
+<div class="bank collapsed" id="bank">
+  <div class="bank-inner">
+    <div class="bank-head">
+      <span>Bank słów</span>
+      <span class="n" id="bankCount">0</span>
+      <span class="acts">
+        <button class="btn ghost icon" id="bankShuffle" data-tip="Przetasuj" aria-label="Przetasuj"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg></button>
+        <button class="btn ghost icon flip" id="bankToggle" data-tip="Rozwiń / zwiń" aria-label="Rozwiń lub zwiń"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg></button>
+      </span>
+    </div>
+    <div class="bank-list" id="bankList"></div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -471,7 +565,10 @@ function tokenize(str){
    RENDER
    ═══════════════════════════════════════════ */
 
+let wordSeq = 0;
+
 function render(){
+  wordSeq = 0;
   stage.innerHTML = '';
   const hasContent = doc.some(l => !l.blank && l.tokens.length);
   if(!hasContent){
@@ -506,6 +603,8 @@ function render(){
       const w = document.createElement('span');
       w.className = 'w' + (tok.marked ? ' marked' : '');
       w.dataset.len = tok.text.length;
+      w.dataset.id = 'w' + (wordSeq++);
+      w.dataset.text = tok.text;
       [...tok.text].forEach(chr => {
         const ch = document.createElement('span');
         ch.className = 'ch';
@@ -525,16 +624,10 @@ function render(){
     stage.appendChild(row);
   });
 
-  applyPreview();
   updateProgress();
 }
 
-function applyPreview(){
-  const on = document.getElementById('previewMarked').checked;
-  stage.querySelectorAll('.w.marked').forEach(w => {
-    w.classList.toggle('marked-preview', on && !w.classList.contains('covered'));
-  });
-}
+
 
 /* ═══════════════════════════════════════════
    ZAKRYWANIE / ODSŁANIANIE
@@ -542,7 +635,7 @@ function applyPreview(){
 
 function coverWord(w, delay = 0){
   w.classList.add('covered');
-  w.classList.remove('done','marked-preview');
+  w.classList.remove('done');
   if(w.classList.contains('marked')) w.classList.add('was-marked');
   w.querySelectorAll('.tile').forEach(t => {
     t.classList.remove('off');
@@ -556,15 +649,25 @@ function uncoverWord(w){
   w.querySelectorAll('.tile').forEach(t => t.classList.remove('off'));
 }
 
+/* stos cofania: zapamiętuje kolejność ruszanych słów */
+let undoStack = [];
+
+function pushUndo(w){
+  undoStack = undoStack.filter(x => x !== w);
+  undoStack.push(w);
+}
+
 function revealTile(tile){
   if(tile.classList.contains('off')) return;
-  tile.classList.add('off');
   const w = tile.closest('.w');
+  pushUndo(w);
+  tile.classList.add('off');
   markDone(w);
   updateProgress();
 }
 
 function revealWord(w){
+  pushUndo(w);
   const tiles = [...w.querySelectorAll('.tile')];
   tiles.forEach((t,i) => setTimeout(() => t.classList.add('off'), i*30));
   setTimeout(() => { markDone(w); updateProgress(); }, tiles.length*30 + 30);
@@ -617,9 +720,27 @@ document.getElementById('revealAll').addEventListener('click', () => {
   updateProgress();
 });
 
+/* Cofnij: zakrywa z powrotem ostatnie ruszane słowo */
+document.getElementById('undo').addEventListener('click', () => {
+  const w = undoStack.pop();
+  if(!w || !w.isConnected){ toast('Nie ma czego cofać'); return; }
+  coverWord(w);
+  updateProgress();
+});
+
+/* Zakryj ponownie: przywraca wszystkie zasłony, bez zmiany doboru słów */
+document.getElementById('recover').addEventListener('click', () => {
+  const list = [...stage.querySelectorAll('.w.covered')];
+  if(!list.length){ toast('Nic nie jest zakryte'); return; }
+  list.forEach(w => coverWord(w));
+  undoStack = [];
+  updateProgress();
+  toast('Przywrócono ' + list.length + ' zasłon');
+});
+
 document.getElementById('uncoverAll').addEventListener('click', () => {
   stage.querySelectorAll('.w').forEach(uncoverWord);
-  applyPreview();
+  undoStack = [];
   updateProgress();
 });
 
@@ -627,9 +748,27 @@ document.getElementById('uncoverAll').addEventListener('click', () => {
    INTERAKCJA: PRZECIĄGNIJ / KLIKNIJ
    ═══════════════════════════════════════════ */
 
-let dragging = false, downX = 0, downY = 0, dragRevealed = 0;
+let dragging = false, painting = false, downX = 0, downY = 0, dragRevealed = 0;
+
+function paintOn(){ return document.getElementById('paintMode').checked; }
+
+/* słowo wymaga zasłony, gdy nie jest zakryte albo gdy ktoś zdjął z niego choć jedną płytkę */
+function needsCover(w){
+  return !w.classList.contains('covered') || !!w.querySelector('.tile.off');
+}
 
 stage.addEventListener('pointerdown', e => {
+  if(paintOn()){
+    const target = e.target.closest('.w');
+    if(target && needsCover(target)){
+      e.preventDefault();
+      painting = true;
+      coverWord(target);
+      updateProgress();
+      try { stage.setPointerCapture(e.pointerId); } catch(_) {}
+    }
+    return;
+  }
   const w = e.target.closest('.w.covered');
   if(!w) return;
   e.preventDefault();
@@ -639,6 +778,12 @@ stage.addEventListener('pointerdown', e => {
 });
 
 stage.addEventListener('pointermove', e => {
+  if(painting){
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const w = el && el.closest ? el.closest('.w') : null;
+    if(w && needsCover(w)){ coverWord(w); updateProgress(); }
+    return;
+  }
   if(!dragging) return;
   const el = document.elementFromPoint(e.clientX, e.clientY);
   if(!el || !el.closest) return;
@@ -650,19 +795,22 @@ stage.addEventListener('pointermove', e => {
 });
 
 stage.addEventListener('pointerup', e => {
+  if(painting){ painting = false; return; }
   if(!dragging) return;
   dragging = false;
   try { stage.releasePointerCapture(e.pointerId); } catch(_) {}
   const dist = Math.hypot(e.clientX - downX, e.clientY - downY);
   if(dist < 8 && dragRevealed === 0){
-    // zwykłe kliknięcie: odsłania TYLKO tę jedną literę
     const el = document.elementFromPoint(e.clientX, e.clientY);
     const tile = el && el.closest ? el.closest('.tile') : null;
-    if(tile && tile.closest('.w').classList.contains('covered')) revealTile(tile);
+    if(tile && tile.closest('.w').classList.contains('covered')){
+      if(document.getElementById('wholeWord').checked) revealWord(tile.closest('.w'));
+      else revealTile(tile);
+    }
   }
 });
 
-stage.addEventListener('pointercancel', () => { dragging = false; });
+stage.addEventListener('pointercancel', () => { dragging = false; painting = false; });
 
 /* podwójne kliknięcie: odsłania całe słowo */
 stage.addEventListener('dblclick', e => {
@@ -681,6 +829,82 @@ stage.addEventListener('contextmenu', e => {
 });
 
 /* ═══════════════════════════════════════════
+   BANK SŁÓW
+   ═══════════════════════════════════════════ */
+
+const bank = document.getElementById('bank');
+const bankList = document.getElementById('bankList');
+let bankOrder = [];   // kolejność wylosowana raz, stabilna między odsłonięciami
+
+function buildBank(reshuffle){
+  const covered = [...stage.querySelectorAll('.w.covered')];
+  const ids = covered.map(w => w.dataset.id);
+
+  if(reshuffle || bankOrder.length === 0){
+    bankOrder = ids.slice();
+  } else {
+    // zachowaj dotychczasową kolejność, dopisz nowe na końcu i wytnij zdjęte
+    bankOrder = bankOrder.filter(id => ids.includes(id));
+    const added = ids.filter(id => !bankOrder.includes(id));
+    added.forEach(id => bankOrder.splice(Math.floor(Math.random() * (bankOrder.length + 1)), 0, id));
+    if(added.length) reshuffle = false;
+  }
+  if(reshuffle){
+    for(let i = bankOrder.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [bankOrder[i], bankOrder[j]] = [bankOrder[j], bankOrder[i]];
+    }
+  }
+
+  bankList.innerHTML = '';
+  if(!bankOrder.length){
+    bankList.innerHTML = '<p class="bank-empty">Nic jeszcze nie jest zakryte.</p>';
+  } else {
+    bankOrder.forEach(id => {
+      const w = stage.querySelector('[data-id="' + id + '"]');
+      if(!w) return;
+      const chip = document.createElement('span');
+      chip.className = 'chip' + (w.classList.contains('marked') ? ' marked' : '');
+      chip.dataset.for = id;
+      chip.textContent = w.dataset.text;
+      bankList.appendChild(chip);
+    });
+  }
+  syncBank();
+}
+
+function syncBank(){
+  let used = 0;
+  bankList.querySelectorAll('.chip').forEach(chip => {
+    const w = stage.querySelector('[data-id="' + chip.dataset.for + '"]');
+    const done = w && w.classList.contains('done');
+    chip.classList.toggle('used', !!done);
+    if(done) used++;
+  });
+  const total = bankList.querySelectorAll('.chip').length;
+  document.getElementById('bankCount').textContent = total ? (total - used) + ' do znalezienia' : '';
+}
+
+document.getElementById('showMarked').addEventListener('change', e => {
+  document.body.classList.toggle('show-marked', e.target.checked);
+});
+
+document.getElementById('paintMode').addEventListener('change', e => {
+  document.body.classList.toggle('paint', e.target.checked);
+  if(e.target.checked) toast('Tryb zakrywania: klikaj słowa, żeby je zasłonić');
+});
+
+document.getElementById('bankOn').addEventListener('change', e => {
+  bank.classList.toggle('on', e.target.checked);
+  if(e.target.checked) buildBank(true);
+});
+document.getElementById('bankShuffle').addEventListener('click', () => buildBank(true));
+document.getElementById('bankToggle').addEventListener('click', e => {
+  const collapsed = bank.classList.toggle('collapsed');
+  e.currentTarget.textContent = collapsed ? '▲' : '▼';
+});
+
+/* ═══════════════════════════════════════════
    POSTĘP
    ═══════════════════════════════════════════ */
 
@@ -692,6 +916,11 @@ function updateProgress(){
   document.getElementById('count').textContent = done + ' / ' + covered;
   const pct = covered ? (done / covered) * 100 : 0;
   document.getElementById('barFill').style.width = pct + '%';
+
+  if(bank.classList.contains('on')){
+    const chips = bankList.querySelectorAll('.chip').length;
+    if(chips !== covered) buildBank(false); else syncBank();
+  }
 
   if(covered > 0 && done === covered){
     if(!wasComplete){ wasComplete = true; sectionShot(); }
@@ -762,6 +991,13 @@ document.getElementById('toggleEditor').addEventListener('click', e => {
   e.target.textContent = hidden ? 'Ukryj edytor' : 'Pokaż edytor';
 });
 
+document.getElementById('toolToggle').addEventListener('click', e => {
+  const t = document.getElementById('toolbar');
+  const collapsed = t.classList.toggle('collapsed');
+  e.currentTarget.dataset.tip = collapsed ? 'Rozwiń panel' : 'Zwiń panel';
+  document.getElementById('toolTitle').textContent = collapsed ? 'Panel zwinięty' : 'Panel';
+});
+
 document.getElementById('intensity').addEventListener('click', e => {
   const b = e.target.closest('button');
   if(!b) return;
@@ -770,7 +1006,6 @@ document.getElementById('intensity').addEventListener('click', e => {
   ratio = Number(b.dataset.r);
 });
 
-document.getElementById('previewMarked').addEventListener('change', applyPreview);
 
 let fontSize = 2;
 function setFont(v){
