@@ -207,26 +207,36 @@ textarea:focus{outline:none;border-color:var(--teal);background:#fff}
 .seg button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
 
 .tool-label{font-size:.92rem;font-weight:600;color:var(--ink-soft)}
+.numwrap{display:inline-flex;align-items:center;gap:.5rem}
+.numin{
+  width:4.4rem;font-family:var(--ui);font-weight:700;font-size:1.05rem;
+  text-align:center;
+  padding:.5rem .5rem;border-radius:10px;
+  border:2px solid #a9c2cb;background-color:#fff;color:var(--ink);
+}
+.numin::placeholder{color:#a9c2cb;font-weight:500}
+.numin:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(18,103,107,.15)}
+.numgo{padding:.5rem .9rem;font-size:.92rem}
 
 .switch{
   display:inline-flex;align-items:center;gap:.5rem;
   font-size:.94rem;font-weight:500;color:var(--ink-soft);cursor:pointer;
   user-select:none;
 }
-.switch input{
+.switch input[type="checkbox"]{
   appearance:none;-webkit-appearance:none;
   width:1.3rem;height:1.3rem;border-radius:7px;cursor:pointer;
   background-color:#ffffff;
   border:1.5px solid #9db6c0;
   transition:background-color .15s ease,border-color .15s ease;
 }
-.switch input:hover{border-color:var(--teal)}
-.switch input:checked{
+.switch input[type="checkbox"]:hover{border-color:var(--teal)}
+.switch input[type="checkbox"]:checked{
   background-color:var(--teal);border-color:var(--teal);
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E");
   background-size:80%;background-position:center;background-repeat:no-repeat;
 }
-.switch input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.switch input[type="checkbox"]:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
 
 .counter{
   margin-left:auto;display:flex;align-items:center;gap:.75rem;
@@ -246,6 +256,7 @@ textarea:focus{outline:none;border-color:var(--teal);background:#fff}
 
 /* ══════════ STAGE ══════════ */
 .stage{
+  user-select:none;-webkit-user-select:none;
   background:linear-gradient(160deg,#fff 0%,#fff 60%,rgba(35,82,184,.06) 100%);
   border-radius:22px;padding:2.2rem 2rem;
   box-shadow:0 6px 20px rgba(19,36,48,.10);
@@ -271,8 +282,11 @@ textarea:focus{outline:none;border-color:var(--teal);background:#fff}
 .line-text{flex:1 1 auto;min-width:0}
 .other{white-space:pre-wrap}
 
-/* ── word + tiles ── */
+/* ── słowo i zasłona ── */
 .w{position:relative;display:inline-block;white-space:nowrap;line-height:1}
+.stage ::selection{background-color:transparent}
+.w .txt{position:relative;z-index:1}
+
 .w::after{
   content:'';position:absolute;z-index:3;
   left:0;right:0;bottom:-.2em;height:.085em;
@@ -281,40 +295,27 @@ textarea:focus{outline:none;border-color:var(--teal);background:#fff}
   transition:background-color .2s ease;
 }
 body.show-marked .w.marked:not(.covered)::after{background-color:var(--marked-line)}
-body.paint .w{cursor:cell}
-body.paint .w:hover{background-color:rgba(59,163,166,.16);border-radius:.18em}
-.ch{position:relative;display:inline-block;line-height:1}
-.chr{position:relative;z-index:1}
 
-.tile{
-  position:absolute;top:-.13em;bottom:-.15em;left:-1px;right:-1px;
-  z-index:2;border-radius:0;
+/* jedna zasłona na całe słowo, odsuwana od lewej przez clip-path */
+.cover{
+  position:absolute;top:-.13em;bottom:-.15em;left:-.05em;right:-.05em;
+  z-index:2;border-radius:.3em;
   background-color:var(--cover);
   opacity:0;pointer-events:none;
   transform:translateY(-118%);
-  transition:transform .26s cubic-bezier(.2,.85,.3,1),opacity .2s ease;
+  transition:transform .26s cubic-bezier(.2,.85,.3,1),opacity .2s ease,clip-path .16s ease-out;
 }
-/* zaokrąglone tylko końce całego paska */
-.ch:first-child .tile{border-top-left-radius:.3em;border-bottom-left-radius:.3em;left:-.05em}
-.ch:last-child .tile{border-top-right-radius:.3em;border-bottom-right-radius:.3em;right:-.05em}
 .w.covered{cursor:grab;touch-action:none}
 .w.covered:active{cursor:grabbing}
-.w.covered .tile{opacity:1;transform:none;pointer-events:auto}
-.w.covered .tile.off{
-  opacity:0;pointer-events:none;
-  transform:translateY(-115%);
-}
-.w.covered .chr{color:transparent}
-.w.covered .tile.off ~ .chr,
-.w.covered .ch:has(.tile.off) .chr{color:inherit}
+.w.covered .cover{opacity:1;transform:none;pointer-events:auto}
+.w.covered.was-marked .cover{background-color:var(--cover-marked)}
+.w.covered.done .cover{opacity:0;pointer-events:none;transform:translateY(-115%)}
+.w.dragging .cover{transition:none}
+.w.quiet .cover{transition:none}
 
-/* marked words get a warmer tile so the teacher can tell them apart */
-.w.covered.was-marked .tile{
-  background-color:var(--cover-marked);
-}
-.w.covered.done{
-  /* linia rysowana przez .w::after */
-}
+body.paint .w{cursor:cell}
+body.paint .w:hover{background-color:rgba(59,163,166,.16);border-radius:.18em}
+
 .w.covered.done::after{background-color:var(--done-line)}
 
 .stage-empty{
@@ -438,6 +439,7 @@ footer{
           <button class="btn ghost icon" id="coverAll" data-tip="Zakryj wszystkie słowa" aria-label="Zakryj wszystkie słowa"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="6" width="18" height="12" rx="3"/></svg></button>
           <button class="btn rust icon" id="revealAll" data-tip="Odsłoń wszystko" aria-label="Odsłoń wszystko"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="3"/></svg></button>
           <button class="btn ghost icon" id="undo" data-tip="Cofnij ostatnie słowo" aria-label="Cofnij"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h9a7 7 0 0 1 7 7v3"/></svg></button>
+          <button class="btn ghost icon" id="next" data-tip="Odsłoń następne słowo" aria-label="Odsłoń następne"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9h-9a7 7 0 0 0-7 7v3"/></svg></button>
           <button class="btn ghost icon" id="recover" data-tip="Przywróć wszystkie zasłony" aria-label="Zakryj ponownie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v7"/><path d="m8.5 7 3.5 3.5L15.5 7"/><rect x="3" y="13" width="18" height="7" rx="2.5"/></svg></button>
           <button class="btn ghost icon" id="uncoverAll" data-tip="Zdejmij zasłony, wróć do czystego tekstu" aria-label="Zdejmij zakrycia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
         </div>
@@ -448,7 +450,12 @@ footer{
             <button data-r="0.25" class="on">Średnio</button>
             <button data-r="0.45">Dużo</button>
           </div>
-          <label class="switch"><input type="checkbox" id="skipShort" checked> pomijaj słowa 1–2 literowe</label>
+          <span class="numwrap">
+            <span class="tool-label">albo dokładnie</span>
+            <input type="number" min="1" max="999" id="coverN" class="numin" placeholder="8">
+            <button class="btn ghost numgo" id="coverNGo">Zakryj</button>
+          </span>
+          <label class="switch"><input type="checkbox" id="skipShort"> pomijaj słowa 1–2 literowe</label>
           <label class="switch"><input type="checkbox" id="wholeWord"> klik odsłania całe słowo</label>
           <label class="switch"><input type="checkbox" id="paintMode"> tryb zakrywania</label>
           <label class="switch"><input type="checkbox" id="showMarked" checked> podkreśl {klamry}</label>
@@ -465,7 +472,7 @@ footer{
     <div class="stage" id="stage"></div>
 
     <div class="hintbar">
-      <span><b>Klik</b> odsłania jedną literę <span class="sep">·</span> <b>przeciągnięcie</b> kolejne <span class="sep">·</span> <b>dwuklik</b> całe słowo <span class="sep">·</span> <b>prawy przycisk</b> zakrywa z powrotem <span class="sep">·</span> <b>Cofnij</b> odwraca ostatni ruch <span class="sep">·</span> w <b>trybie zakrywania</b> klikasz to, co ma zniknąć</span>
+      <span><b>Klik</b> odsłania jedną literę <span class="sep">·</span> <b>przeciągnięcie</b> kolejne <span class="sep">·</span> <b>dwuklik</b> całe słowo <span class="sep">·</span> <b>prawy przycisk</b> zakrywa z powrotem <span class="sep">·</span> strzałki <b>← →</b> zdejmują i cofają po literze, <b>↑ ↓</b> całe słowo <span class="sep">·</span> w <b>trybie zakrywania</b> klikasz to, co ma zniknąć</span>
       <span class="acts">
         <button class="btn blue" id="save">Zapisz stan</button>
         <button class="btn ghost" id="reset">Wyczyść zapis</button>
@@ -605,18 +612,13 @@ function render(){
       w.dataset.len = tok.text.length;
       w.dataset.id = 'w' + (wordSeq++);
       w.dataset.text = tok.text;
-      [...tok.text].forEach(chr => {
-        const ch = document.createElement('span');
-        ch.className = 'ch';
-        const c = document.createElement('span');
-        c.className = 'chr';
-        c.textContent = chr;
-        const tile = document.createElement('span');
-        tile.className = 'tile';
-        ch.appendChild(c);
-        ch.appendChild(tile);
-        w.appendChild(ch);
-      });
+      const txt = document.createElement('span');
+      txt.className = 'txt';
+      txt.textContent = tok.text;
+      const cover = document.createElement('span');
+      cover.className = 'cover';
+      w.appendChild(txt);
+      w.appendChild(cover);
       body.appendChild(w);
     });
 
@@ -633,20 +635,68 @@ function render(){
    ZAKRYWANIE / ODSŁANIANIE
    ═══════════════════════════════════════════ */
 
+function coverOf(w){ return w.querySelector('.cover'); }
+
+/* granice liter liczone leniwie, dopiero przy pierwszym dotknięciu słowa */
+function letterStops(w){
+  if(w._stops) return w._stops;
+  const cover = coverOf(w);
+  const node = w.querySelector('.txt').firstChild;
+  const base = cover.getBoundingClientRect().left;
+  const range = document.createRange();
+  const stops = [0];
+  const len = node.length;
+  for(let i = 1; i <= len; i++){
+    range.setStart(node, 0);
+    range.setEnd(node, i);
+    stops.push(range.getBoundingClientRect().right - base);
+  }
+  stops[stops.length - 1] = cover.getBoundingClientRect().width;
+  w._stops = stops;
+  return stops;
+}
+
+function snapToLetter(w, x){
+  const stops = letterStops(w);
+  let best = stops[0], diff = Infinity;
+  for(const s of stops){
+    const d = Math.abs(s - x);
+    if(d < diff){ diff = d; best = s; }
+  }
+  return best;
+}
+
+function setProgress(w, px, snap = true){
+  const cover = coverOf(w);
+  const width = cover.getBoundingClientRect().width;
+  let p = Math.max(0, Math.min(width, px));
+  if(snap) p = snapToLetter(w, p);
+  w.dataset.p = p;
+  if(p >= width - 0.5){
+    w.classList.add('quiet','done');
+    cover.style.clipPath = '';
+  } else {
+    w.classList.remove('done');
+    cover.style.clipPath = 'inset(0 0 0 ' + p + 'px)';
+  }
+  updateProgress();
+}
+
 function coverWord(w, delay = 0){
+  const cover = coverOf(w);
   w.classList.add('covered');
-  w.classList.remove('done');
+  w.classList.remove('done','quiet');
   if(w.classList.contains('marked')) w.classList.add('was-marked');
-  w.querySelectorAll('.tile').forEach(t => {
-    t.classList.remove('off');
-    t.style.transitionDelay = delay + 'ms';
-    setTimeout(() => { t.style.transitionDelay = ''; }, delay + 340);
-  });
+  w.dataset.p = 0;
+  cover.style.clipPath = 'inset(0 0 0 0)';
+  cover.style.transitionDelay = delay + 'ms';
+  setTimeout(() => { cover.style.transitionDelay = ''; }, delay + 340);
 }
 
 function uncoverWord(w){
-  w.classList.remove('covered','done','was-marked');
-  w.querySelectorAll('.tile').forEach(t => t.classList.remove('off'));
+  w.classList.remove('covered','done','was-marked','quiet','cursor');
+  w.dataset.p = 0;
+  coverOf(w).style.clipPath = '';
 }
 
 /* stos cofania: zapamiętuje kolejność ruszanych słów */
@@ -657,25 +707,20 @@ function pushUndo(w){
   undoStack.push(w);
 }
 
-function revealTile(tile){
-  if(tile.classList.contains('off')) return;
-  const w = tile.closest('.w');
+function revealWord(w){
   pushUndo(w);
-  tile.classList.add('off');
-  markDone(w);
+  w.classList.remove('quiet');
+  w.classList.add('done');
+  coverOf(w).style.clipPath = '';
+  w.dataset.p = coverOf(w).getBoundingClientRect().width;
   updateProgress();
 }
 
-function revealWord(w){
-  pushUndo(w);
-  const tiles = [...w.querySelectorAll('.tile')];
-  tiles.forEach((t,i) => setTimeout(() => t.classList.add('off'), i*30));
-  setTimeout(() => { markDone(w); updateProgress(); }, tiles.length*30 + 30);
-}
-
-function markDone(w){
-  const all = [...w.querySelectorAll('.tile')].every(t => t.classList.contains('off'));
-  w.classList.toggle('done', all);
+function revealNext(){
+  const next = stage.querySelector('.w.covered:not(.done)');
+  if(!next){ toast('Nie ma już nic zakrytego'); return; }
+  revealWord(next);
+  next.scrollIntoView({ block:'nearest', behavior:'smooth' });
 }
 
 function eligibleWords(){
@@ -693,10 +738,10 @@ document.getElementById('coverMarked').addEventListener('click', () => {
   toast('Zakryto ' + list.length + ' zaznaczonych słów');
 });
 
-document.getElementById('coverRandom').addEventListener('click', () => {
+function coverRandomWords(n){
   const pool = eligibleWords();
-  if(!pool.length){ toast('Wszystko już zakryte'); return; }
-  const n = Math.max(1, Math.round(pool.length * ratio));
+  if(!pool.length){ toast('Wszystko już zakryte'); return 0; }
+  n = Math.max(1, Math.min(pool.length, n));
   for(let i = pool.length - 1; i > 0; i--){
     const j = Math.floor(Math.random() * (i + 1));
     [pool[i], pool[j]] = [pool[j], pool[i]];
@@ -704,7 +749,25 @@ document.getElementById('coverRandom').addEventListener('click', () => {
   pool.slice(0, n).forEach((w,i) => coverWord(w, i*30));
   updateProgress();
   toast('Zakryto ' + n + ' losowych słów');
+  return n;
+}
+
+document.getElementById('coverRandom').addEventListener('click', () => {
+  coverRandomWords(Math.round(eligibleWords().length * ratio));
 });
+
+function coverExactCount(){
+  const field = document.getElementById('coverN');
+  const n = parseInt(field.value, 10);
+  if(!n || n < 1){ toast('Wpisz liczbę słów'); field.focus(); return; }
+  coverRandomWords(n);
+}
+
+document.getElementById('coverN').addEventListener('keydown', e => {
+  if(e.key === 'Enter'){ e.preventDefault(); coverExactCount(); }
+  e.stopPropagation();
+});
+document.getElementById('coverNGo').addEventListener('click', coverExactCount);
 
 document.getElementById('coverAll').addEventListener('click', () => {
   const list = [...stage.querySelectorAll('.w:not(.covered)')];
@@ -714,8 +777,9 @@ document.getElementById('coverAll').addEventListener('click', () => {
 
 document.getElementById('revealAll').addEventListener('click', () => {
   stage.querySelectorAll('.w.covered').forEach(w => {
-    w.querySelectorAll('.tile').forEach(t => t.classList.add('off'));
     w.classList.add('done');
+    coverOf(w).style.clipPath = '';
+    w.dataset.p = coverOf(w).getBoundingClientRect().width;
   });
   updateProgress();
 });
@@ -729,6 +793,8 @@ document.getElementById('undo').addEventListener('click', () => {
 });
 
 /* Zakryj ponownie: przywraca wszystkie zasłony, bez zmiany doboru słów */
+document.getElementById('next').addEventListener('click', revealNext);
+
 document.getElementById('recover').addEventListener('click', () => {
   const list = [...stage.querySelectorAll('.w.covered')];
   if(!list.length){ toast('Nic nie jest zakryte'); return; }
@@ -741,6 +807,7 @@ document.getElementById('recover').addEventListener('click', () => {
 document.getElementById('uncoverAll').addEventListener('click', () => {
   stage.querySelectorAll('.w').forEach(uncoverWord);
   undoStack = [];
+  setCursorWord(null);
   updateProgress();
 });
 
@@ -748,16 +815,30 @@ document.getElementById('uncoverAll').addEventListener('click', () => {
    INTERAKCJA: PRZECIĄGNIJ / KLIKNIJ
    ═══════════════════════════════════════════ */
 
-let dragging = false, painting = false, downX = 0, downY = 0, dragRevealed = 0;
+let dragging = false, painting = false, activeWord = null, downX = 0, downY = 0, dragRevealed = 0;
 
 function paintOn(){ return document.getElementById('paintMode').checked; }
 
 /* słowo wymaga zasłony, gdy nie jest zakryte albo gdy ktoś zdjął z niego choć jedną płytkę */
 function needsCover(w){
-  return !w.classList.contains('covered') || !!w.querySelector('.tile.off');
+  return !w.classList.contains('covered') || w.classList.contains('done') || Number(w.dataset.p || 0) > 0;
+}
+
+function wholeWordOn(){ return document.getElementById('wholeWord').checked; }
+
+function wordUnderAny(x, y){
+  const el = document.elementFromPoint(x, y);
+  return el && el.closest ? el.closest('.w') : null;
+}
+
+function wordUnder(x, y){
+  const el = document.elementFromPoint(x, y);
+  return el && el.closest ? el.closest('.w.covered') : null;
 }
 
 stage.addEventListener('pointerdown', e => {
+  if(e.button !== undefined && e.button !== 0 && !e.isPrimary) return;
+
   if(paintOn()){
     const target = e.target.closest('.w');
     if(target && needsCover(target)){
@@ -769,27 +850,48 @@ stage.addEventListener('pointerdown', e => {
     }
     return;
   }
+
   const w = e.target.closest('.w.covered');
-  if(!w) return;
+  if(!w || w.classList.contains('done')) return;
   e.preventDefault();
-  dragging = true; dragRevealed = 0;
+  dragging = true; dragRevealed = 0; activeWord = w;
+  setCursorWord(w);
   downX = e.clientX; downY = e.clientY;
   try { stage.setPointerCapture(e.pointerId); } catch(_) {}
+
+  if(wholeWordOn()){
+    revealWord(w);
+  } else {
+    w.classList.add('dragging');
+  }
 });
 
 stage.addEventListener('pointermove', e => {
   if(painting){
-    const el = document.elementFromPoint(e.clientX, e.clientY);
-    const w = el && el.closest ? el.closest('.w') : null;
+    const w = wordUnderAny(e.clientX, e.clientY);
     if(w && needsCover(w)){ coverWord(w); updateProgress(); }
     return;
   }
   if(!dragging) return;
-  const el = document.elementFromPoint(e.clientX, e.clientY);
-  if(!el || !el.closest) return;
-  const tile = el.closest('.tile');
-  if(tile && !tile.classList.contains('off') && tile.closest('.w').classList.contains('covered')){
-    revealTile(tile);
+
+  const hit = wordUnder(e.clientX, e.clientY);
+
+  /* przejście na inne słowo w trakcie trzymania przycisku */
+  if(hit && hit !== activeWord && !hit.classList.contains('done')){
+    if(activeWord) activeWord.classList.remove('dragging');
+    activeWord = hit;
+    setCursorWord(hit);
+    dragRevealed++;
+    if(wholeWordOn()){ revealWord(hit); return; }
+    hit.classList.add('dragging');
+  }
+
+  if(wholeWordOn() || !activeWord) return;
+
+  const cover = coverOf(activeWord);
+  const x = e.clientX - cover.getBoundingClientRect().left;
+  if(x > Number(activeWord.dataset.p || 0)){
+    setProgress(activeWord, x);
     dragRevealed++;
   }
 });
@@ -799,18 +901,21 @@ stage.addEventListener('pointerup', e => {
   if(!dragging) return;
   dragging = false;
   try { stage.releasePointerCapture(e.pointerId); } catch(_) {}
+
   const dist = Math.hypot(e.clientX - downX, e.clientY - downY);
-  if(dist < 8 && dragRevealed === 0){
-    const el = document.elementFromPoint(e.clientX, e.clientY);
-    const tile = el && el.closest ? el.closest('.tile') : null;
-    if(tile && tile.closest('.w').classList.contains('covered')){
-      if(document.getElementById('wholeWord').checked) revealWord(tile.closest('.w'));
-      else revealTile(tile);
-    }
+  if(dist < 8 && dragRevealed === 0 && activeWord && !wholeWordOn()){
+    const cover = coverOf(activeWord);
+    setProgress(activeWord, e.clientX - cover.getBoundingClientRect().left);
   }
+  if(activeWord) activeWord.classList.remove('dragging');
+  activeWord = null;
 });
 
-stage.addEventListener('pointercancel', () => { dragging = false; painting = false; });
+stage.addEventListener('pointercancel', () => {
+  dragging = false; painting = false;
+  if(activeWord) activeWord.classList.remove('dragging');
+  activeWord = null;
+});
 
 /* podwójne kliknięcie: odsłania całe słowo */
 stage.addEventListener('dblclick', e => {
@@ -826,6 +931,112 @@ stage.addEventListener('contextmenu', e => {
   e.preventDefault();
   coverWord(w);
   updateProgress();
+});
+
+/* ═══════════════════════════════════════════
+   STEROWANIE KLAWIATURĄ
+   ═══════════════════════════════════════════ */
+
+let cursorWord = null;
+
+function setCursorWord(w){
+  stage.querySelectorAll('.w.cursor').forEach(x => x.classList.remove('cursor'));
+  cursorWord = w || null;
+  if(cursorWord){
+    cursorWord.classList.add('cursor');
+    cursorWord.scrollIntoView({ block:'nearest', behavior:'smooth' });
+  }
+}
+
+function coveredList(){
+  return [...stage.querySelectorAll('.w.covered')];
+}
+
+function currentWord(){
+  if(cursorWord && cursorWord.isConnected && cursorWord.classList.contains('covered')) return cursorWord;
+  const first = stage.querySelector('.w.covered:not(.done)') || stage.querySelector('.w.covered');
+  if(first) setCursorWord(first);
+  return first;
+}
+
+function neighbourWord(dir){
+  const list = coveredList();
+  const i = list.indexOf(currentWord());
+  return list[i + dir] || null;
+}
+
+/* → jedna litera w prawo */
+function letterForward(){
+  const w = currentWord();
+  if(!w) return;
+  if(w.classList.contains('done')){
+    const nxt = neighbourWord(1);
+    if(nxt){ setCursorWord(nxt); if(!nxt.classList.contains('done')) return letterForward(); }
+    return;
+  }
+  const stops = letterStops(w);
+  const p = Number(w.dataset.p || 0);
+  const next = stops.find(s => s > p + 0.5);
+  setProgress(w, next === undefined ? stops[stops.length - 1] : next, false);
+}
+
+/* ← jedna litera w lewo */
+function letterBack(){
+  let w = currentWord();
+  if(!w) return;
+  if(Number(w.dataset.p || 0) <= 0 && !w.classList.contains('done')){
+    const prev = neighbourWord(-1);
+    if(!prev) return;
+    setCursorWord(prev);
+    w = prev;
+  }
+  const stops = letterStops(w);
+  const width = coverOf(w).getBoundingClientRect().width;
+  const p = w.classList.contains('done') ? width : Number(w.dataset.p || 0);
+  let prevStop = 0;
+  for(const s of stops){ if(s < p - 0.5) prevStop = s; }
+  w.classList.remove('done','quiet');
+  coverOf(w).style.transitionDelay = '';
+  setProgress(w, prevStop, false);
+}
+
+/* ↑ całe słowo odsłonięte, kursor idzie dalej */
+function wordForward(){
+  const w = currentWord();
+  if(!w) return;
+  if(!w.classList.contains('done')) revealWord(w);
+  const nxt = stage.querySelector('.w.covered:not(.done)');
+  if(nxt) setCursorWord(nxt);
+}
+
+/* ↓ całe słowo z powrotem pod zasłonę */
+function wordBack(){
+  let w = currentWord();
+  if(!w) return;
+  if(!w.classList.contains('done') && Number(w.dataset.p || 0) <= 0){
+    const prev = neighbourWord(-1);
+    if(prev){ setCursorWord(prev); w = prev; }
+  }
+  coverWord(w);
+  updateProgress();
+}
+
+document.addEventListener('keydown', e => {
+  const tag = (document.activeElement && document.activeElement.tagName) || '';
+  if(tag === 'TEXTAREA' || tag === 'INPUT') return;
+  if(e.metaKey || e.ctrlKey || e.altKey) return;
+
+  const map = {
+    ArrowRight: letterForward,
+    ArrowLeft:  letterBack,
+    ArrowUp:    wordForward,
+    ArrowDown:  wordBack
+  };
+  const fn = map[e.key];
+  if(!fn) return;
+  if(!stage.querySelector('.w.covered')) return;
+  e.preventDefault();
+  fn();
 });
 
 /* ═══════════════════════════════════════════
@@ -1010,6 +1221,7 @@ document.getElementById('intensity').addEventListener('click', e => {
 let fontSize = 2;
 function setFont(v){
   fontSize = Math.min(3.4, Math.max(1.1, v));
+  stage.querySelectorAll('.w').forEach(w => { w._stops = null; });
   document.documentElement.style.setProperty('--stage-size', fontSize.toFixed(2) + 'rem');
 }
 document.getElementById('fontUp').addEventListener('click', () => setFont(fontSize + 0.2));
@@ -1021,7 +1233,8 @@ document.getElementById('save').addEventListener('click', () => {
     font: fontSize,
     words: [...stage.querySelectorAll('.w')].map(w => ({
       c: w.classList.contains('covered'),
-      t: [...w.querySelectorAll('.tile')].map(t => t.classList.contains('off') ? 1 : 0)
+      d: w.classList.contains('done'),
+      p: Number(w.dataset.p || 0)
     }))
   };
   try {
@@ -1054,13 +1267,33 @@ function restore(){
     if(!w || !s.c) return;
     w.classList.add('covered');
     if(w.classList.contains('marked')) w.classList.add('was-marked');
-    const tiles = [...w.querySelectorAll('.tile')];
-    (s.t || []).forEach((v, j) => { if(v && tiles[j]) tiles[j].classList.add('off'); });
-    markDone(w);
+    w.dataset.p = s.p || 0;
+    if(s.d){
+      w.classList.add('done');
+    } else if(s.p > 0){
+      coverOf(w).style.clipPath = 'inset(0 0 0 ' + s.p + 'px)';
+    } else {
+      coverOf(w).style.clipPath = 'inset(0 0 0 0)';
+    }
   });
   wasComplete = true;   // nie odpalaj confetti od razu po wczytaniu
   updateProgress();
 }
+
+/* po zmianie szerokości okna granice liter trzeba przeliczyć od nowa */
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    stage.querySelectorAll('.w').forEach(w => {
+      w._stops = null;
+      if(w.classList.contains('covered') && !w.classList.contains('done')){
+        const p = Number(w.dataset.p || 0);
+        if(p > 0) coverOf(w).style.clipPath = 'inset(0 0 0 ' + p + 'px)';
+      }
+    });
+  }, 200);
+});
 
 let toastTimer;
 function toast(msg){
