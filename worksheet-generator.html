@@ -811,6 +811,14 @@ body {
 }
 .thumb-none { background: #fbfcff; }
 /* Miniatura "Własne SVG" - po wklejeniu kodu pokazuje prawdziwy wzorek */
+.thumb-html {
+  background-color: #fbfcff;
+  background-image:
+    radial-gradient(circle at 30% 35%, rgba(37,99,235,0.30) 3px, transparent 4px),
+    radial-gradient(circle at 70% 65%, rgba(37,99,235,0.22) 4px, transparent 5px),
+    radial-gradient(circle at 50% 20%, rgba(37,99,235,0.16) 2px, transparent 3px);
+}
+
 .thumb-svg {
   background-color: #fbfcff;
   background-image:
@@ -1108,6 +1116,69 @@ body {
 
 .gen-hint { color: var(--text-muted); font-size: 0.82rem; margin-top: 0.85rem; font-family: var(--mono); }
 
+/* Pelny reset generatora - celowo dyskretny i osobno pod przyciskiem generowania,
+   zeby nie konkurowal wzrokowo z glowna akcja i nie dalo sie w niego trafic przypadkiem. */
+.btn-reset-all {
+  margin-top: 1.4rem;
+  font-family: var(--mono); font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  background-color: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: color 0.18s, border-color 0.18s, background-color 0.18s, transform 0.12s;
+}
+.btn-reset-all:hover {
+  color: #c0392b;
+  border-color: #c0392b;
+  background-color: rgba(192, 57, 43, 0.06);
+  transform: scale(1.03);
+}
+.btn-reset-all:active { transform: scale(0.98); }
+.btn-reset-all:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Ostrzezenie w statusie TSV - wyrazniejsze niz zwykla podpowiedz, ale bez
+   krzyku (status jako calosc dalej moze byc "ok"). */
+.tsv-status .hint-warn {
+  color: #b45309;
+  font-weight: 500;
+}
+
+/* Rzad pod polem TSV: link "pokaz przyklady" po lewej, "wyczysc" po prawej.
+   Flex + margin-left:auto na przycisku czyszczenia, wiec layout trzyma sie
+   niezaleznie od dlugosci etykiet. */
+.tsv-under-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+.tsv-clear-btn {
+  margin-left: auto;
+  font-family: var(--mono); font-size: 0.75rem;
+  color: var(--text-muted);
+  background-color: transparent;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 0.3rem 0.7rem;
+  margin-top: 0.6rem;
+  cursor: pointer;
+  transition: color 0.18s, border-color 0.18s, background-color 0.18s, transform 0.12s;
+}
+.tsv-clear-btn:hover {
+  color: #c0392b;
+  border-color: #c0392b;
+  background-color: rgba(192, 57, 43, 0.06);
+  transform: scale(1.04);
+}
+.tsv-clear-btn:active { transform: scale(0.98); }
+.tsv-clear-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 /* TSV EXAMPLE */
 .tsv-example-toggle {
   font-family: var(--mono); font-size: 0.75rem;
@@ -1226,11 +1297,14 @@ body {
 kot	cat
 pies	dog
 ..."></textarea>
-      <button type="button" class="tsv-example-toggle" id="tsvExampleToggle">▸ Pokaż przykładowe dane</button>
+      <div class="tsv-under-row">
+        <button type="button" class="tsv-example-toggle" id="tsvExampleToggle">▸ Pokaż przykładowe dane</button>
+        <button type="button" class="tsv-clear-btn" id="tsvClearBtn" title="Czyści tytuł, podtytuł i dane TSV">✕ Wyczyść</button>
+      </div>
       <div class="tsv-example-wrap" id="tsvExampleBox">
         <div class="tsv-example-head">
           <div class="tsv-example-info">
-            <strong>Przykładowe dane TSV</strong> dopasowane do różnych typów zadań. Kolumna <code>tasks</code> (opcjonalna) ogranicza wiersz do konkretnych typów. Puste = wiersz idzie do wszystkich zaznaczonych typów. Skróty: <code>f</code>=flashcards, <code>m</code>=matching, <code>s</code>=scramble, <code>q</code>=quiz, <code>u</code>=unscramble, <code>c</code>=cornell, <code>g</code>=gapfill, <code>t</code>=translate, <code>w</code>=writing. Możesz podać kilka tagów po przecinku (np. <code>f,m</code>), ale zwykle czytelniej jest dać jeden tag na wiersz. Quiz z własnymi odpowiedziami: w kolumnie <code>en</code> oddziel opcje kreską, np. <code>cat|cut|cot|cap</code> - pierwsza jest poprawna, pytanie używa dokładnie tych opcji (globalna liczba opcji go nie dotyczy), a w pozostałych zadaniach wiersz działa jak samo <code>cat</code>. Kolumna <code>distractors</code> (opcjonalna): atrapy oddzielone kreską, np. <code>commuter|commute</code>. W zadaniu Matching dokładają do prawej kolumny dodatkowe słowa bez pary, których nie da się połączyć - utrudnienie. Zbierane są z całej części sekcji. Klamerki <code>{…}</code> w EN działają tylko w Gap Fill - w każdym innym zadaniu (także gdy wiersz ma tagi mieszane, np. <code>g,m</code>) są automatycznie czyszczone z widoku. Kolumna <code>note</code> (opcjonalna): notatka do podzadania, pokazuje się po jego rozwiązaniu (w fiszkach: na odwrocie, w szybkiej powtórce: dopiero po zdjęciu zasłony, żeby nie podpowiadała) - np. kontekst, alternatywne odpowiedzi. Karta zapisuje też do TSV linię <code>#progress</code> ze stanem rozwiązania - wklejona z powrotem przenosi postęp do nowo wygenerowanej karty. Kolejność zadań bez <code>#order</code> = auto-order: o układzie karty decyduje kolejność PIERWSZEGO wystąpienia tagu w danych (możesz układać grupy wierszy w arkuszu, a karta to odwzoruje); jawny <code>#order</code> i ręczne strzałki mają pierwszeństwo.
+            <strong>Przykładowe dane TSV</strong> dopasowane do różnych typów zadań. Kolumna <code>tasks</code> (opcjonalna) ogranicza wiersz do konkretnych typów. Puste = wiersz idzie do wszystkich zaznaczonych typów. Skróty: <code>f</code>=flashcards, <code>m</code>=matching, <code>s</code>=scramble, <code>q</code>=quiz, <code>u</code>=unscramble, <code>c</code>=cornell, <code>g</code>=gapfill, <code>t</code>=translate, <code>w</code>=writing. Możesz podać kilka tagów po przecinku (np. <code>f,m</code>), ale zwykle czytelniej jest dać jeden tag na wiersz. Quiz z własnymi odpowiedziami: w kolumnie <code>en</code> oddziel opcje kreską ze spacjami, np. <code>cat | cut | cot | cap</code> - pierwsza jest poprawna, pytanie używa dokładnie tych opcji (globalna liczba opcji go nie dotyczy), a w pozostałych zadaniach wiersz działa jak samo <code>cat</code>. Kolumna <code>distractors</code> (opcjonalna): atrapy oddzielone kreską ze spacjami, np. <code>commuter | commute</code>. Spacje wokół kreski są tylko dla czytelności - sam znak też zadziała. W zadaniu <strong>Matching</strong> dokładają do prawej kolumny dodatkowe słowa bez pary, których nie da się połączyć (zbierane z całej części sekcji). W zadaniu <strong>Sentence Unscramble</strong> wpadają do puli klocków tego zdania jako dodatkowe słowa, które do niego nie pasują - fraza wielowyrazowa rozbija się na osobne klocki, a atrapy pokrywające się ze słowami zdania są pomijane. Klamerki <code>{…}</code> w EN działają tylko w Gap Fill - w każdym innym zadaniu (także gdy wiersz ma tagi mieszane, np. <code>g,m</code>) są automatycznie czyszczone z widoku. Kolumna <code>note</code> (opcjonalna): notatka do podzadania, pokazuje się po jego rozwiązaniu (w fiszkach: na odwrocie, w szybkiej powtórce: dopiero po zdjęciu zasłony, żeby nie podpowiadała) - np. kontekst, alternatywne odpowiedzi. Karta zapisuje też do TSV linię <code>#progress</code> ze stanem rozwiązania - wklejona z powrotem przenosi postęp do nowo wygenerowanej karty. Kolejność zadań bez <code>#order</code> = auto-order: o układzie karty decyduje kolejność PIERWSZEGO wystąpienia tagu w danych (możesz układać grupy wierszy w arkuszu, a karta to odwzoruje); jawny <code>#order</code> i ręczne strzałki mają pierwszeństwo.
           </div>
           <button type="button" class="tsv-example-use" id="tsvExampleUse" title="Wklej te dane do pola">📋 Użyj tych danych</button>
         </div>
@@ -1238,7 +1312,7 @@ pies	dog
 kot	cat	m	
 pies	dog	m	
 ptak	bird	m	
-ryba	fish	m	fish and chips|fishing|finish
+ryba	fish	m	fish and chips | fishing | finish
 słońce	sun	f	
 księżyc	moon	f	
 gwiazda	star	f	
@@ -1246,8 +1320,8 @@ chmura	cloud	f
 dziękuję	thank you	s	
 przepraszam	sorry	s	
 proszę	please	s	
-statek	ship|sheep|shop|chip	q	
-jabłko	apple|orange|grape|lemon	q	
+statek	ship | sheep | shop | chip	q	
+jabłko	apple | orange | grape | lemon	q	
 Lubię uczyć się angielskiego.	I like learning English.	u	
 Gdzie jest najbliższa stacja?	Where is the nearest station?	u	
 Mój brat mieszka w Krakowie.	My brother lives in Krakow.	u	
@@ -1340,7 +1414,7 @@ Napisz krótki email do przyjaciela o weekendzie.	Use past simple. Include at le
         <div class="task-checkbox"></div>
         <div class="task-info">
           <div class="task-info-name">📝 Sentence unscramble</div>
-          <div class="task-info-desc">Ułóż słowa w zdanie</div>
+          <div class="task-info-desc">Ułóż słowa w zdanie. Kolumna <code>distractors</code> dokłada do puli dodatkowe słowa, które do zdania nie pasują</div>
         </div>
       </div>
       <div class="task-card" data-task="cornell">
@@ -1411,11 +1485,15 @@ Napisz krótki email do przyjaciela o weekendzie.	Use past simple. Include at le
         </button>
         <button type="button" class="bg-style-btn" data-bg="svg">
           <span class="bg-style-thumb thumb-svg" id="svgThumb"></span>
-          <span class="bg-style-name">Własne SVG</span>
+          <span class="bg-style-name">Wzorek (kafelek)</span>
+        </button>
+        <button type="button" class="bg-style-btn" data-bg="html">
+          <span class="bg-style-thumb thumb-html"></span>
+          <span class="bg-style-name">Scena (HTML)</span>
         </button>
       </div>
       <div class="svg-bg-wrap" id="svgBgWrap" style="display:none;">
-        <label class="label" for="svgBgCode">Wzorek SVG - wklej kod &lt;svg&gt;, cały blok CSS z background-image albo sam data:image/svg+xml (np. z heropatterns.com)</label>
+        <label class="label" for="svgBgCode">Wzorek kafelkowany - wklej kod &lt;svg&gt;, cały blok CSS z background-image albo sam data:image/svg+xml (np. z heropatterns.com)</label>
         <textarea id="svgBgCode" class="textarea svg-bg-textarea" spellcheck="false" placeholder='<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" ...>...</svg>'></textarea>
         <div class="svg-bg-controls">
           <label class="svg-bg-ctl">
@@ -1427,6 +1505,19 @@ Napisz krótki email do przyjaciela o weekendzie.	Use past simple. Include at le
             <span class="svg-bg-op-row">
               <input type="range" id="svgBgOpacity" min="0.05" max="1" step="0.05" value="1">
               <span id="svgBgOpacityVal">100%</span>
+            </span>
+          </label>
+        </div>
+      </div>
+      <div class="svg-bg-wrap" id="htmlBgWrap" style="display:none;">
+        <label class="label" for="htmlBgCode">Scena na całe okno - wklej dowolny kod HTML/CSS (możesz animować, np. lecące emoji). Renderuje się w izolowanej ramce, więc jego style nie ruszą reszty karty. Ramka nie łapie kliknięć i nie trafia na wydruk.</label>
+        <textarea id="htmlBgCode" class="textarea svg-bg-textarea" spellcheck="false" placeholder="&lt;div class=&quot;e&quot;&gt;🌸&lt;/div&gt;&#10;&lt;style&gt;&#10;  .e { position:absolute; top:-2em; font-size:3rem; animation: fall 8s linear infinite; }&#10;  @keyframes fall { to { transform: translateY(110vh); } }&#10;&lt;/style&gt;"></textarea>
+        <div class="svg-bg-controls">
+          <label class="svg-bg-ctl">
+            <span class="task-edit-label">Widoczność</span>
+            <span class="svg-bg-op-row">
+              <input type="range" id="htmlBgOpacity" min="0.05" max="1" step="0.05" value="1">
+              <span id="htmlBgOpacityVal">100%</span>
             </span>
           </label>
         </div>
@@ -1527,7 +1618,7 @@ Napisz krótki email do przyjaciela o weekendzie.	Use past simple. Include at le
       <label class="checkbox-row">
         <input type="checkbox" id="ttsEnabled" checked>
         <span class="checkbox-mark"></span>
-        <span class="checkbox-label">Dodaj przyciski 🔊 do czytania słów / zdań w wygenerowanej karcie</span>
+        <span class="checkbox-label">Dodaj przyciski odsłuchu do czytania słów / zdań w wygenerowanej karcie</span>
       </label>
     </div>
 
@@ -1585,7 +1676,7 @@ Napisz krótki email do przyjaciela o weekendzie.	Use past simple. Include at le
       <label class="checkbox-row">
         <input type="checkbox" id="difficultyEnabled" checked>
         <span class="checkbox-mark"></span>
-        <span class="checkbox-label">Dodaj przyciski oznaczania trudności (nowe + 4 oceny jak w Anki) do każdego słówka / podzadania</span>
+        <span class="checkbox-label">Dodaj przyciski oznaczania trudności (nowe + 4 poziomy) do każdego słówka / podzadania</span>
       </label>
     </div>
 
@@ -1595,9 +1686,9 @@ Napisz krótki email do przyjaciela o weekendzie.	Use past simple. Include at le
         <strong style="color:#6b7280">✦ · nowe słowo</strong>,
         <strong style="color:#ab55ff">↻ · do powtórki</strong>,
         <strong style="color:#ff8018">▲ · trudne</strong>,
-        <strong style="color:#16a34a">⬤ · dobre</strong>,
-        <strong style="color:#2563eb">✓ · łatwe</strong>.
-        Symbole są rozróżnialne także bez koloru (przyjazne dla daltonizmu). W zadaniu Matching oceniasz parę zaraz po jej poprawnym połączeniu (nakładka na kafelku), a potem możesz zmienić ocenę klikając plakietkę obok kafelka. Oznaczenia zapisują się automatycznie razem z postępem, a po kliknięciu „⤓ TSV" trafiają do pliku jako kolumna <strong>difficulty</strong> (wiersze bez oznaczenia zostają puste). Ponowne kliknięcie wybranego symbolu usuwa go.
+        <strong style="color:#16a34a">⬤ · łatwe</strong>,
+        <strong style="color:#2563eb">✓ · opanowane</strong>.
+        To <strong>nie są oceny</strong> - tylko informacja, na ile dana rzecz jest już opanowana, żeby było wiadomo, co powtórzyć. Symbole są rozróżnialne także bez koloru (przyjazne dla daltonizmu). W zadaniu Matching oznaczasz parę zaraz po jej poprawnym połączeniu (nakładka na kafelku), a potem możesz zmienić poziom klikając plakietkę obok kafelka. Oznaczenia zapisują się automatycznie razem z postępem, a po kliknięciu „⤓ TSV" trafiają do pliku jako kolumna <strong>difficulty</strong> (wiersze bez oznaczenia zostają puste). Ponowne kliknięcie wybranego symbolu usuwa go.
       </div>
     </div>
 
@@ -1605,12 +1696,12 @@ Napisz krótki email do przyjaciela o weekendzie.	Use past simple. Include at le
          wiec stoja POZA #difficultyConfig (ktory chowa sie po odznaczeniu). -->
     <div class="field">
       <div class="tts-info tts-info-alt">
-        ⓘ <strong>Widoczność ocen przełączysz też na samej karcie.</strong> W pasku postępu, obok przełącznika dźwięku, zawsze siedzą dwie dyskretne ikonki - niezależnie od tego, jak ustawisz powyższy przełącznik:
-        <br>• <strong>👁️</strong> - chowa i odsłania cały system ocen na tej karcie. Powyższy przełącznik decyduje tylko o tym, w którym stanie karta się otwiera. Zmiana trzyma się do zamknięcia okna, potem karta wraca do stanu z generatora.
-        <br>• <strong>⚙️</strong> - otwiera tę samą kartę pracy w drugim oknie, z widocznymi ocenami i cienkim paskiem akcentu u góry. Wygląda identycznie jak karta ucznia, więc od razu widać, które to zadanie. Kopia startuje wyciszona i pusta, a oceny synchronizują się między oknami na żywo w obie strony. Odpowiedzi <strong>nie</strong> - nic z kopii nie trafia do zapisu, więc możesz w niej sprawdzać rozwiązania, nie ruszając karty na współdzielonym ekranie.
+        ⓘ <strong>Widoczność oznaczeń przełączysz też na samej karcie.</strong> W pasku postępu, obok przełącznika dźwięku, zawsze siedzą dwie dyskretne ikonki - niezależnie od tego, jak ustawisz powyższy przełącznik:
+        <br>• <strong>ikona oka</strong> - chowa i odsłania cały system trudności na tej karcie. Powyższy przełącznik decyduje tylko o tym, w którym stanie karta się otwiera. Zmiana trzyma się do zamknięcia okna, potem karta wraca do stanu z generatora.
+        <br>• <strong>ikona otwierania w nowym oknie</strong> - otwiera tę samą kartę pracy w drugim oknie, z widocznymi oznaczeniami i cienkim paskiem akcentu u góry. Wygląda identycznie jak karta ucznia, więc od razu widać, które to zadanie. Kopia startuje wyciszona i pusta, a oznaczenia synchronizują się między oknami na żywo w obie strony. Odpowiedzi <strong>nie</strong> - nic z kopii nie trafia do zapisu, więc możesz w niej sprawdzać rozwiązania, nie ruszając karty na współdzielonym ekranie.
       </div>
       <div class="tts-info tts-info-alt">
-        ⓘ <strong>W danych TSV kolumnę <code>difficulty</code> możesz pisać liczbą albo słownie</strong> - tak jak tagi zadań, które przyjmują i literkę, i pełną nazwę. Liczby są wygodniejsze, gdy dopisujesz oceny ręcznie w arkuszu: <strong>0</strong> nowe słowo, <strong>1</strong> do powtórki, <strong>2</strong> trudne, <strong>3</strong> dobre, <strong>4</strong> łatwe. Puste pole to brak oceny. Karta przy pobieraniu TSV zapisuje oceny słownie, ale czyta oba zapisy, więc round-trip działa w obie strony.
+        ⓘ <strong>W danych TSV kolumna <code>difficulty</code> to liczba 0-4</strong>: <strong>0</strong> nowe słowo, <strong>1</strong> do powtórki, <strong>2</strong> trudne, <strong>3</strong> łatwe, <strong>4</strong> opanowane. Puste pole to brak oznaczenia. Liczba to <strong>jedyny</strong> przyjmowany zapis - karta tak samo zapisuje i tak samo czyta, więc round-trip działa w obie strony. Wartość spoza zakresu 0-4 zostanie pominięta, a generator ostrzeże o tym pod polem z danymi.
       </div>
     </div>
 
@@ -1620,7 +1711,7 @@ Napisz krótki email do przyjaciela o weekendzie.	Use past simple. Include at le
       <label class="checkbox-row">
         <input type="checkbox" id="reviewOnlyMode">
         <span class="checkbox-mark"></span>
-        <span class="checkbox-label">Pomiń zadania - zrób kartę będącą samą szybką powtórką. Wystarczą kolumny <code>pl</code> i <code>en</code> (tagi nie są potrzebne). Wszystkie słówka od razu trafiają do powtórki, możesz je oceniać i pobrać TSV z ocenami.</span>
+        <span class="checkbox-label">Pomiń zadania - zrób kartę będącą samą szybką powtórką. Wystarczą kolumny <code>pl</code> i <code>en</code> (tagi nie są potrzebne). Wszystkie słówka od razu trafiają do powtórki, możesz oznaczać ich trudność i pobrać TSV z oznaczeniami.</span>
       </label>
     </div>
   </div>
@@ -1635,6 +1726,7 @@ Napisz krótki email do przyjaciela o weekendzie.	Use past simple. Include at le
       </button>
     </div>
     <div class="gen-hint" id="genHint">Wklej dane, żeby aktywować przycisk</div>
+    <button type="button" id="btnResetAll" class="btn-reset-all" title="Przywraca generator do stanu wyjściowego">↺ Zresetuj generator</button>
   </div>
 
   <div class="foot">
@@ -1649,7 +1741,7 @@ Napisz krótki email do przyjaciela o weekendzie.	Use past simple. Include at le
 // Jedno zrodlo prawdy o numerze wersji. Uzywane w naglowku generatora
 // ORAZ w badge "Worksheet vX.Y" na samej karcie pracy - dzieki temu
 // wiadomo, w jakiej wersji generatora powstala dana karta.
-const WS_GEN_VERSION = '4.0';
+const WS_GEN_VERSION = '4.2';
 
 // LOGO KARTY PRACY - jeden staly URL, zawsze widoczne na gorze i dole karty.
 // Chcesz inne logo? Podmien ponizszy adres (jedyne miejsce w kodzie).
@@ -1703,6 +1795,10 @@ const STATE = {
   bgSvgCode: '',
   bgSvgSize: null,
   bgSvgOpacity: 1,
+  // Własne tło HTML: dowolny kod renderowany w izolowanej ramce (iframe srcdoc).
+  // Izolacja jest tu kluczowa - wklejony <style> nie moze przeciekac na karte.
+  bgHtmlCode: '',
+  bgHtmlOpacity: 1,
   // Czy user przestawial kolejnosc zadan recznie (strzalki) - wtedy auto-order
   // z danych przestaje nadpisywac uklad. Reset kolejnosci zdejmuje flage.
   userReorderedTasks: false,
@@ -1737,6 +1833,10 @@ const STATE = {
   // Wylaczana per zadanie, np. gdy zadanie jest niestandardowe ("popraw bledy")
   // i zrodlowa linia wcale nie jest po polsku.
   taskFlags: { gapfill: true, translate: true, writing: true },
+  // Writing ma DWA polecenia (zrodlowe PL i angielskie), wiec i dwie flagi:
+  // taskFlags steruje polska przy zdaniu zrodlowym, taskFlagsUK - brytyjska
+  // przy poleceniu po angielsku.
+  taskFlagsUK: { writing: true },
   taskOrder: ['flashcards', 'matching', 'scramble', 'quiz', 'unscramble', 'cornell', 'gapfill', 'translate', 'writing'],
   // Edytowalne tytuly sekcji w wygenerowanej karcie pracy.
   // Domyslnie sama nazwa zadania (bez "· polecenia"), zeby nie dublowac instrukcji ktora jest pod spodem.
@@ -1778,11 +1878,11 @@ const STATE = {
 const DEFAULT_INSTRUCTIONS = {
   flashcards: 'Kliknij kartę, żeby odsłonić tłumaczenie. Spróbuj najpierw zgadnąć w głowie!',
   matching:   'Kliknij słowo z lewej strony, potem jego tłumaczenie z prawej.',
-  scramble:   'Ułóż słowo z rozsypanych liter: klikaj kafelki albo wpisz odpowiedź (Enter sprawdza). Kliknij 💡, żeby wstawić kolejną literę, lub ✨, żeby rozwiązać od razu.',
+  scramble:   'Ułóż słowo z rozsypanych liter: klikaj kafelki albo wpisz odpowiedź (Enter sprawdza). Przycisk z żarówką wstawia kolejną literę, a przycisk z kluczem rozwiązuje od razu.',
   quiz:       'Wybierz prawidłowe tłumaczenie polskiego słowa. Tylko jedna odpowiedź jest poprawna.',
-  unscramble: 'Kliknij pole "Pokaż słowa", a następnie ułóż je w odpowiedniej kolejności. Możesz też przeciągać słowa. Kliknij 💡, aby wstawić kolejne poprawne słowo, lub ✨, aby rozwiązać od razu.',
+  unscramble: 'Kliknij pole "Pokaż słowa", a następnie ułóż je w odpowiedniej kolejności. Możesz też przeciągać słowa. Przycisk „Podpowiedź" wstawia kolejne poprawne słowo, a „Rozwiąż" układa całe zdanie od razu.',
   cornell:    'Kliknij pytanie, żeby odsłonić odpowiedź. Spróbuj najpierw odpowiedzieć w głowie!',
-  gapfill:    'Wpisz brakujące słowa w lukach (Enter sprawdza). 💡 - kolejna litera, ✨ - rozwiąż całe zdanie.',
+  gapfill:    'Wpisz brakujące słowa w lukach (Enter sprawdza). Żarówka podpowiada kolejną literę, klucz rozwiązuje całe zdanie.',
   translate:  'Przetłumacz polskie słowo, frazę lub zdanie na angielski (Enter sprawdza). Sprawdzanie pomija wielkość liter i kropkę na końcu.',
   writing:    'Napisz odpowiedź według polecenia. Kliknij "Gotowe", gdy skończysz.'
 };
@@ -1896,7 +1996,12 @@ function parseTSV(text) {
         return true;
       });
     }
-    if (obj.pl && obj.en) {
+    // Wystarczy JEDNA z kolumn tresci. Do writing czasem chce sie dac samo
+    // polecenie po angielsku (albo samo po polsku) - wiersz nie moze wiec
+    // przepasc juz na etapie parsowania. Zadania, ktore potrzebuja PARY
+    // (fiszki, matching, quiz, scramble...), odsiewaja takie wiersze pozniej,
+    // w rowsForTask - patrz WS_TASKS_NEED_PAIR.
+    if (obj.pl || obj.en) {
       // Parse tasks column if present (skróty f/m/s/q lub pełne nazwy, comma-separated)
       obj._tasks = parseTaskTags(obj.tasks || '');
       // Kolumna "distractors": atrapy (np. dla matchingu) oddzielone "|".
@@ -2061,6 +2166,10 @@ function detectTaskInstances() {
 // - 'flashcards' (instancja 1) lub 'flashcards:2' (instancja 2).
 // Dla instancji 1: wiersze bez tagow + wiersze z tagiem instancji 1.
 // Dla instancji 2+: tylko wiersze z odpowiednim tagiem (zmapowanym z origKey z parsera).
+// Zadania, ktore bez PARY pl+en nie maja sensu. Writing jest poza ta lista -
+// tam wystarczy samo polecenie po polsku ALBO samo po angielsku.
+const WS_TASKS_NEED_PAIR = new Set(['flashcards', 'matching', 'scramble', 'quiz', 'unscramble', 'cornell', 'gapfill', 'translate']);
+
 function rowsForTask(taskKey) {
   const base = taskKeyBase(taskKey);
   const num = taskKeyNum(taskKey);
@@ -2075,6 +2184,14 @@ function rowsForTask(taskKey) {
     if (r._tasks.length === 0) return num === 1;
     return r._tasks.includes(origKey);
   });
+  // Wiersz niepelny (samo PL albo samo EN) ma sens WYLACZNIE w writing, gdzie
+  // polecenie moze byc w jednym jezyku. Kazde inne zadanie potrzebuje pary,
+  // wiec taki wiersz cicho odpada zamiast produkowac pusta fiszke czy kafelek.
+  if (WS_TASKS_NEED_PAIR.has(base)) {
+    out = out.filter(r => r.pl && r.en);
+  } else {
+    out = out.filter(r => r.pl || r.en);
+  }
   // ── KLAMERKI TYLKO DLA GAP FILL (warstwa renderowania) ──
   // Wiersz z tagami np. "g,m" musi zachowac klamry w danych (gap fill ich
   // potrzebuje), ale kazde INNE zadanie dostaje klon z czystym tekstem.
@@ -2335,6 +2452,18 @@ function updateTSVStatus() {
   } else {
     msg += `<span class="hint">Wszystkie wiersze trafią do każdego zaznaczonego typu zadania. Aby przypisać wiersze do konkretnych typów, dodaj kolumnę <code>tasks</code> z tagami: f, m, s, q, u, c, g, t, w (możesz powielić sekcje numerując: f2, m2 itd.).</span>`;
   }
+  // Kolumna "difficulty" przyjmuje WYLACZNIE liczbe 0-4. Cokolwiek innego karta
+  // zignoruje, wiec mowimy o tym tutaj - zeby oznaczenia nie przepadaly po cichu.
+  if (result.headers.includes('difficulty')) {
+    const bad = result.rows.filter(r => {
+      const v = (r.difficulty || '').trim();
+      return v !== '' && !/^[0-4]$/.test(v);
+    });
+    if (bad.length) {
+      const sample = bad.slice(0, 3).map(r => '<code>' + escapeHtml(String(r.difficulty).trim()) + '</code>').join(', ');
+      msg += `<span class="hint hint-warn">⚠ Kolumna <code>difficulty</code>: ${bad.length} ${bad.length === 1 ? 'wiersz ma' : 'wierszy ma'} wartość spoza zakresu 0-4 (${sample}${bad.length > 3 ? ' i inne' : ''}). Te oznaczenia zostaną pominięte - dozwolone są tylko liczby: 0 nowe słowo, 1 do powtórki, 2 trudne, 3 łatwe, 4 opanowane.</span>`;
+    }
+  }
   status.innerHTML = msg;
   updateTaskAvailability();
   updateOrphanWarning();
@@ -2540,6 +2669,32 @@ document.getElementById('tsvExampleUse').addEventListener('click', () => {
     btn.textContent = original;
   }, 1400);
   // Celowo BEZ scrollIntoView - przewijanie do pola TSV bylo irytujace.
+});
+
+// "Wyczysc" - zeruje tytul, podtytul i dane TSV jednym klikiem. Reszta ustawien
+// (kolory, czcionki, wybrane zadania, obrazki) zostaje nietknieta - to celowe:
+// zwykle chce sie wrzucic NOWE dane do TEGO SAMEGO wygladu karty.
+// Potwierdzenie pojawia sie tylko wtedy, gdy faktycznie jest co stracic.
+document.getElementById('tsvClearBtn').addEventListener('click', () => {
+  const tsvField = document.getElementById('tsv');
+  const titleField = document.getElementById('title');
+  const subField = document.getElementById('subtitle');
+  const hasContent = (tsvField.value.trim() || subField.value.trim() ||
+                      (titleField.value.trim() && titleField.value.trim() !== 'Vocabulary Practice'));
+  if (hasContent && !confirm('Wyczyścić tytuł, podtytuł i dane TSV?\n\nUstawienia wyglądu i wybrane zadania zostaną bez zmian.')) return;
+  titleField.value = '';
+  subField.value = '';
+  tsvField.value = '';
+  // Importowany postep nalezal do STARYCH danych - zostawiony przeniosby sie
+  // na nowa karte i "rozwiazywal" ja sam z siebie.
+  STATE.importedProgress = null;
+  // dispatch input: przeliczenie statusu, dostepnosci zadan i autozapisu
+  [titleField, subField, tsvField].forEach(el => el.dispatchEvent(new Event('input', { bubbles: true })));
+  const btn = document.getElementById('tsvClearBtn');
+  const original = btn.textContent;
+  btn.textContent = '✓ Wyczyszczone';
+  setTimeout(() => { btn.textContent = original; }, 1400);
+  titleField.focus();
 });
 
 // Aktualizuje wygląd master toggle na podstawie stanu wszystkich per-task toggli
@@ -2776,12 +2931,20 @@ function initTaskCard(card) {
     </div>
     ${['gapfill', 'translate', 'writing'].includes(taskKeyBase(task)) ? `
     <div class="task-edit-field">
-      <span class="task-edit-label">Flaga</span>
+      <span class="task-edit-label">${taskKeyBase(task) === 'writing' ? 'Flaga PL' : 'Flaga'}</span>
       <label class="task-edit-flag-row" title="Wyłącz np. przy niestandardowym zadaniu (popraw błędy), gdy zdanie źródłowe nie jest po polsku">
         <input type="checkbox" class="task-edit-flag"${STATE.taskFlags[task] !== false ? ' checked' : ''}>
         <span>🇵🇱 przy zdaniu źródłowym</span>
       </label>
-    </div>` : ''}
+    </div>
+    ${taskKeyBase(task) === 'writing' ? `
+    <div class="task-edit-field">
+      <span class="task-edit-label">Flaga EN</span>
+      <label class="task-edit-flag-row" title="Wyłącz, jeśli polecenie po angielsku ma stać samo, bez flagi">
+        <input type="checkbox" class="task-edit-flag-uk"${STATE.taskFlagsUK[task] !== false ? ' checked' : ''}>
+        <span>🇬🇧 przy poleceniu po angielsku</span>
+      </label>
+    </div>` : ''}` : ''}
     <div class="task-edit-field">
       <span class="task-edit-label">Obrazek</span>
       <div class="task-edit-field-row">
@@ -2881,6 +3044,10 @@ function initTaskCard(card) {
   const flagChk = editFields.querySelector('.task-edit-flag');
   if (flagChk) flagChk.addEventListener('change', e => {
     STATE.taskFlags[task] = e.target.checked;
+  });
+  const flagUkChk = editFields.querySelector('.task-edit-flag-uk');
+  if (flagUkChk) flagUkChk.addEventListener('change', e => {
+    STATE.taskFlagsUK[task] = e.target.checked;
   });
   instrInput.addEventListener('input', e => {
     STATE.taskCustomInstr[task] = e.target.value;
@@ -3064,6 +3231,7 @@ function syncTaskInstancesUI() {
       if (!(key in STATE.taskHeaders)) STATE.taskHeaders[key] = true;
       if (base === 'gapfill' || base === 'translate' || base === 'writing') {
         if (!(key in STATE.taskFlags)) STATE.taskFlags[key] = true;
+        if (taskKeyBase(key) === 'writing' && !(key in STATE.taskFlagsUK)) STATE.taskFlagsUK[key] = true;
       }
       if (!(key in STATE.taskTitles)) {
         // Domyslny tytul: bazowy + " " + numer (np. "Word scramble 2")
@@ -3353,6 +3521,17 @@ function applyExtraSettings(extra) {
     });
   }
 
+  // ── FLAGA UK (writing) ──
+  if (extra.flagsUK && typeof extra.flagsUK === 'object') {
+    Object.keys(extra.flagsUK).forEach(k => {
+      STATE.taskFlagsUK[k] = !!extra.flagsUK[k];
+    });
+    document.querySelectorAll('.task-edit-flag-uk').forEach(chk => {
+      const task = chk.closest('.task-card') && chk.closest('.task-card').dataset.task;
+      if (task && task in STATE.taskFlagsUK) chk.checked = STATE.taskFlagsUK[task];
+    });
+  }
+
   // ── SEKCJE LINKOW / HTML ──
   if (Array.isArray(extra.customs)) {
     // Najpierw usun obecne sekcje materialow - TSV/zapis opisuje CALY docelowy
@@ -3439,6 +3618,8 @@ document.querySelectorAll('.bg-style-btn').forEach(btn => {
     STATE.bgStyle = btn.dataset.bg;
     const svgWrap = document.getElementById('svgBgWrap');
     if (svgWrap) svgWrap.style.display = (STATE.bgStyle === 'svg') ? 'grid' : 'none';
+    const htmlWrap = document.getElementById('htmlBgWrap');
+    if (htmlWrap) htmlWrap.style.display = (STATE.bgStyle === 'html') ? 'grid' : 'none';
   });
 });
 
@@ -3513,6 +3694,18 @@ if (_svgBgOpacity) _svgBgOpacity.addEventListener('input', e => {
   STATE.bgSvgOpacity = parseFloat(e.target.value);
   document.getElementById('svgBgOpacityVal').textContent = Math.round(STATE.bgSvgOpacity * 100) + '%';
   refreshSvgThumb();
+});
+
+// Panel wlasnego tla HTML: sam kod + widocznosc (rozmiar kafelka nie ma tu
+// sensu - to nie jest wzorek do powielania, tylko gotowa scena na cale okno).
+const _htmlBgCode = document.getElementById('htmlBgCode');
+const _htmlBgOpacity = document.getElementById('htmlBgOpacity');
+if (_htmlBgCode) _htmlBgCode.addEventListener('input', e => {
+  STATE.bgHtmlCode = e.target.value;
+});
+if (_htmlBgOpacity) _htmlBgOpacity.addEventListener('input', e => {
+  STATE.bgHtmlOpacity = parseFloat(e.target.value);
+  document.getElementById('htmlBgOpacityVal').textContent = Math.round(STATE.bgHtmlOpacity * 100) + '%';
 });
 
 // Czcionki: jeden ujednolicony panel (link + dwie listy). Dawny select
@@ -3896,6 +4089,41 @@ function wrapEmoji(escaped) {
 // viewBox dopasowany do rzeczywistego prostokąta flagi (bez paddingu), żeby
 // obramowanie CSS przylegało dokładnie do krawędzi flagi.
 // Używane jako oznaczenia językowe PL / EN w typach zadań które tego potrzebują (translate, writing).
+// ============================================================
+// IKONY PRZYCISKOW (inline SVG)
+// ============================================================
+// Rysowane obrysem, ze stroke="currentColor" - dziedzicza kolor przycisku,
+// skaluja sie bez rozmycia i wygladaja identycznie na kazdym systemie.
+// Emoji potrafia sie renderowac roznie (inny krój, inny rozmiar, czasem
+// kolorowy prostokat zastepczy), dlatego przyciski funkcyjne dostaja SVG.
+// Rozmiar i wysrodkowanie zalatwia klasa .ws-ico w CSS karty.
+const _ICO = (d, extra) => '<svg class="ws-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (extra || 2) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + d + '</svg>';
+
+// C3 - ptaszek w zaokraglonym kwadracie
+const ICO_CHECK = _ICO('<rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M8 12.4l2.6 2.6L16 9.4"/>');
+// H1 - zarowka
+const ICO_HINT = _ICO('<path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 00-3.6 10.8c.5.4.8 1 .9 1.6l.1.6h5.2l.1-.6c.1-.6.4-1.2.9-1.6A6 6 0 0012 3z"/>');
+// H4 - klucz
+const ICO_SOLVE = _ICO('<circle cx="8" cy="16" r="4"/><path d="M10.8 13.2L20 4"/><path d="M17 7l2.5 2.5"/><path d="M14.5 9.5L17 12"/>');
+// S1 - glosnik z falami
+const ICO_TTS = _ICO('<path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/><path d="M15.5 9.2a4 4 0 010 5.6"/><path d="M18.2 6.5a8 8 0 010 11"/>');
+// glosnik wyciszony - para do ICO_TTS dla przelacznika dzwiekow
+const ICO_MUTE = _ICO('<path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/><path d="M16 9.5l5 5"/><path d="M21 9.5l-5 5"/>');
+// V1 - oko
+const ICO_EYE = _ICO('<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>');
+// V2 - oko przekreslone
+const ICO_EYE_OFF = _ICO('<path d="M3.5 3.5l17 17"/><path d="M9.6 5.9A9.4 9.4 0 0112 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 01-3.5 4.2"/><path d="M6.2 7.8A17 17 0 002.5 12S6 18.5 12 18.5c1 0 1.9-.2 2.7-.5"/><path d="M9.9 9.9a3 3 0 004.2 4.2"/>');
+// T2 - otworz w nowym oknie
+const ICO_TEACHER = _ICO('<path d="M14 4.5h5.5V10"/><path d="M19.5 4.5L11 13"/><path d="M18 14v4.5a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 014 18.5v-11A1.5 1.5 0 015.5 6H10"/>');
+// zaslon z powrotem - kreska u gory + strzalka w dol ("opusc zaslone")
+const ICO_RECOVER = _ICO('<path d="M4 5.5h16"/><path d="M12 9v7.5"/><path d="M8.5 13l3.5 3.5 3.5-3.5"/>');
+// Z1 - strzalka cofania
+const ICO_UNDO = _ICO('<path d="M3.5 6v5.5H9"/><path d="M4.6 11.5a8 8 0 113 8"/>');
+// P1 - drukarka
+const ICO_PRINT = _ICO('<path d="M7 8.5V3.5h10v5"/><path d="M7 17.5H4.5v-6A2.5 2.5 0 017 9h10a2.5 2.5 0 012.5 2.5v6H17"/><rect x="7" y="14.5" width="10" height="6" rx="1"/>');
+// B1 - backspace
+const ICO_BACKSPACE = _ICO('<path d="M21 5.5H9.2L3 12l6.2 6.5H21z"/><path d="M12.5 9.5l5 5"/><path d="M17.5 9.5l-5 5"/>');
+
 const FLAG_PL_SVG = '<svg viewBox="5 17 62 38" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-label="PL"><rect x="5" y="17" width="62" height="19" fill="#fff"/><rect x="5" y="36" width="62" height="19" fill="#d22f27"/></svg>';
 
 // Flaga PL per zadanie - '' gdy wylaczona przelacznikiem na kafelku.
@@ -3903,6 +4131,14 @@ function sectionFlag(taskKey) {
   return (STATE.taskFlags && STATE.taskFlags[taskKey] === false) ? '' : FLAG_PL_SVG;
 }
 // Klasa dokladana do kontenera zdania zrodlowego, gdy flaga jest ukryta.
+// Flaga brytyjska przy poleceniu po angielsku (tylko writing) - wlasny przelacznik.
+function sectionFlagUK(taskKey) {
+  return (STATE.taskFlagsUK && STATE.taskFlagsUK[taskKey] === false) ? '' : FLAG_UK_SVG;
+}
+function flagOffClsUK(taskKey) {
+  return (STATE.taskFlagsUK && STATE.taskFlagsUK[taskKey] === false) ? ' no-flag' : '';
+}
+
 function flagOffCls(taskKey) {
   return (STATE.taskFlags && STATE.taskFlags[taskKey] === false) ? ' no-flag' : '';
 }
@@ -4274,6 +4510,7 @@ function buildWorksheetHTML() {
       instrOn: STATE.taskInstructions,
       headOn: STATE.taskHeaders,
       flags: STATE.taskFlags,
+      flagsUK: STATE.taskFlagsUK,
       customs: STATE.taskOrder
         .map((k, pos) => {
           const c = STATE.customSections[k];
@@ -4386,9 +4623,9 @@ function sectionImage(taskName) {
 // ============================================================
 // ŚLEDZENIE TRUDNOŚCI - helpery budujące widgety w karcie
 // ============================================================
-// Tytuly poziomow. "new" = nowe slowo/wyrazenie (szary znacznik, przed ocenami).
-// Pozostale to klasyczne Anki: again / hard / good / easy.
-const DIFF_TITLES = { 'new': 'Nowe słowo dla mnie', 1: 'Do powtórki', 2: 'Trudne', 3: 'Dobre', 4: 'Łatwe' };
+// Tytuly poziomow. "new" = nowe slowo/wyrazenie (szary znacznik, przed oznaczeniem).
+// To NIE sa oceny szkolne - to informacja, na ile dana rzecz jest juz opanowana.
+const DIFF_TITLES = { 'new': 'Nowe słowo dla mnie', 1: 'Do powtórki', 2: 'Trudne', 3: 'Łatwe', 4: 'Opanowane' };
 // Symbole zamiast cyfr - wypelnione ksztalty rozroznialne takze bez koloru
 // (czern-biel / daltonizm). NIE sa to emoji, wiec renderuja sie spojnie.
 const DIFF_SYMBOLS = { 'new': '✦', 1: '↻', 2: '▲', 3: '⬤', 4: '✓' };
@@ -4414,7 +4651,7 @@ function diffWidget(gi, opts = {}) {
     return `<button type="button" class="ws-diff-btn ${cls}" data-level="${l}" onclick="wsSetDiff(event, ${gi}, '${l}')" title="${DIFF_TITLES[l]}" aria-label="Trudność: ${DIFF_TITLES[l]}"><span class="ws-diff-num">${DIFF_SYMBOLS[l]}</span></button>`;
   }).join('');
   const lab = opts.label ? '<span class="ws-diff-lab">trudność</span>' : '';
-  return `<div class="ws-diff${opts.cls ? ' ' + opts.cls : ''}" data-row="${gi}" role="group" aria-label="Oceń trudność">${lab}${btns}</div>`;
+  return `<div class="ws-diff${opts.cls ? ' ' + opts.cls : ''}" data-row="${gi}" role="group" aria-label="Oznacz poziom trudności">${lab}${btns}</div>`;
 }
 
 // Widget w osobnym, wyrownanym do prawej rzedzie (quiz, gap fill, translate, Q&A).
@@ -4455,7 +4692,7 @@ function buildFlashcardsSection(num, options = {}) {
             <div class="flashcard-face flashcard-back ${backSize}">
               <div class="flash-word-back-pl">${escapeHtml(r.pl)}</div>
               <div class="flash-word-back">${escapeHtml(r.en)}</div>
-              <button class="tts-btn tts-btn-corner" onclick="ttsBtnClick(event, ${JSON.stringify(r.en).replace(/"/g, '&quot;')})" title="Czytaj" aria-label="Czytaj">🔊</button>
+              <button class="tts-btn tts-btn-corner" onclick="ttsBtnClick(event, ${JSON.stringify(r.en).replace(/"/g, '&quot;')})" title="Czytaj" aria-label="Czytaj">${ICO_TTS}</button>
             </div>
           </div>
         </div>`;
@@ -4550,7 +4787,7 @@ function buildMatchingSection(num, options = {}) {
   const pairs = allRows.slice(startIdx, endIdx);
   const plList = pairs.map((r, i) => `
     <div class="match-item-wrap">
-      <button class="tts-btn tts-btn-side match-solve-btn" onclick="solveMatchingOne_${num}(${i})" title="Rozwiąż tę parę" aria-label="Rozwiąż">✨</button>
+      <button class="tts-btn tts-btn-side match-solve-btn" onclick="solveMatchingOne_${num}(${i})" title="Rozwiąż tę parę" aria-label="Rozwiąż">${ICO_SOLVE}</button>
       <button class="match-item match-pl" data-idx="${i}" onclick="pickMatch_${num}(this, 'pl')">${escapeHtml(r.pl)}</button>
     </div>`).join('');
   // Atrapy (dystraktory): angielskie kafelki BEZ pary po lewej. Zbieramy je
@@ -4572,7 +4809,7 @@ function buildMatchingSection(num, options = {}) {
   const distractorItems = distractors.map(d => ({ idx: -1, en: d, gi: -1, distractor: true }));
   const shuffledEn = shuffle([...realItems, ...distractorItems]);
   const enList = shuffledEn.map(item => {
-    const ttsBtn = `<button class="tts-btn tts-btn-side" onclick="ttsBtnClick(event, ${JSON.stringify(item.en).replace(/"/g, '&quot;')})" title="Czytaj" aria-label="Czytaj">🔊</button>`;
+    const ttsBtn = `<button class="tts-btn tts-btn-side" onclick="ttsBtnClick(event, ${JSON.stringify(item.en).replace(/"/g, '&quot;')})" title="Czytaj" aria-label="Czytaj">${ICO_TTS}</button>`;
     // Atrapa: kafelek bez pary (data-idx="-1"). Gdy wlaczone sledzenie trudnosci,
     // dostaje TE SAMA strukture co prawdziwe kafelki (match-en-box + plakietka),
     // zeby rozmiary byly spojne. Plakietka atrapy jest jednak nieaktywna -
@@ -4590,7 +4827,7 @@ function buildMatchingSection(num, options = {}) {
       <div class="match-en-box">
         ${enBtn}
       </div>
-      <button type="button" class="ws-diff-badge" data-row="-1" onclick="wsBadgeClick(event, this)" title="Oceń trudność" aria-label="Oceń trudność">?</button>
+      <button type="button" class="ws-diff-badge" data-row="-1" onclick="wsBadgeClick(event, this)" title="Oceń trudność" aria-label="Oznacz poziom trudności">?</button>
       ${ttsBtn}
     </div>`;
       }
@@ -4615,7 +4852,7 @@ function buildMatchingSection(num, options = {}) {
         ${enBtn}
         <div class="ws-diff-overlay">${diffWidget(item.gi)}</div>
       </div>
-      <button type="button" class="ws-diff-badge" data-row="${item.gi}" onclick="wsBadgeClick(event, this)" title="Oceń trudność" aria-label="Oceń trudność">?</button>
+      <button type="button" class="ws-diff-badge" data-row="${item.gi}" onclick="wsBadgeClick(event, this)" title="Oceń trudność" aria-label="Oznacz poziom trudności">?</button>
       ${ttsBtn}
     </div>`;
     }
@@ -4886,14 +5123,14 @@ function buildScrambleSection(num, options = {}) {
           ${scrambled.toLowerCase().split('').map(ch => ch === ' '
             ? `<button type="button" class="scramble-letter scramble-letter-space" data-letter=" " onclick="wsScrambleTile(this)" aria-label="Spacja">␣</button>`
             : `<button type="button" class="scramble-letter" data-letter="${escapeHtml(ch)}" onclick="wsScrambleTile(this)" aria-label="Litera ${escapeHtml(ch)}">${escapeHtml(ch)}</button>`).join('')}
-          <button type="button" class="scramble-backspace" onclick="wsScrambleBackspace(this)" title="Usuń ostatnią literę" aria-label="Usuń ostatnią literę">⌫</button>
+          <button type="button" class="scramble-backspace" onclick="wsScrambleBackspace(this)" title="Usuń ostatnią literę" aria-label="Usuń ostatnią literę">${ICO_BACKSPACE}</button>
         </div>
         <div class="scramble-input-row">
           <input type="text" class="scramble-input" data-answer="${escapeHtml(r.en.toLowerCase())}" placeholder="Klikaj literki albo wpisz słowo..." oninput="wsSyncScrambleTiles(this)" onkeydown="if(event.key==='Enter') checkScramble_${num}(this)">
-          <button class="scramble-check" onclick="checkScramble_${num}(this.previousElementSibling)" title="Sprawdź" aria-label="Sprawdź">✅</button>
-          <button class="scramble-hint-btn" onclick="hintScramble_${num}(${i})" title="Podpowiedź - wstaw kolejną literę" aria-label="Podpowiedź">💡</button>
-          <button class="scramble-solve-btn" onclick="solveScrambleOne_${num}(${i})" title="Rozwiąż to słowo" aria-label="Rozwiąż">✨</button>
-          <button class="scramble-tts-btn tts-btn" onclick="ttsBtnClick(event, ${JSON.stringify(r.en).replace(/"/g, '&quot;')})" title="Posłuchaj" aria-label="Czytaj">🔊</button>
+          <button class="scramble-check" onclick="checkScramble_${num}(this.previousElementSibling)" title="Sprawdź" aria-label="Sprawdź">${ICO_CHECK}</button>
+          <button class="scramble-hint-btn" onclick="hintScramble_${num}(${i})" title="Podpowiedź - wstaw kolejną literę" aria-label="Podpowiedź">${ICO_HINT}</button>
+          <button class="scramble-solve-btn" onclick="solveScrambleOne_${num}(${i})" title="Rozwiąż to słowo" aria-label="Rozwiąż">${ICO_SOLVE}</button>
+          <button class="scramble-tts-btn tts-btn" onclick="ttsBtnClick(event, ${JSON.stringify(r.en).replace(/"/g, '&quot;')})" title="Posłuchaj" aria-label="Czytaj">${ICO_TTS}</button>
         </div>
         ${noteHTML(r)}
         ${diffRow(diffRowIdx(r))}
@@ -4908,7 +5145,7 @@ function buildScrambleSection(num, options = {}) {
         <div class="ws-sec-num">${num < 10 ? "0" + num : num}</div>
         <h2 class="ws-sec-title">${sectionTitle(taskKey, 'Word Scramble')}</h2>
       </div>
-      ${sectionInstr(taskKey, 'Ułóż słowo z rozsypanych liter: klikaj kafelki albo wpisz odpowiedź (Enter sprawdza). Kliknij 💡, żeby wstawić kolejną literę, lub ✨, żeby rozwiązać od razu.')}
+      ${sectionInstr(taskKey, 'Ułóż słowo z rozsypanych liter: klikaj kafelki albo wpisz odpowiedź (Enter sprawdza). Przycisk z żarówką wstawia kolejną literę, a przycisk z kluczem rozwiązuje od razu.')}
       <div class="scramble-grid">${items}</div>
       <div class="ws-actions">
         <button class="ws-btn-solve" onclick="solveScramble_${num}()">Pokaż wszystkie odpowiedzi</button>
@@ -5044,15 +5281,15 @@ function buildQuizSection(num, options = {}) {
           <span class="quiz-opt-letter">${String.fromCharCode(65 + oi)}</span>
           <span class="quiz-opt-text">${escapeHtml(opt)}</span>
         </button>
-        <button class="tts-btn tts-btn-quiz" onclick="ttsBtnClick(event, ${JSON.stringify(opt).replace(/"/g, '&quot;')})" title="Czytaj" aria-label="Czytaj">🔊</button>
+        <button class="tts-btn tts-btn-quiz" onclick="ttsBtnClick(event, ${JSON.stringify(opt).replace(/"/g, '&quot;')})" title="Czytaj" aria-label="Czytaj">${ICO_TTS}</button>
       </div>`).join('');
     return `
       <div class="quiz-card" data-idx="${i}">
         <div class="quiz-question">
           <span class="quiz-q-num">${i + 1}.</span>
           <span class="quiz-q-text">${escapeHtml(r.pl)}</span>
-          <button class="tts-btn quiz-hint-btn" onclick="hintQuiz_${num}(${i})" title="Podpowiedź: wyeliminuj jedną błędną odpowiedź" aria-label="Podpowiedź">💡</button>
-          <button class="tts-btn quiz-solve-btn" onclick="solveQuizOne_${num}(${i})" title="Rozwiąż to pytanie" aria-label="Rozwiąż">✨</button>
+          <button class="tts-btn quiz-hint-btn" onclick="hintQuiz_${num}(${i})" title="Podpowiedź: wyeliminuj jedną błędną odpowiedź" aria-label="Podpowiedź">${ICO_HINT}</button>
+          <button class="tts-btn quiz-solve-btn" onclick="solveQuizOne_${num}(${i})" title="Rozwiąż to pytanie" aria-label="Rozwiąż">${ICO_SOLVE}</button>
         </div>
         <div class="quiz-options" data-opts="${opts.length}">${optHTML}</div>
         ${noteHTML(r)}
@@ -5185,13 +5422,37 @@ function buildUnscrambleSection(num, options = {}) {
     if (scrambled.join(' ') === words.join(' ') && words.length >= 2) {
       [scrambled[0], scrambled[1]] = [scrambled[1], scrambled[0]];
     }
-    const wordTokens = scrambled.map((w, wi) => `<button class="unsc-word" data-word="${escapeHtml(w)}" data-orig-idx="${wi}" draggable="true">${escapeHtml(w)}</button>`).join('');
+    // ── DYSTRAKTORY (kolumna "distractors") ──
+    // Slowa-atrapy dorzucane do puli: nie naleza do zdania, wiec ucznia kusza,
+    // ale poprawnego ulozenia nie da sie z nich zbudowac. Odrzucamy atrapy,
+    // ktore juz w zdaniu wystepuja (mylily by wyszukiwanie tokenow przy
+    // "Rozwiaz" i "Podpowiedz") oraz duplikaty. Fraza wieloslowna rozpada sie
+    // na pojedyncze tokeny, bo w tym zadaniu klocek = jedno slowo.
+    const _seenTok = new Set(words.map(w => w.toLowerCase()));
+    const decoys = [];
+    (r._distractors || []).forEach(d => {
+      String(d).trim().split(/\s+/).filter(Boolean).forEach(tok => {
+        const k = tok.toLowerCase();
+        if (_seenTok.has(k)) return;
+        _seenTok.add(k);
+        decoys.push(tok);
+      });
+    });
+    // Bez atrap zostawiamy kolejnosc z "scrambled" (jest juz sprawdzona pod
+    // katem tego, ze rozni sie od oryginalu). Z atrapami mieszamy calosc,
+    // zeby atrapy nie wisialy zawsze na koncu puli.
+    const tokenList = decoys.length
+      ? shuffle([...scrambled.map(w => ({ w, decoy: false })), ...decoys.map(w => ({ w, decoy: true }))])
+      : scrambled.map(w => ({ w, decoy: false }));
+    // WAZNE: atrapa nie ma zadnej klasy wyrozniajacej - z zewnatrz wyglada
+    // dokladnie jak zwykly klocek. Rozroznia je tylko atrybut data-decoy.
+    const wordTokens = tokenList.map((tk, wi) => `<button type="button" class="unsc-word" data-word="${escapeHtml(tk.w)}"${tk.decoy ? ' data-decoy="1"' : ''} data-orig-idx="${wi}" draggable="true">${escapeHtml(tk.w)}</button>`).join('');
     const correctJSON = escapeHtml(JSON.stringify(words));
     return `
       <div class="unsc-card" data-idx="${i}" data-correct='${correctJSON}'>
         <div class="unsc-prompt">
           <span class="unsc-pl">${escapeHtml(r.pl)}</span>
-          <button class="tts-btn tts-btn-unsc" onclick="ttsBtnClick(event, ${JSON.stringify(enClean).replace(/"/g, '&quot;')})" title="Posłuchaj poprawnego zdania" aria-label="Czytaj">🔊</button>
+          <button class="tts-btn tts-btn-unsc" onclick="ttsBtnClick(event, ${JSON.stringify(enClean).replace(/"/g, '&quot;')})" title="Posłuchaj poprawnego zdania" aria-label="Czytaj">${ICO_TTS}</button>
         </div>
         <div class="unsc-answer-area" data-section="${num}" data-card-idx="${i}">
           <div class="unsc-answer-empty">Kliknij słowa poniżej lub przeciągnij je tutaj</div>
@@ -5201,14 +5462,14 @@ function buildUnscrambleSection(num, options = {}) {
             ${wordTokens}
           </div>
           <button type="button" class="unsc-pool-reveal" onclick="revealUnscPool_${num}(${i})">
-            <span class="unsc-pool-reveal-icon">👁</span>
+            <span class="unsc-pool-reveal-icon">${ICO_EYE}</span>
             <span>Kliknij, aby pokazać słowa do ułożenia</span>
           </button>
         </div>
         <div class="unsc-controls">
           <button type="button" class="unsc-check-btn" onclick="checkUnscramble_${num}(${i})">Sprawdź</button>
-          <button type="button" class="unsc-hint-btn" onclick="hintUnscramble_${num}(${i})">💡 Podpowiedź</button>
-          <button type="button" class="unsc-solve-btn" onclick="solveUnscrambleOne_${num}(${i})">✨ Rozwiąż</button>
+          <button type="button" class="unsc-hint-btn" onclick="hintUnscramble_${num}(${i})" title="Podpowiedź" aria-label="Podpowiedź">${ICO_HINT}<span>Podpowiedź</span></button>
+          <button type="button" class="unsc-solve-btn" onclick="solveUnscrambleOne_${num}(${i})" title="Rozwiąż" aria-label="Rozwiąż">${ICO_SOLVE}<span>Rozwiąż</span></button>
           <button type="button" class="unsc-clear-btn" onclick="clearUnscramble_${num}(${i})">Wyczyść</button>
         </div>
         ${noteHTML(r)}
@@ -5224,7 +5485,7 @@ function buildUnscrambleSection(num, options = {}) {
         <div class="ws-sec-num">${num < 10 ? "0" + num : num}</div>
         <h2 class="ws-sec-title">${sectionTitle(taskKey, 'Sentence Unscramble')}</h2>
       </div>
-      ${sectionInstr(taskKey, 'Kliknij pole "Pokaż słowa", a następnie ułóż je w odpowiedniej kolejności. Możesz też przeciągać słowa. Kliknij 💡, aby wstawić kolejne poprawne słowo, lub ✨, aby rozwiązać od razu.')}
+      ${sectionInstr(taskKey, 'Kliknij pole "Pokaż słowa", a następnie ułóż je w odpowiedniej kolejności. Możesz też przeciągać słowa. Przycisk „Podpowiedź" wstawia kolejne poprawne słowo, a „Rozwiąż" układa całe zdanie od razu.')}
       <div class="unsc-grid">${items}</div>
       <div class="ws-actions">
         <button class="ws-btn-solve" onclick="solveUnscramble_${num}()">Pokaż wszystkie odpowiedzi</button>
@@ -5239,11 +5500,39 @@ function buildUnscrambleJS(num, options = {}) {
   const total = rows.length;
   return `
   // ── SENTENCE UNSCRAMBLE (section ${num}) ──
+  // UWAGA NA IZOLACJE SEKCJI: skrypty wszystkich sekcji laduja w JEDNYM
+  // wspolnym zakresie (sectionsJS.join). Kazda nazwa musi wiec konczyc sie
+  // sufiksem _${num}. Wczesniej helpery (_unscGetUserAnswer, _unscMoveToAnswer...)
+  // byly deklarowane BEZ sufiksu i przy dwoch sekcjach tego typu (tagi u1, u2)
+  // pozniejsza deklaracja nadpisywala wczesniejsza. Efekt: "Sprawdz" w pierwszej
+  // sekcji czytal odpowiedz z drugiej - stad losowo "nie dziala" albo "poprawne
+  // zdanie jest czerwone". Nie usuwaj tych sufiksow.
   let _unscDone_${num} = new Set();
   const _unscTotal_${num} = ${total};
 
+  // Normalizacja porownania: te same znaki moga przyjsc w roznych postaciach
+  // Unicode (np. litery z diakrytykami zlozone vs prekomponowane).
+  function _unscNorm_${num}(s) {
+    const v = String(s == null ? '' : s).trim();
+    try { return v.normalize('NFC'); } catch (e) { return v; }
+  }
+
+  function _unscCard_${num}(cardIdx) {
+    return document.querySelector('#sec-${num} .unsc-card[data-idx="' + cardIdx + '"]');
+  }
+
+  // Poprawna kolejnosc slow z atrybutu data-correct. Gdyby atrybut byl uszkodzony,
+  // zwracamy null zamiast rzucac wyjatkiem (wyjatek zabijalby caly handler kliku
+  // i przycisk sprawialby wrazenie martwego).
+  function _unscCorrect_${num}(card) {
+    try {
+      const arr = JSON.parse(card.getAttribute('data-correct'));
+      return Array.isArray(arr) ? arr : null;
+    } catch (e) { return null; }
+  }
+
   // Helper: po kliknięciu słowa w pool przenieś do answer-area
-  function _unscMoveToAnswer(wordEl) {
+  function _unscMoveToAnswer_${num}(wordEl) {
     const card = wordEl.closest('.unsc-card');
     if (card.classList.contains('done')) return;
     wsSound('tap');
@@ -5254,9 +5543,9 @@ function buildUnscrambleJS(num, options = {}) {
     answerArea.appendChild(wordEl);
     wordEl.classList.add('in-answer');
     wordEl.classList.remove('correct-pos', 'wrong-pos');
-    _unscUpdatePoolEmpty(pool);
+    _unscUpdatePoolEmpty_${num}(pool);
   }
-  function _unscMoveToPool(wordEl) {
+  function _unscMoveToPool_${num}(wordEl) {
     const card = wordEl.closest('.unsc-card');
     if (card.classList.contains('done')) return;
     wsSound('tap');
@@ -5273,7 +5562,7 @@ function buildUnscrambleJS(num, options = {}) {
       answerArea.appendChild(empty);
     }
   }
-  function _unscUpdatePoolEmpty(pool) {
+  function _unscUpdatePoolEmpty_${num}(pool) {
     if (pool.querySelectorAll('.unsc-word').length === 0 && !pool.querySelector('.unsc-pool-empty')) {
       const ph = document.createElement('div');
       ph.className = 'unsc-pool-empty';
@@ -5282,17 +5571,29 @@ function buildUnscrambleJS(num, options = {}) {
     }
   }
 
-  function _unscGetUserAnswer(secNum, cardIdx) {
-    const card = document.querySelector('#sec-${num} .unsc-card[data-idx="' + cardIdx + '"]');
+  function _unscGetUserAnswer_${num}(cardIdx) {
+    const card = _unscCard_${num}(cardIdx);
+    if (!card) return [];
     const answerArea = card.querySelector('.unsc-answer-area');
     return Array.from(answerArea.querySelectorAll('.unsc-word')).map(w => w.dataset.word);
   }
 
+  // Znajduje w puli wolny klocek o danym slowie, POMIJAJAC atrapy (data-decoy).
+  // Bez tego "Rozwiaz" moglby wciagnac atrape zamiast prawdziwego slowa.
+  function _unscFindToken_${num}(pool, word) {
+    const want = _unscNorm_${num}(word);
+    return Array.from(pool.querySelectorAll('.unsc-word')).find(t =>
+      !t.hasAttribute('data-decoy') && !t.classList.contains('used') && _unscNorm_${num}(t.dataset.word) === want
+    ) || null;
+  }
+
   // Per-section nazwy (zob. komentarz przy solveFlashcards_).
   window.checkUnscramble_${num} = function(cardIdx) {
-    const card = document.querySelector('#sec-${num} .unsc-card[data-idx="' + cardIdx + '"]');
-    const correct = JSON.parse(card.getAttribute('data-correct'));
-    const user = _unscGetUserAnswer(${num}, cardIdx);
+    const card = _unscCard_${num}(cardIdx);
+    if (!card) return;
+    const correct = _unscCorrect_${num}(card);
+    if (!correct) return;
+    const user = _unscGetUserAnswer_${num}(cardIdx);
     if (user.length === 0) {
       // Puste pole odpowiedzi: zamiast cichego "nic sie nie dzieje" dajemy
       // wyrazny sygnal - dzwiek bledu + potrzasniecie ramka odpowiedzi.
@@ -5309,7 +5610,11 @@ function buildUnscrambleJS(num, options = {}) {
     const words = card.querySelectorAll('.unsc-answer-area .unsc-word');
     let allOk = user.length === correct.length;
     words.forEach((w, idx) => {
-      if (idx < correct.length && w.dataset.word === correct[idx]) {
+      // Atrapa w polu odpowiedzi jest zawsze bledem, nawet gdyby przypadkiem
+      // stala na pozycji o tym samym brzmieniu.
+      const isDecoy = w.hasAttribute('data-decoy');
+      const ok = !isDecoy && idx < correct.length && _unscNorm_${num}(w.dataset.word) === _unscNorm_${num}(correct[idx]);
+      if (ok) {
         w.classList.add('correct-pos');
         w.classList.remove('wrong-pos');
       } else {
@@ -5323,6 +5628,9 @@ function buildUnscrambleJS(num, options = {}) {
       card.classList.add('done');
       // wszystkie słowa staja sie disabled
       card.querySelectorAll('.unsc-word').forEach(w => w.setAttribute('draggable', 'false'));
+      // Atrapy, ktore zostaly w puli, oznaczamy DOPIERO teraz - w trakcie
+      // ukladania musialy wygladac jak zwykle klocki.
+      _unscRevealDecoys_${num}(card);
       _unscDone_${num}.add(cardIdx);
       if (_unscDone_${num}.size === _unscTotal_${num}) {
         showSectionFeedback(${num}, true, '📝 Wszystkie zdania ułożone!');
@@ -5334,16 +5642,27 @@ function buildUnscrambleJS(num, options = {}) {
     }
   };
 
+  // Po rozwiazaniu karty atrapy zostaja w puli - wyszarzamy je i podpisujemy,
+  // zeby bylo jasne, ze te slowa NIE nalezaly do zdania.
+  function _unscRevealDecoys_${num}(card) {
+    card.querySelectorAll('.unsc-word[data-decoy]').forEach(d => {
+      if (d.classList.contains('in-answer')) return;
+      d.classList.add('unsc-decoy-shown');
+      d.setAttribute('title', 'To słowo nie należy do tego zdania');
+    });
+  }
+
   // Hint: znajdź najdłuższy poprawny prefix tego co użytkownik ułożył,
   // i wstaw kolejne poprawne słowo w odpowiedniej pozycji.
   window.hintUnscramble_${num} = function(cardIdx) {
-    const card = document.querySelector('#sec-${num} .unsc-card[data-idx="' + cardIdx + '"]');
-    if (card.classList.contains('done')) return;
-    const correct = JSON.parse(card.getAttribute('data-correct'));
-    const user = _unscGetUserAnswer(${num}, cardIdx);
+    const card = _unscCard_${num}(cardIdx);
+    if (!card || card.classList.contains('done')) return;
+    const correct = _unscCorrect_${num}(card);
+    if (!correct) return;
+    const user = _unscGetUserAnswer_${num}(cardIdx);
     let matchLen = 0;
     for (let i = 0; i < Math.min(user.length, correct.length); i++) {
-      if (user[i] === correct[i]) matchLen++;
+      if (_unscNorm_${num}(user[i]) === _unscNorm_${num}(correct[i])) matchLen++;
       else break;
     }
     if (matchLen >= correct.length) return; // już wszystko poprawne
@@ -5352,49 +5671,47 @@ function buildUnscrambleJS(num, options = {}) {
     // znajdź to słowo w pool (z preferencją na jeszcze nie-przeniesione)
     const pool = card.querySelector('.unsc-pool');
     const answerArea = card.querySelector('.unsc-answer-area');
-    let candidate = pool.querySelector('.unsc-word[data-word="' + cssEscape(nextWord) + '"]');
+    let candidate = _unscFindToken_${num}(pool, nextWord);
     if (!candidate) {
       // może jest w answer-area na złej pozycji - wez pierwsze pasujące spoza prefixu
       const answerWords = Array.from(answerArea.querySelectorAll('.unsc-word'));
-      candidate = answerWords.slice(matchLen).find(w => w.dataset.word === nextWord);
+      candidate = answerWords.slice(matchLen).find(w =>
+        !w.hasAttribute('data-decoy') && _unscNorm_${num}(w.dataset.word) === _unscNorm_${num}(nextWord)
+      );
     }
     if (!candidate) return;
     // usuń wszystkie błędne słowa po prefiksie (zwróć je do poola)
     const answerWords = Array.from(answerArea.querySelectorAll('.unsc-word'));
     for (let i = answerWords.length - 1; i >= matchLen; i--) {
       if (answerWords[i] !== candidate) {
-        _unscMoveToPool(answerWords[i]);
+        _unscMoveToPool_${num}(answerWords[i]);
       }
     }
     // przenieś candidate na pozycję matchLen w answer-area
-    _unscMoveToAnswer(candidate);
+    _unscMoveToAnswer_${num}(candidate);
     // sprawdź czy ułożone całe zdanie
-    const newUser = _unscGetUserAnswer(${num}, cardIdx);
-    if (newUser.join(' ') === correct.join(' ')) {
+    const newUser = _unscGetUserAnswer_${num}(cardIdx);
+    if (newUser.length === correct.length && newUser.every((w, i) => _unscNorm_${num}(w) === _unscNorm_${num}(correct[i]))) {
       window.checkUnscramble_${num}(cardIdx);
     }
   };
 
-  // CSS.escape fallback
-  function cssEscape(s) {
-    if (window.CSS && CSS.escape) return CSS.escape(s);
-    return s.replace(/([!"#$%&'()*+,./:;<=>?@\\\\\\[\\\\\\]^\`{|}~])/g, '\\\\$1');
-  }
-
   window.clearUnscramble_${num} = function(cardIdx) {
-    const card = document.querySelector('#sec-${num} .unsc-card[data-idx="' + cardIdx + '"]');
+    const card = _unscCard_${num}(cardIdx);
     if (!card) return;
     // Dziala TAKZE na rozwiazanej karcie - cofa rozwiazanie. Wczesniej guard
     // "if done return" blokowal czyszczenie po przypadkowym rozwiazaniu.
     const wasDone = card.classList.contains('done');
     card.classList.remove('done');
-    // Odblokuj slowa (po rozwiazaniu byly draggable=false / .used).
+    // Odblokuj slowa (po rozwiazaniu byly draggable=false / .used) i schowaj
+    // z powrotem oznaczenie atrap - karta wraca do stanu wyjsciowego.
     card.querySelectorAll('.unsc-word').forEach(w => {
       w.setAttribute('draggable', 'true');
-      w.classList.remove('used', 'correct-pos', 'wrong-pos');
+      w.classList.remove('used', 'correct-pos', 'wrong-pos', 'unsc-decoy-shown');
+      if (w.hasAttribute('data-decoy')) w.removeAttribute('title');
     });
     const answerWords = Array.from(card.querySelectorAll('.unsc-answer-area .unsc-word'));
-    answerWords.forEach(w => _unscMoveToPool(w));
+    answerWords.forEach(w => _unscMoveToPool_${num}(w));
     if (wasDone) {
       _unscDone_${num}.delete(cardIdx);
       // Cala sekcja przestaje byc ukonczona, gdy cofniemy rozwiazana karte.
@@ -5405,48 +5722,12 @@ function buildUnscrambleJS(num, options = {}) {
     }
   };
 
-  window.solveUnscramble_${num} = function() {
-    wsSound('correct');
-    document.querySelectorAll('#sec-${num} .unsc-card').forEach(card => {
-      if (card.classList.contains('done')) return;
-      const cardIdx = parseInt(card.dataset.idx);
-      const correct = JSON.parse(card.getAttribute('data-correct'));
-      const answerArea = card.querySelector('.unsc-answer-area');
-      const pool = card.querySelector('.unsc-pool');
-      // Spojnie z pojedynczym "Rozwiaz": zdejmij zaslone puli i schowaj
-      // nakladke "Kliknij, aby pokazac slowa" - po rozwiazaniu nie ma juz
-      // czego zaslaniac (wszystkie slowa laduja w polu odpowiedzi).
-      pool.classList.remove('unsc-pool-hidden');
-      const reveal = card.querySelector('.unsc-pool-reveal');
-      if (reveal) reveal.style.display = 'none';
-      // wszystkie słowa do poola
-      Array.from(card.querySelectorAll('.unsc-word')).forEach(w => pool.appendChild(w));
-      // wyczyść answer-area placeholder
-      answerArea.innerHTML = '';
-      // dla każdego słowa correct znajdź token w pool i przenieś
-      correct.forEach(targetWord => {
-        const token = pool.querySelector('.unsc-word[data-word="' + cssEscape(targetWord) + '"]:not(.used)');
-        if (token) {
-          token.classList.add('used', 'correct-pos');
-          answerArea.appendChild(token);
-        }
-      });
-      // Komunikat "(wszystkie slowa uzyte)" w pustej puli - identycznie jak
-      // przy recznym ulozeniu zdania.
-      _unscUpdatePoolEmpty(pool);
-      card.classList.add('done');
-      _unscDone_${num}.add(cardIdx);
-    });
-    showSectionFeedback(${num}, true, '✓ Wszystkie odpowiedzi pokazane');
-    markSectionDone(${num});
-  };
-
-  // Rozwiaz jedna karte unscramble (tylko ta).
-  window.solveUnscrambleOne_${num} = function(cardIdx) {
-    const card = document.querySelector('#sec-${num} .unsc-card[data-idx="' + cardIdx + '"]');
-    if (!card || card.classList.contains('done')) return;
-    wsSound('correct');
-    const correct = JSON.parse(card.getAttribute('data-correct'));
+  // Wypelnia JEDNA karte poprawna odpowiedzia (wspolny trzon dla "Rozwiaz"
+  // pojedynczej karty i "Pokaz wszystkie odpowiedzi").
+  function _unscFillCard_${num}(card) {
+    const cardIdx = parseInt(card.dataset.idx, 10);
+    const correct = _unscCorrect_${num}(card);
+    if (!correct) return;
     const answerArea = card.querySelector('.unsc-answer-area');
     const pool = card.querySelector('.unsc-pool');
     // pokaz pule slow (jesli ukryta)
@@ -5454,20 +5735,42 @@ function buildUnscrambleJS(num, options = {}) {
     const reveal = card.querySelector('.unsc-pool-reveal');
     if (reveal) reveal.style.display = 'none';
     // wszystkie slowa do poola
-    Array.from(card.querySelectorAll('.unsc-word')).forEach(w => pool.appendChild(w));
+    Array.from(card.querySelectorAll('.unsc-word')).forEach(w => {
+      w.classList.remove('in-answer', 'correct-pos', 'wrong-pos', 'used');
+      pool.appendChild(w);
+    });
     answerArea.innerHTML = '';
     correct.forEach(targetWord => {
-      const token = pool.querySelector('.unsc-word[data-word="' + cssEscape(targetWord) + '"]:not(.used)');
+      const token = _unscFindToken_${num}(pool, targetWord);
       if (token) {
-        token.classList.add('used', 'correct-pos');
+        token.classList.add('used', 'in-answer', 'correct-pos');
         answerArea.appendChild(token);
       }
     });
-    // Spojny komunikat "(wszystkie slowa uzyte)" - tak samo jak przy recznym
-    // ulozeniu i przy rozwiazaniu calej sekcji.
-    _unscUpdatePoolEmpty(pool);
+    // Spojny komunikat "(wszystkie slowa uzyte)" - tak samo jak przy recznym ulozeniu.
+    _unscUpdatePoolEmpty_${num}(pool);
+    _unscRevealDecoys_${num}(card);
     card.classList.add('done');
-    _unscDone_${num}.add(cardIdx);
+    card.querySelectorAll('.unsc-word').forEach(w => w.setAttribute('draggable', 'false'));
+    if (!isNaN(cardIdx)) _unscDone_${num}.add(cardIdx);
+  }
+
+  window.solveUnscramble_${num} = function() {
+    wsSound('correct');
+    document.querySelectorAll('#sec-${num} .unsc-card').forEach(card => {
+      if (card.classList.contains('done')) return;
+      _unscFillCard_${num}(card);
+    });
+    showSectionFeedback(${num}, true, '✓ Wszystkie odpowiedzi pokazane');
+    markSectionDone(${num});
+  };
+
+  // Rozwiaz jedna karte unscramble (tylko ta).
+  window.solveUnscrambleOne_${num} = function(cardIdx) {
+    const card = _unscCard_${num}(cardIdx);
+    if (!card || card.classList.contains('done')) return;
+    wsSound('correct');
+    _unscFillCard_${num}(card);
     if (_unscDone_${num}.size === _unscTotal_${num}) {
       markSectionDone(${num});
     }
@@ -5475,12 +5778,22 @@ function buildUnscrambleJS(num, options = {}) {
 
   // Odsloniecie puli slow - klikniecie zaslony pokazuje slowa do ulozenia.
   window.revealUnscPool_${num} = function(cardIdx) {
-    const card = document.querySelector('#sec-${num} .unsc-card[data-idx="' + cardIdx + '"]');
+    const card = _unscCard_${num}(cardIdx);
     if (!card) return;
     const pool = card.querySelector('.unsc-pool');
     const reveal = card.querySelector('.unsc-pool-reveal');
     if (pool) pool.classList.remove('unsc-pool-hidden');
     if (reveal) reveal.style.display = 'none';
+  };
+
+  // Odtwarzanie zapisanego postepu: karta wraca jako "done" prosto z DOM, wiec
+  // wewnetrzny licznik sekcji trzeba dosypac tu, inaczej pasek postepu i
+  // komunikat koncowy rozjezdzaly sie po odswiezeniu strony.
+  WS_UNSC_MARK[${num}] = function(cardIdx) {
+    const i = parseInt(cardIdx, 10);
+    if (!isNaN(i)) _unscDone_${num}.add(i);
+    const card = _unscCard_${num}(i);
+    if (card) _unscRevealDecoys_${num}(card);
   };
 
   // Kliknięcie słowa w pool przenosi do answer-area; w answer-area zwraca do pool
@@ -5490,9 +5803,9 @@ function buildUnscrambleJS(num, options = {}) {
     const card = word.closest('.unsc-card');
     if (card.classList.contains('done')) return;
     if (word.classList.contains('in-answer')) {
-      _unscMoveToPool(word);
+      _unscMoveToPool_${num}(word);
     } else {
-      _unscMoveToAnswer(word);
+      _unscMoveToAnswer_${num}(word);
     }
   });
 
@@ -5552,7 +5865,7 @@ function buildUnscrambleJS(num, options = {}) {
       if (empty) empty.remove();
       // Gdy przeciagnieto OSTATNIE slowo z puli - pokaz "(wszystkie slowa uzyte)",
       // spojnie z przenoszeniem klikaniem.
-      _unscUpdatePoolEmpty(card.querySelector('.unsc-pool'));
+      _unscUpdatePoolEmpty_${num}(card.querySelector('.unsc-pool'));
     } else {
       dragged.classList.remove('in-answer', 'correct-pos', 'wrong-pos');
       // Sprawdź czy answer-area jest pusta
@@ -5713,9 +6026,9 @@ function buildGapfillSection(num, options = {}) {
         </div>
         <div class="gap-sentence">${sentenceHTML}
           <span class="gap-actions">
-            <button class="tts-btn tts-btn-gap gap-helper-btn" onclick="hintGap_${num}(${i})" title="Podpowiedź - kolejna litera w pierwszej pustej luce" aria-label="Podpowiedź">💡</button>
-            <button class="tts-btn tts-btn-gap gap-solve-btn" onclick="solveGapOne_${num}(${i})" title="Rozwiąż całe zdanie" aria-label="Rozwiąż">✨</button>
-            <button class="tts-btn tts-btn-gap" onclick="ttsBtnClick(event, ${JSON.stringify(enClean).replace(/"/g, '&quot;')})" title="Posłuchaj całego zdania" aria-label="Czytaj">🔊</button>
+            <button class="tts-btn tts-btn-gap gap-helper-btn" onclick="hintGap_${num}(${i})" title="Podpowiedź - kolejna litera w pierwszej pustej luce" aria-label="Podpowiedź">${ICO_HINT}</button>
+            <button class="tts-btn tts-btn-gap gap-solve-btn" onclick="solveGapOne_${num}(${i})" title="Rozwiąż całe zdanie" aria-label="Rozwiąż">${ICO_SOLVE}</button>
+            <button class="tts-btn tts-btn-gap" onclick="ttsBtnClick(event, ${JSON.stringify(enClean).replace(/"/g, '&quot;')})" title="Posłuchaj całego zdania" aria-label="Czytaj">${ICO_TTS}</button>
           </span>
         </div>
         ${noteHTML(r)}
@@ -5731,7 +6044,7 @@ function buildGapfillSection(num, options = {}) {
         <div class="ws-sec-num">${num < 10 ? "0" + num : num}</div>
         <h2 class="ws-sec-title">${sectionTitle(taskKey, 'Gap Fill')}</h2>
       </div>
-      ${sectionInstr(taskKey, 'Wpisz brakujące słowa w lukach (Enter sprawdza). 💡 - kolejna litera, ✨ - rozwiąż całe zdanie.')}
+      ${sectionInstr(taskKey, 'Wpisz brakujące słowa w lukach (Enter sprawdza). Żarówka podpowiada kolejną literę, klucz rozwiązuje całe zdanie.')}
       <div class="gap-grid">${items}</div>
       <div class="ws-actions">
         <button class="ws-btn-solve" onclick="solveGap_${num}()">Pokaż wszystkie odpowiedzi</button>
@@ -5883,10 +6196,10 @@ function buildTranslateSection(num, options = {}) {
         <div class="trans-input-row">
           <input type="text" class="trans-input" data-answer="${escapeHtml(r.en)}" placeholder="Wpisz tłumaczenie po angielsku..." onkeydown="if(event.key==='Enter'){event.preventDefault();checkTranslate_${num}(this);}">
           <div class="trans-input-actions">
-            <button class="trans-check" onclick="checkTranslate_${num}(this.closest('.trans-card').querySelector('.trans-input'))" title="Sprawdź" aria-label="Sprawdź">✅</button>
-            <button class="trans-hint-btn" onclick="hintTranslate_${num}(${i})" title="Podpowiedź - kolejna litera" aria-label="Podpowiedź">💡</button>
-            <button class="trans-solve-btn" onclick="solveTranslateOne_${num}(${i})" title="Rozwiąż to zdanie" aria-label="Rozwiąż">✨</button>
-            <button class="tts-btn tts-btn-trans" onclick="ttsBtnClick(event, ${JSON.stringify(r.en).replace(/"/g, '&quot;')})" title="Posłuchaj poprawnego tłumaczenia" aria-label="Czytaj">🔊</button>
+            <button class="trans-check" onclick="checkTranslate_${num}(this.closest('.trans-card').querySelector('.trans-input'))" title="Sprawdź" aria-label="Sprawdź">${ICO_CHECK}</button>
+            <button class="trans-hint-btn" onclick="hintTranslate_${num}(${i})" title="Podpowiedź - kolejna litera" aria-label="Podpowiedź">${ICO_HINT}</button>
+            <button class="trans-solve-btn" onclick="solveTranslateOne_${num}(${i})" title="Rozwiąż to zdanie" aria-label="Rozwiąż">${ICO_SOLVE}</button>
+            <button class="tts-btn tts-btn-trans" onclick="ttsBtnClick(event, ${JSON.stringify(r.en).replace(/"/g, '&quot;')})" title="Posłuchaj poprawnego tłumaczenia" aria-label="Czytaj">${ICO_TTS}</button>
           </div>
         </div>
         ${noteHTML(r)}
@@ -6018,8 +6331,12 @@ function buildWritingSection(num, options = {}) {
   const taskKey = options.taskKey || 'writing';
   const rows = rowsForTask(taskKey);
   const items = rows.map((r, i) => {
-    const plBlock = r.pl ? `<div class="write-prompt-pl${flagOffCls(taskKey)}"><span class="write-prompt-flag">${sectionFlag(taskKey)}</span> ${escapeHtml(r.pl)}</div>` : '';
-    const enBlock = r.en ? `<div class="write-prompt-en"><span class="write-prompt-flag">${FLAG_UK_SVG}</span> ${escapeHtml(r.en)} <button class="tts-btn tts-btn-write" onclick="ttsBtnClick(event, ${JSON.stringify(r.en).replace(/"/g, '&quot;')})" title="Posłuchaj polecenia" aria-label="Czytaj">🔊</button></div>` : '';
+    // Tekst polecenia siedzi we WLASNYM spanie. Wczesniej byl golym wezlem
+    // tekstowym w kontenerze flex - stawal sie anonimowym elementem flex i przy
+    // dlugim poleceniu przeskakiwal CALY do nastepnej linii, zostawiajac flage
+    // sama u gory. Span z flex:1 1 auto lamie sie normalnie, W SOBIE.
+    const plBlock = r.pl ? `<div class="write-prompt-pl${flagOffCls(taskKey)}"><span class="write-prompt-flag">${sectionFlag(taskKey)}</span><span class="write-prompt-text">${escapeHtml(r.pl)}</span></div>` : '';
+    const enBlock = r.en ? `<div class="write-prompt-en${flagOffClsUK(taskKey)}"><span class="write-prompt-flag">${sectionFlagUK(taskKey)}</span><span class="write-prompt-text">${escapeHtml(r.en)} <button class="tts-btn tts-btn-write" onclick="ttsBtnClick(event, ${JSON.stringify(r.en).replace(/"/g, '&quot;')})" title="Posłuchaj polecenia" aria-label="Czytaj">${ICO_TTS}</button></span></div>` : '';
     return `
       <div class="write-card" data-idx="${i}">
         <div class="write-prompt">
@@ -6133,9 +6450,9 @@ ${bgEffectHTML}
       <span class="ws-progress-label">Postęp</span>
       <span class="ws-progress-top-right">
         <span class="ws-progress-score" id="wsProgressScore">0 / ${sectionCount}</span>
-        ${difficulty ? `<button type="button" class="ws-tool-btn ${diffHidden ? 'ws-tool-off' : 'ws-tool-on'}" id="wsDiffVisBtn" onclick="wsToggleDiffVis()" aria-pressed="${diffHidden ? 'false' : 'true'}" title="${diffHidden ? 'Pokaż oceny trudności' : 'Ukryj oceny trudności'}" aria-label="Pokaż lub ukryj oceny trudności">👁️</button>
-        <button type="button" class="ws-tool-btn" id="wsDiffCopyBtn" onclick="wsOpenRaterCopy()" title="Otwórz kopię do oceniania w drugim oknie" aria-label="Otwórz kopię do oceniania">⚙️</button>` : ''}
-        <button class="ws-sound-toggle ws-tool-btn" onclick="wsToggleSound()" title="Włącz/wyłącz dźwięki" aria-pressed="true" aria-label="Włącz lub wyłącz dźwięki">🔊</button>
+        ${difficulty ? `<button type="button" class="ws-tool-btn ${diffHidden ? 'ws-tool-off' : 'ws-tool-on'}" id="wsDiffVisBtn" onclick="wsToggleDiffVis()" aria-pressed="${diffHidden ? 'false' : 'true'}" title="${diffHidden ? 'Pokaż oznaczenia trudności' : 'Ukryj oznaczenia trudności'}" aria-label="Pokaż lub ukryj oznaczenia trudności">${diffHidden ? ICO_EYE_OFF : ICO_EYE}</button>
+        <button type="button" class="ws-tool-btn" id="wsDiffCopyBtn" onclick="wsOpenRaterCopy()" title="Otwórz kopię prowadzącego w drugim oknie" aria-label="Otwórz kopię prowadzącego">${ICO_TEACHER}</button>` : ''}
+        <button class="ws-sound-toggle ws-tool-btn" onclick="wsToggleSound()" title="Włącz/wyłącz dźwięki" aria-pressed="true" aria-label="Włącz lub wyłącz dźwięki">${ICO_TTS}</button>
       </span>
     </div>
     <div class="ws-progress-track"><div class="ws-progress-fill" id="wsProgressFill"></div></div>
@@ -6146,8 +6463,8 @@ ${bgEffectHTML}
     <span class="ws-diff-key"><span class="ws-diff-chip" style="background:#9ca3af">✦</span>nowe słowo</span>
     <span class="ws-diff-key"><span class="ws-diff-chip" style="background:#ab55ff">↻</span>do powtórki</span>
     <span class="ws-diff-key"><span class="ws-diff-chip" style="background:#ff8018">▲</span>trudne</span>
-    <span class="ws-diff-key"><span class="ws-diff-chip" style="background:#16a34a">⬤</span>dobre</span>
-    <span class="ws-diff-key"><span class="ws-diff-chip" style="background:#2563eb">✓</span>łatwe</span>
+    <span class="ws-diff-key"><span class="ws-diff-chip" style="background:#16a34a">⬤</span>łatwe</span>
+    <span class="ws-diff-key"><span class="ws-diff-chip" style="background:#2563eb">✓</span>opanowane</span>
   </div>` : ''}
 
   ${sectionsHTML}
@@ -6166,7 +6483,7 @@ ${bgEffectHTML}
           <span class="ws-review-icon">🔁</span>
           <span class="ws-review-toggle-titles">
             <span class="ws-review-title">Szybka powtórka</span>
-            <span class="ws-review-toggle-sub" id="wsReviewCount">Oceń słowa, żeby zebrać je tutaj do powtórki</span>
+            <span class="ws-review-toggle-sub" id="wsReviewCount">Oznacz trudność słów, żeby zebrać je tutaj do powtórki</span>
           </span>
         </span>
         <span class="ws-review-toggle-arrow">▾</span>
@@ -6175,12 +6492,12 @@ ${bgEffectHTML}
       <div class="ws-review-body" id="wsReviewBody" hidden>
         <p class="ws-review-text">Wybierz, które poziomy chcesz powtórzyć. Odpowiedzi są zasłonięte - kliknij, żeby odsłonić, albo użyj „Pokaż wszystkie".</p>
         <div class="ws-review-levels">
-          <label class="ws-review-lvl"><input type="checkbox" value="none"${reviewOnly ? ' checked' : ''} onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#cbd5e1;color:#475569">○</span> nieocenione</label>
+          <label class="ws-review-lvl"><input type="checkbox" value="none"${reviewOnly ? ' checked' : ''} onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#cbd5e1;color:#475569">○</span> bez oznaczenia</label>
           <label class="ws-review-lvl"><input type="checkbox" value="new" checked onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#9ca3af">✦</span> nowe słowo</label>
           <label class="ws-review-lvl"><input type="checkbox" value="1" checked onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#ab55ff">↻</span> do powtórki</label>
           <label class="ws-review-lvl"><input type="checkbox" value="2" checked onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#ff8018">▲</span> trudne</label>
-          <label class="ws-review-lvl"><input type="checkbox" value="3" onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#16a34a">⬤</span> dobre</label>
-          <label class="ws-review-lvl"><input type="checkbox" value="4" onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#2563eb">✓</span> łatwe</label>
+          <label class="ws-review-lvl"><input type="checkbox" value="3" onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#16a34a">⬤</span> łatwe</label>
+          <label class="ws-review-lvl"><input type="checkbox" value="4" onchange="wsBuildReview()"><span class="ws-review-chip" style="background:#2563eb">✓</span> opanowane</label>
         </div>
         <div class="ws-review-toolbar">
           <div class="ws-review-sort">
@@ -6188,17 +6505,18 @@ ${bgEffectHTML}
             <button type="button" class="ws-review-sort-btn sel" data-sort="level" onclick="wsSetReviewSort('level')">wg poziomu</button>
             <button type="button" class="ws-review-sort-btn" data-sort="hist" onclick="wsSetReviewSort('hist')">historycznie</button>
           </div>
-          <button type="button" class="ws-review-reveal-all" id="wsReviewRevealAll" onclick="wsRevealAllReview()">👁 Pokaż wszystkie</button>
-          <button type="button" class="ws-review-print" onclick="wsPrintReview()" title="Wydrukuj lub zapisz jako PDF samą powtórkę">🖨 Drukuj powtórkę</button>
+          <button type="button" class="ws-review-reveal-all" id="wsReviewRevealAll" onclick="wsRevealAllReview()">${ICO_EYE}<span>Pokaż wszystkie</span></button>
+          <button type="button" class="ws-review-print" onclick="wsPrintReview()" title="Wydrukuj lub zapisz jako PDF samą powtórkę">${ICO_PRINT}<span>Drukuj powtórkę</span></button>
         </div>
+        <div class="ws-review-hint">Kliknij w odpowiedź, żeby odsłonić ją do tego miejsca - albo przytrzymaj przycisk i przeciągnij, żeby odsłaniać płynnie. Klawisze <kbd>←</kbd> <kbd>→</kbd> odsłaniają literami. Przycisk w rogu odpowiedzi przełącza całą zasłonę.</div>
         <div class="ws-review-legend-wrap" aria-hidden="true">
-          <div class="ws-review-legend-title">Legenda ocen</div>
+          <div class="ws-review-legend-title">Legenda oznaczeń</div>
           <div class="ws-review-legend">
             <span class="ws-review-legend-item"><span class="ws-review-chip" style="background:#9ca3af">✦</span> nowe słowo</span>
             <span class="ws-review-legend-item"><span class="ws-review-chip" style="background:#ab55ff">↻</span> do powtórki</span>
             <span class="ws-review-legend-item"><span class="ws-review-chip" style="background:#ff8018">▲</span> trudne</span>
-            <span class="ws-review-legend-item"><span class="ws-review-chip" style="background:#16a34a">⬤</span> dobre</span>
-            <span class="ws-review-legend-item"><span class="ws-review-chip" style="background:#2563eb">✓</span> łatwe</span>
+            <span class="ws-review-legend-item"><span class="ws-review-chip" style="background:#16a34a">⬤</span> łatwe</span>
+            <span class="ws-review-legend-item"><span class="ws-review-chip" style="background:#2563eb">✓</span> opanowane</span>
           </div>
         </div>
         <div class="ws-review-result" id="wsReviewResult"></div>
@@ -6268,11 +6586,10 @@ const WS_DIFF_ENABLED = ${difficulty ? 'true' : 'false'};
 // (widgety, nakladki, plakietki) siedzi w HTML, wiec przelacznik "Pokaz oceny"
 // dziala natychmiast, bez re-renderu i bez luk (np. w Matchingu).
 const WS_DIFF_HIDDEN_MODE = ${diffHidden ? 'true' : 'false'};
-// KOPIA DO OCENIANIA: ten sam plik otwarty w drugim oknie z hashem #oceny.
-// Wyglada dokladnie jak karta pracy, ale oceny sa w niej zawsze widoczne,
+// KOPIA PROWADZACEGO: ten sam plik otwarty w drugim oknie z hashem #trudnosc.
+// Wyglada dokladnie jak karta pracy, ale oznaczenia sa w niej zawsze widoczne,
 // a jej wlasne odpowiedzi NIGDZIE sie nie zapisuja (patrz saveProgress).
-// '#teacher' zostaje jako alias - starsze linki dalej dzialaja.
-const WS_RATER = (location.hash === '#oceny' || location.hash === '#teacher');
+const WS_RATER = (location.hash === '#trudnosc');
 // sessionStorage: przelacznik widocznosci przezywa odswiezenie strony, ale
 // znika po zamknieciu okna - swiezo otwarta karta zawsze startuje z ukrytymi
 // ocenami. Zero smieci w localStorage i zero ryzyka, ze uczen zobaczy oceny.
@@ -6294,35 +6611,33 @@ if (document.body) {
   if (WS_DIFF_HIDDEN) document.body.classList.add('ws-diff-hidden');
   if (WS_RATER) document.body.classList.add('ws-rater');
 }
-const WS_DIFF_LABELS = { 'new': 'nowe słowo', 1: 'do powtórki', 2: 'trudne', 3: 'dobre', 4: 'łatwe' };
+// Ikony uzywane przez skrypt karty (buduje czesc HTML juz po zaladowaniu).
+// Te same stale co w generatorze - wstrzykniete jako gotowe stringi.
+const ICO_TTS_S = ${JSON.stringify(ICO_TTS)};
+const ICO_UNDO_S = ${JSON.stringify(ICO_UNDO)};
+const ICO_RECOVER_S = ${JSON.stringify(ICO_RECOVER)};
+const ICO_TTS_ON_S = ${JSON.stringify(ICO_TTS)};
+const ICO_MUTE_S = ${JSON.stringify(ICO_MUTE)};
+const ICO_EYE_S = ${JSON.stringify(ICO_EYE)};
+const ICO_EYE_OFF_S = ${JSON.stringify(ICO_EYE_OFF)};
+
+const WS_DIFF_LABELS = { 'new': 'nowe słowo', 1: 'do powtórki', 2: 'trudne', 3: 'łatwe', 4: 'opanowane' };
 const WS_DIFF_COLORS = { 'new': '#9ca3af', 1: '#ab55ff', 2: '#ff8018', 3: '#16a34a', 4: '#2563eb' };
 // Symbole pokazywane na przyciskach i plakietkach (NIE cyfry, NIE emoji).
 const WS_DIFF_SYMBOLS = { 'new': '✦', 1: '↻', 2: '▲', 3: '⬤', 4: '✓' };
-// Wartosc zapisywana do kolumny TSV "difficulty" (czytelna i odwracalna przy imporcie).
-const WS_DIFF_TSV = { 'new': 'nowe słowo', 1: 'do powtórki', 2: 'trudne', 3: 'dobre', 4: 'łatwe' };
+// Wartosc zapisywana do kolumny TSV "difficulty". JEDYNY format: liczba 0-4.
+const WS_DIFF_TSV = { 'new': '0', 1: '1', 2: '2', 3: '3', 4: '4' };
 
-// Jesli zaimportowany TSV mial juz kolumne "difficulty", wczytaj oceny jako
-// stan poczatkowy (round-trip). Rozpoznajemy TRZY zapisy tej samej rzeczy:
-//   1) LICZBY 0-4  - do recznego wpisywania w arkuszu: 0 nowe, 1 do powtorki,
-//      2 trudne, 3 dobre, 4 latwe. Puste pole = brak oceny.
-//   2) etykiety slowne ('nowe słowo', 'do powtórki', 'trudne', 'dobre',
-//      'łatwe') - tak zapisuje sama karta przy pobieraniu TSV.
-//   3) stare formaty ('2 - trudne', samo 'nowe', 'new') - kompatybilnosc wstecz.
+// Odczyt kolumny "difficulty" z zaimportowanego TSV (round-trip).
+// JEDEN format, ten sam przy zapisie i odczycie: liczba 0-4.
+//   0 nowe slowo, 1 do powtorki, 2 trudne, 3 latwe, 4 opanowane.
+// Puste pole = brak oznaczenia. Cokolwiek innego jest ignorowane; generator
+// ostrzega o takich wierszach jeszcze przed wygenerowaniem karty.
 if (WS_DIFF_ENABLED) {
   WS_DATA.forEach(r => {
-    const raw = (r.difficulty || '').trim().toLowerCase();
-    if (!raw) return;
-    // Sama liczba 0-4 (najwygodniejsza do wklepania w arkuszu).
-    if (/^[0-4]$/.test(raw)) { r._diff = (raw === '0') ? 'new' : parseInt(raw, 10); return; }
-    if (raw.startsWith('nowe') || raw === 'new') { r._diff = 'new'; return; }
-    // Stare pliki: cyfra na poczatku (np. "2 - trudne", "0 - nowe słowo").
-    const m = /^\\s*([0-4])\\s*[-–—:.)]/.exec(raw);
-    if (m) { r._diff = (m[1] === '0') ? 'new' : parseInt(m[1], 10); return; }
-    // Etykiety slowne.
-    if (raw.indexOf('do powt') !== -1 || raw.indexOf('nie umiem') !== -1 || raw.indexOf('nie pami') !== -1) { r._diff = 1; return; }
-    if (raw.indexOf('trudne') !== -1) { r._diff = 2; return; }
-    if (raw.indexOf('dobre') !== -1) { r._diff = 3; return; }
-    if (raw.indexOf('łatwe') !== -1 || raw.indexOf('latwe') !== -1) { r._diff = 4; return; }
+    const raw = (r.difficulty || '').trim();
+    if (!/^[0-4]$/.test(raw)) return;
+    r._diff = (raw === '0') ? 'new' : parseInt(raw, 10);
   });
 }
 
@@ -6622,10 +6937,62 @@ function wsUnmarkSection(num) {
   if (typeof wsScheduleSave === 'function') wsScheduleSave();
 }
 
+// ── SZEROKOSC LUK W GAP FILL ──────────────────────────────────────────────
+// Atrybut size="" mierzy w "srednich szerokosciach znaku", wiec przy czcionce
+// proporcjonalnej to samo size dawalo raz pole ciasne, raz dwa razy szersze niz
+// slowo - stad wrazenie, ze rozmiar luki szaleje. Mierzymy wiec tekst NAPRAWDE
+// (canvas, dokladnie ta czcionka co w polu) i ustawiamy szerokosc na
+// tekst + padding z CSS. Odstep boczny jest wtedy zawsze identyczny.
+let _wsGapCtx = null;
+function _wsTextWidth(text, font) {
+  if (!_wsGapCtx) {
+    try { _wsGapCtx = document.createElement('canvas').getContext('2d'); }
+    catch (e) { return 0; }
+  }
+  if (!_wsGapCtx) return 0;
+  _wsGapCtx.font = font;
+  return _wsGapCtx.measureText(text || '').width;
+}
+function wsFitGap(inp) {
+  if (!inp) return;
+  const cs = getComputedStyle(inp);
+  const font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+  // Bierzemy NAJSZERSZY z trzech tekstow, ktore moga sie w polu pojawic:
+  // odpowiedz (podpowiada dlugosc slowa i wskakuje po "Rozwiaz"), to co uczen
+  // wlasnie wpisal, oraz placeholder "(1)". Dzieki temu pole nigdy nie zwezi
+  // sie pod wpisanym tekstem ani nie utnie liczby slow.
+  let w = 0;
+  [inp.dataset.answer || '', inp.value || '', inp.placeholder || ''].forEach(t => {
+    const m = _wsTextWidth(t, font);
+    if (m > w) w = m;
+  });
+  // box-sizing: border-box, wiec do szerokosci trzeba doliczyc padding i ramke.
+  const extra = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight)
+              + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth);
+  inp.style.width = Math.ceil(w + extra + 1) + 'px';
+}
+function wsFitAllGaps() {
+  document.querySelectorAll('.gap-input').forEach(wsFitGap);
+}
+// Pisanie: pole rosnie razem z tekstem (nigdy nie ponizej szerokosci odpowiedzi).
+document.addEventListener('input', e => {
+  if (e.target && e.target.classList && e.target.classList.contains('gap-input')) wsFitGap(e.target);
+});
+// Czcionki z Google Fonts doczytuja sie asynchronicznie - pomiar zrobiony przed
+// ich zaladowaniem bylby wykonany na czcionce zastepczej. Mierzymy ponownie.
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(wsFitAllGaps).catch(() => {});
+}
+
 // Rejestr per-sekcyjnych resetow. Kazdy builder zadania rejestruje tu funkcje,
 // ktora zeruje SWOJ wewnetrzny licznik (_xDone_N) - dzieki temu po
 // wyczyszczeniu sekcja nie raportuje fałszywie "ukonczone".
 const WS_SECTION_RESET = {};
+
+// Rejestr per-sekcyjnych "dosypek" dla zadania Sentence Unscramble. Przywracanie
+// postepu dziala na DOM (klasa .done), ale wewnetrzny licznik sekcji zyje w
+// domknieciu tej sekcji - stad ten mostek, wolany z _wsRestoreUnscramble.
+const WS_UNSC_MARK = {};
 
 // Generyczne czyszczenie sekcji: przywraca interaktywne pola do stanu poczatkowego
 // (stan trzymany jest w DOM), zeruje wewnetrzny licznik sekcji i cofa "ukonczono".
@@ -6692,6 +7059,7 @@ function wsClearSection(num) {
     inp.value = '';
     inp.classList.remove('gap-correct', 'gap-wrong');
     inp.disabled = false;
+    wsFitGap(inp);   // po skasowaniu dluzszego wpisu pole wraca do szerokosci slowa
   });
 
   // ── TRANSLATE ── wyczysc pola i schowaj odsloniety wzor odpowiedzi.
@@ -6894,16 +7262,11 @@ function wsRevealAllReview() {
   if (!result) return;
   // Czy cokolwiek jest jeszcze zaslonięte? Jesli tak - odslaniamy wszystko;
   // jesli nic - zaslaniamy z powrotem (przycisk dziala jak przelacznik).
-  const anyCovered = result.querySelector('.ws-review-item-answer:not(.revealed) .ws-review-cover, .ws-review-gap.covered');
+  const anyCovered = result.querySelector('.wsc.covered');
   const reveal = !!anyCovered;
-  result.querySelectorAll('.ws-review-item-answer').forEach(a => {
-    if (a.querySelector('.ws-review-cover')) a.classList.toggle('revealed', reveal);
-  });
-  result.querySelectorAll('.ws-review-gap').forEach(g => {
-    g.classList.toggle('covered', !reveal);
-  });
+  result.querySelectorAll('.wsc').forEach(u => _wsBarSetOpen(u, reveal));
   const btn = document.getElementById('wsReviewRevealAll');
-  if (btn) btn.textContent = reveal ? '🙈 Zasłoń wszystkie' : '👁 Pokaż wszystkie';
+  if (btn) btn.innerHTML = (reveal ? ICO_EYE_OFF_S : ICO_EYE_S) + '<span>' + (reveal ? 'Zasłoń wszystkie' : 'Pokaż wszystkie') + '</span>';
   _wsSyncAllNotes();
   wsSound('tap');
 }
@@ -6915,10 +7278,7 @@ function wsPrintReview() {
   const body = document.getElementById('wsReviewBody');
   if (body && body.hidden) { body.hidden = false; const t = document.getElementById('wsReviewToggle'); if (t) t.setAttribute('aria-expanded','true'); }
   if (typeof wsBuildReview === 'function') wsBuildReview();
-  document.querySelectorAll('.ws-review-item-answer .ws-review-cover').forEach(c => {
-    c.parentNode.classList.add('revealed');
-  });
-  document.querySelectorAll('.ws-review-gap.covered').forEach(g => g.classList.remove('covered'));
+  document.querySelectorAll('.wsc').forEach(u => _wsBarSetOpen(u, true));
   _wsSyncAllNotes();
   document.body.classList.add('ws-print-review-only');
   const cleanup = () => {
@@ -6934,10 +7294,21 @@ function wsPrintReview() {
 // dokladne 'gapfill', przez co wiersze z drugiej/trzeciej instancji gap-fill
 // (G2, G3, G4) nie byly rozpoznawane i w powtorce zaslaniala sie cala odpowiedz
 // zamiast pojedynczych luk.
+// Czy wiersz ma byc pokazany jak gap-fill: pelne zdanie widoczne, a slowa
+// w klamrach zaslonięte.
+//
+// Warunkiem jest oczywiscie obecnosc klamr, ale samo dopasowanie tagu "gapfill"
+// nie wystarcza. W trybie SAMEJ POWTORKI tagow zwykle w ogole nie ma (kolumna
+// tasks jest niepotrzebna), wiec wiersz z klamrami trafialby pod jedna zaslone
+// na cala odpowiedz zamiast pokazac zdanie z lukami. Dlatego klamry uznajemy za
+// luki takze wtedy, gdy karta jest sama powtorka albo gdy wiersz nie ma tagow
+// (a taki wiersz i tak idzie do wszystkich zadan, w tym do gap-fill).
 function _wsIsGap(r) {
+  if (!/\{[^}]+\}/.test(r.en || '')) return false;
   const tasks = r._tasks || [];
-  const hasGap = tasks.some(t => t === 'gapfill' || t.indexOf('gapfill:') === 0);
-  return hasGap && /\{[^}]+\}/.test(r.en || '');
+  if (tasks.length === 0) return true;
+  if (typeof WS_REVIEW_ONLY !== 'undefined' && WS_REVIEW_ONLY) return true;
+  return tasks.some(t => t === 'gapfill' || t.indexOf('gapfill:') === 0);
 }
 
 // Tekst do TTS - dla gap-fill czytamy pelne zdanie bez klamr.
@@ -7024,8 +7395,7 @@ function wsBuildReview() {
       // Jesli w danych zostaly klamry {slowo} (np. wiersz wspoldzielony z gap-fill,
       // ale tutaj traktowany jako cale zdanie), usuwamy klamry i pogrubiamy te slowa,
       // zeby nie wyswietlaly sie surowe nawiasy ani nie ginelo pogrubienie.
-      answerInner = '<span class="ws-review-ans-text">' + _wsRenderAnswerText(r.en) + '</span>'
-        + '<button type="button" class="ws-review-cover" onclick="wsToggleCover(this)" aria-label="Odsłoń lub zasłoń odpowiedź"></button>';
+      answerInner = '<span class="ws-review-ans-text">' + _wsRenderAnswerText(r.en) + '</span>';
     }
 
     // Wiersze z zadania "ułóż zdanie" (unscramble): przypomnienie CALEGO zdania
@@ -7057,11 +7427,12 @@ function wsBuildReview() {
     // Tryb ukrytych ocen: stopka (oceny + TTS) bylaby pustym rzedem z samym
     // glosniczkiem - zamiast tego TTS wskakuje do glownego rzedu obok
     // odpowiedzi, a stopki nie ma wcale. Prosciej i zwarcie.
-    const ttsBtnHtml = '<button type="button" class="ws-review-item-tts' + (WS_DIFF_HIDDEN ? ' ws-review-item-tts-inline' : '') + '" onclick="ttsBtnClick(event, ' + ttsText + ')" title="Posłuchaj" aria-label="Czytaj">🔊</button>';
+    const recoverBtnHtml = '<button type="button" class="ws-review-item-recover" onclick="wsToggleItemCover(this)" title="Odsłoń odpowiedź" aria-label="Odsłoń lub zasłoń odpowiedź">' + ICO_EYE_S + '</button>';
+    const ttsBtnHtml = '<button type="button" class="ws-review-item-tts' + (WS_DIFF_HIDDEN ? ' ws-review-item-tts-inline' : '') + '" onclick="ttsBtnClick(event, ' + ttsText + ')" title="Posłuchaj" aria-label="Czytaj">' + ICO_TTS_S + '</button>';
     const footBlock = WS_DIFF_HIDDEN
       ? ''
       : '<div class="ws-review-row-foot">'
-        + '<span class="ws-diff' + '" data-row="' + i + '"' + selAttr + ' aria-label="Zmień ocenę">' + rateBtns + '</span>'
+        + '<span class="ws-diff' + '" data-row="' + i + '"' + selAttr + ' aria-label="Zmień poziom trudności">' + rateBtns + '</span>'
         + ttsBtnHtml
         + '</div>';
     return '<div class="ws-review-item' + gapCls + '" data-row="' + i + '">'
@@ -7069,7 +7440,7 @@ function wsBuildReview() {
       + '<div class="ws-review-row-main">'
       +   '<span class="ws-review-item-pl">' + _wsEsc(r.pl) + unscHint + '</span>'
       +   '<span class="ws-review-item-arrow">→</span>'
-      +   '<span class="ws-review-item-answer">' + answerInner + '</span>'
+      +   '<span class="ws-review-item-answer">' + answerInner + recoverBtnHtml + '</span>'
       +   (WS_DIFF_HIDDEN ? ttsBtnHtml : '')
       + '</div>'
       + noteBlock
@@ -7081,8 +7452,29 @@ function wsBuildReview() {
     + '<div class="ws-review-list">' + rows + '</div>';
 }
 
-// Buduje strone EN gap-fill: pelne zdanie, ale kazde slowo-luka {x} owiniete
-// w nakladke-zaslone (klik zdejmuje/przywraca pojedyncza luke).
+// JEDEN pasek na caly zakryty fragment. Zamiast nakladki liczonej w pikselach
+// dzielimy sam TEKST na dwie czesci: odslonieta (zwykla) i zakryta (z tlem
+// w kolorze akcentu i przezroczystym tekstem). Odslanianie = przesuniecie
+// jednej liczby, czyli granicy podzialu.
+//
+// Dlaczego tak, a nie nakladkami:
+//   - ZERO pomiarow geometrii. Poprzednie wersje liczyly granice liter przez
+//     getBoundingClientRect dla kazdej litery, co przy dluzszej liscie potrafilo
+//     mulic i rozjezdzac sie po zawinieciu wiersza.
+//   - ZERO elementow na slowo. Caly fragment to dwa spany, niezaleznie od dlugosci.
+//   - Pasek zawija sie sam razem z tekstem, bo JEST tekstem. Zaokraglenia na
+//     poczatku i koncu zalatwia box-decoration-break: clone.
+//   - Szerokosc sie nie zmienia (tekst tylko staje sie przezroczysty), wiec przy
+//     odslanianiu nic nie skacze.
+function _wsCoverBar(text, bold) {
+  const t = String(text);
+  return '<span class="wsc covered" data-txt="' + _wsEsc(t) + '"' + (bold ? ' data-bold="1"' : '') + '>'
+    + '<span class="wsc-r"></span><span class="wsc-h">' + _wsEsc(t) + '</span>'
+    + '</span>';
+}
+
+// Buduje strone EN gap-fill: pelne zdanie widoczne, ale slowa w klamrach {x}
+// zakryte. Tafla obejmuje TYLKO to jedno slowo, reszta zdania zostaje czytelna.
 function _wsRenderGapCovered(r) {
   let html = '';
   let last = 0;
@@ -7090,10 +7482,7 @@ function _wsRenderGapCovered(r) {
   let m;
   while ((m = re.exec(r.en)) !== null) {
     if (m.index > last) html += _wsEsc(r.en.slice(last, m.index));
-    html += '<span class="ws-review-gap covered">'
-      + '<strong class="ws-review-gap-word">' + _wsEsc(m[1]) + '</strong>'
-      + '<button type="button" class="ws-review-gap-cover" onclick="wsToggleGapCover(this)" aria-label="Odsłoń lub zasłoń słowo"></button>'
-      + '</span>';
+    html += _wsCoverBar(m[1], true);
     last = m.index + m[0].length;
   }
   if (last < r.en.length) html += _wsEsc(r.en.slice(last));
@@ -7113,74 +7502,221 @@ function _wsRenderAnswerText(en) {
   while ((m = re.exec(en)) !== null) {
     found = true;
     if (m.index > last) html += _wsEsc(en.slice(last, m.index));
-    html += '<strong class="ws-review-gap-word">' + _wsEsc(m[1]) + '</strong>';
+    html += _wsEsc(m[1]);
     last = m.index + m[0].length;
   }
   if (last < en.length) html += _wsEsc(en.slice(last));
-  return found ? html : _wsEsc(en);
+  // Typy inne niz gap-fill: CALA odpowiedz pod jednym paskiem.
+  return _wsCoverBar(found ? _wsStripBraces(en) : en, false);
 }
 
-// Generuje umiarkowany efekt pekajacego szkla na zaslonie. host = element zaslony
-// (.ws-review-cover lub .ws-review-gap-cover). Tworzy kilka odlamkow (clip-path),
-// kazdy odlatuje w losowym kierunku i znika. Sam kontener usuwa sie po animacji.
-function _wsShatter(host) {
-  if (!host) return;
-  const parent = host.parentNode;
-  if (!parent) return;
-  // Umiarkowanie gestszy zestaw odlamkow - 9 wielokatow rozchodzacych sie od
-  // srodka tafli. Wciaz lekki dla przegladarki, ale rozbicie wyglada ladniej.
-  const shards = [
-    'polygon(0% 0%, 34% 0%, 46% 48%, 0% 38%)',
-    'polygon(34% 0%, 68% 0%, 46% 48%)',
-    'polygon(68% 0%, 100% 0%, 100% 36%, 46% 48%)',
-    'polygon(100% 36%, 100% 66%, 46% 48%)',
-    'polygon(100% 66%, 100% 100%, 64% 100%, 46% 48%)',
-    'polygon(64% 100%, 32% 100%, 46% 48%)',
-    'polygon(32% 100%, 0% 100%, 0% 70%, 46% 48%)',
-    'polygon(0% 70%, 0% 38%, 46% 48%)',
-    'polygon(0% 38%, 46% 48%, 34% 0%)'
-  ];
-  const wrap = document.createElement('span');
-  wrap.className = 'ws-review-shatter';
-  shards.forEach((clip, k) => {
-    const sh = document.createElement('span');
-    sh.className = 'ws-review-shard';
-    sh.style.clipPath = clip;
-    sh.style.webkitClipPath = clip;
-    // Kierunek rozrzutu - lekko losowy, ale stabilny rozklad na boki.
-    const ang = (k / shards.length) * Math.PI * 2 + (Math.random() - 0.5);
-    const dist = 14 + Math.random() * 16;
-    sh.style.setProperty('--sx', (Math.cos(ang) * dist).toFixed(1) + 'px');
-    sh.style.setProperty('--sy', (Math.sin(ang) * dist).toFixed(1) + 'px');
-    sh.style.setProperty('--sr', ((Math.random() - 0.5) * 90).toFixed(1) + 'deg');
-    wrap.appendChild(sh);
-  });
-  parent.appendChild(wrap);
-  setTimeout(() => { if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }, 560);
+function _wsStripBraces(en) {
+  return String(en).replace(/\{([^}]+)\}/g, '$1');
 }
 
-// Zasłona całej odpowiedzi (typy inne niż gap-fill). Nakładka leży NA widocznej
-// pod spodem odpowiedzi; klik ją zdejmuje (efekt pękania), kolejny klik przywraca.
-function wsToggleCover(btn) {
-  const ans = btn.parentNode; // .ws-review-item-answer
-  if (!ans) return;
-  const wasCovered = !ans.classList.contains('revealed');
-  ans.classList.toggle('revealed');
-  _wsSyncNote(ans.closest('.ws-review-item'));
-  if (wasCovered) { _wsShatter(btn); wsSound('shatter'); } // pekanie + dzwiek szkla
-  else wsSound('tap');                                     // zaslanianie z powrotem
+// ── SILNIK ZASŁON ────────────────────────────────────────────────────────
+// Stan jednej zaslony to JEDNA LICZBA: ile znakow jest juz odslonietych.
+// Nie ma pomiarow, nie ma clip-path, nie ma elementow na litere. Odslanianie
+// to przepisanie dwoch textContent - operacja, ktora przegladarka wykonuje
+// natychmiast niezaleznie od dlugosci listy.
+
+function _wsBarUnits() {
+  return Array.prototype.slice.call(document.querySelectorAll('#wsReviewResult .wsc'));
 }
 
-// Zasłona pojedynczej luki w gap-fill (toggle, z efektem pekania przy odslanianiu).
-function wsToggleGapCover(btn) {
-  const gap = btn.parentNode; // .ws-review-gap
-  if (!gap) return;
-  const wasCovered = gap.classList.contains('covered');
-  gap.classList.toggle('covered');
-  _wsSyncNote(gap.closest('.ws-review-item'));
-  if (wasCovered) { _wsShatter(btn); wsSound('shatter'); }
-  else wsSound('tap');
+// Ustawia liczbe odslonietych znakow. Spacje przeskakujemy, zeby zaslona nie
+// zatrzymywala sie na odstepie (wygladaloby to jak zaciecie).
+function _wsBarSet(unit, n, dir) {
+  const txt = unit.getAttribute('data-txt') || '';
+  let v = Math.max(0, Math.min(txt.length, n));
+  if (dir > 0) { while (v < txt.length && txt.charAt(v) === ' ') v++; }
+  else if (dir < 0) { while (v > 0 && txt.charAt(v - 1) === ' ') v--; }
+  unit._wsN = v;
+  const rev = unit.querySelector('.wsc-r');
+  const hid = unit.querySelector('.wsc-h');
+  if (rev) rev.textContent = txt.slice(0, v);
+  if (hid) hid.textContent = txt.slice(v);
+  const open = (v >= txt.length);
+  const wasOpen = unit.classList.contains('wsc-open');
+  unit.classList.toggle('covered', !open);
+  unit.classList.toggle('wsc-open', open);
+  // Notatke przeliczamy TYLKO przy zmianie stanu zakryte/odsloniete. Przy
+  // trzymanym klawiszu strzalki zdarzenia leca kilkanascie razy na sekunde,
+  // a _wsSyncNote przeszukuje cala pozycje - to byl zbedny koszt na kazda litere.
+  const item = unit.closest('.ws-review-item');
+  if (open !== wasOpen) _wsSyncNote(item);
+  _wsSyncRecoverBtn(item);
 }
+
+// Przelacznik widocznosci CALEJ pozycji: cokolwiek zakryte -> odslon wszystko,
+// wszystko odsloniete -> zaslon z powrotem. Wygodniejsze niz celowanie myszka
+// w pierwsza litere, zwlaszcza przy krotkich odpowiedziach.
+function wsToggleItemCover(btn) {
+  const item = btn.closest('.ws-review-item');
+  if (!item) return;
+  const units = item.querySelectorAll('.wsc');
+  const anyCovered = Array.prototype.some.call(units, u => u.classList.contains('covered'));
+  units.forEach(u => _wsBarSetOpen(u, anyCovered));
+  wsSound('tap');
+}
+
+// Ikona idzie za stanem: oko = "odslon", strzalka w dol = "zaslon z powrotem".
+// Przycisk jest widoczny ZAWSZE i nie zmienia rozmiaru - stoi w stalym miejscu
+// w rogu, wiec nic nie miga ani nie przeskakuje przy odslanianiu.
+function _wsSyncRecoverBtn(item) {
+  if (!item) return;
+  const btn = item.querySelector('.ws-review-item-recover');
+  if (!btn) return;
+  const anyCovered = !!item.querySelector('.wsc.covered');
+  const want = anyCovered ? ICO_EYE_S : ICO_RECOVER_S;
+  if (btn._wsIco !== want) { btn.innerHTML = want; btn._wsIco = want; }
+  btn.setAttribute('title', anyCovered ? 'Odsłoń odpowiedź' : 'Zasłoń odpowiedź z powrotem');
+}
+
+function _wsBarSetOpen(unit, open) {
+  const txt = unit.getAttribute('data-txt') || '';
+  _wsBarSet(unit, open ? txt.length : 0, 0);
+}
+
+// ── AKTYWNA ZASŁONA (na niej dzialaja strzalki) ──
+let _wsActiveBar = null;
+function _wsBarActivate(unit) {
+  if (_wsActiveBar === unit) return;
+  if (_wsActiveBar) _wsActiveBar.classList.remove('wsc-active');
+  _wsActiveBar = unit;
+  if (unit) unit.classList.add('wsc-active');
+}
+function _wsBarCurrent() {
+  if (_wsActiveBar && _wsActiveBar.isConnected) return _wsActiveBar;
+  const list = _wsBarUnits();
+  const first = list.filter(u => u.classList.contains('covered'))[0] || list[0] || null;
+  if (first) {
+    _wsBarActivate(first);
+    // Pierwsze nacisniecie strzalki bez wczesniejszego klikniecia dziala na
+    // pierwszej zakrytej odpowiedzi - przewijamy do niej, zeby nie wygladalo,
+    // ze "nic sie nie stalo" (efekt byl poza widocznym obszarem listy).
+    _wsBarScrollIfNeeded(first);
+  }
+  return first;
+}
+
+// Pozycja znaku pod kursorem - z natywnego API przegladarki, wiec BEZ wlasnych
+// pomiarow. Gdy API nie zadziala, klik po prostu odslania calosc.
+function _wsBarCharAt(unit, x, y) {
+  let node = null, off = 0;
+  try {
+    if (document.caretPositionFromPoint) {
+      const cp = document.caretPositionFromPoint(x, y);
+      if (cp) { node = cp.offsetNode; off = cp.offset; }
+    } else if (document.caretRangeFromPoint) {
+      const r = document.caretRangeFromPoint(x, y);
+      if (r) { node = r.startContainer; off = r.startOffset; }
+    }
+  } catch (e) { return null; }
+  if (!node) return null;
+  const rev = unit.querySelector('.wsc-r');
+  const hid = unit.querySelector('.wsc-h');
+  if (rev && rev.contains(node)) return off;
+  if (hid && hid.contains(node)) return (unit._wsN || 0) + off;
+  return null;
+}
+
+// Granica idzie za kursorem: klikniecie ustawia ja w miejscu klikniecia,
+// a PRZYTRZYMANIE lewego przycisku i ruch odslania (lub zaslania) plynnie,
+// litera po literze. Obsluga na zdarzeniach pointer, wiec dziala tak samo
+// myszka, palcem i rysikiem.
+let _wsBarDragging = false;
+function _wsBarApplyAt(unit, x, y, fallbackToggle) {
+  const n = _wsBarCharAt(unit, x, y);
+  if (n === null) {
+    if (fallbackToggle) _wsBarSetOpen(unit, unit.classList.contains('covered'));
+    return;
+  }
+  if (n !== (unit._wsN || 0)) _wsBarSet(unit, n, 0);
+}
+document.addEventListener('pointerdown', e => {
+  if (e.button !== undefined && e.button !== 0) return;   // tylko lewy przycisk
+  const unit = e.target.closest && e.target.closest('.wsc');
+  if (!unit) return;
+  e.preventDefault();          // bez tego przeciaganie zaznaczaloby tekst
+  _wsBarDragging = true;
+  _wsBarActivate(unit);
+  _wsBarApplyAt(unit, e.clientX, e.clientY, true);
+  wsSound('tap');
+});
+document.addEventListener('pointermove', e => {
+  if (!_wsBarDragging) return;
+  // Kursor moze zjechac na sasiednia zaslone - wtedy przejmuje ona prowadzenie.
+  let unit = null;
+  if (document.elementFromPoint) {
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    unit = (el && el.closest) ? el.closest('.wsc') : null;
+  }
+  if (!unit) unit = _wsActiveBar;
+  if (!unit) return;
+  if (unit !== _wsActiveBar) _wsBarActivate(unit);
+  _wsBarApplyAt(unit, e.clientX, e.clientY, false);
+});
+document.addEventListener('pointerup', () => { _wsBarDragging = false; });
+document.addEventListener('pointercancel', () => { _wsBarDragging = false; });
+
+// Podwojny klik: cala odpowiedz od razu.
+document.addEventListener('dblclick', e => {
+  const unit = e.target.closest && e.target.closest('.wsc');
+  if (!unit) return;
+  e.preventDefault();
+  _wsBarActivate(unit);
+  // Przelacznik: odslania calosc, a na odslonietej zaslania z powrotem.
+  // To najszybszy sposob na cofniecie przypadkowego odkrycia jednej pozycji.
+  _wsBarSetOpen(unit, unit.classList.contains('covered'));
+});
+
+// ── KLAWIATURA ──
+// Kursor jest zwykla zmienna, NIE fokusem DOM. Wczesniejsza wersja wymagala
+// document.activeElement === element zaslony, ale pointerdown wola
+// preventDefault, co wlasnie uniemozliwia nadanie fokusu - dlatego strzalki
+// nie dzialaly. Tutaj nasluch jest globalny i niezalezny od fokusu.
+function _wsBarStep(delta) {
+  let unit = _wsBarCurrent();
+  if (!unit) return;
+  const list = _wsBarUnits();
+  const txt = () => unit.getAttribute('data-txt') || '';
+  const n = unit._wsN || 0;
+  // Na koncu fragmentu strzalka przeskakuje do nastepnego (i odwrotnie w lewo).
+  if (delta > 0 && n >= txt().length) {
+    const nxt = list[list.indexOf(unit) + 1];
+    if (!nxt) return;
+    _wsBarActivate(nxt);
+    unit = nxt;
+    if ((unit._wsN || 0) >= (unit.getAttribute('data-txt') || '').length) return;
+  } else if (delta < 0 && n <= 0) {
+    const prv = list[list.indexOf(unit) - 1];
+    if (!prv) return;
+    _wsBarActivate(prv);
+    unit = prv;
+  }
+  _wsBarSet(unit, (unit._wsN || 0) + delta, delta);
+  _wsBarScrollIfNeeded(unit);
+}
+
+// scrollIntoView wymusza przeliczenie ukladu, wiec wolamy je dopiero wtedy, gdy
+// zaslona faktycznie wyszla poza ekran - a nie przy kazdej literze.
+function _wsBarScrollIfNeeded(unit) {
+  if (!unit || !unit.getBoundingClientRect) return;
+  const r = unit.getBoundingClientRect();
+  const h = window.innerHeight || document.documentElement.clientHeight;
+  if (r.top >= 0 && r.bottom <= h) return;
+  try { unit.scrollIntoView({ block: 'center', inline: 'nearest' }); } catch (e) {}
+}
+document.addEventListener('keydown', e => {
+  const tag = (document.activeElement && document.activeElement.tagName) || '';
+  if (tag === 'TEXTAREA' || tag === 'INPUT') return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+  if (!document.querySelector('#wsReviewResult .wsc')) return;
+  e.preventDefault();
+  _wsBarStep(e.key === 'ArrowRight' ? 1 : -1);
+});
 
 // Notatka pokazuje sie dopiero, gdy w danej pozycji NIC nie jest juz zaslonięte
 // (przy gap-fill z kilkoma lukami: po odslonieciu wszystkich). Zaslonięcie
@@ -7190,7 +7726,7 @@ function _wsSyncNote(item) {
   if (!item) return;
   const note = item.querySelector('.ws-review-note');
   if (!note) return;
-  const stillCovered = item.querySelector('.ws-review-item-answer:not(.revealed) .ws-review-cover, .ws-review-gap.covered');
+  const stillCovered = item.querySelector('.wsc.covered');
   const open = !stillCovered;
   item.classList.toggle('note-open', open);
   note.setAttribute('aria-hidden', open ? 'false' : 'true');
@@ -7304,7 +7840,7 @@ function wsToggleSound() {
   if (WS_RATER) wsSSset(WS_SFX_KEY, WS_SFX_ON ? '1' : '0');
   else wsLSset(WS_SFX_KEY, WS_SFX_ON ? '1' : '0');
   document.querySelectorAll('.ws-sound-toggle').forEach(btn => {
-    btn.textContent = WS_SFX_ON ? '🔊' : '🔇';
+    btn.innerHTML = WS_SFX_ON ? ICO_TTS_ON_S : ICO_MUTE_S;
     btn.classList.toggle('sfx-off', !WS_SFX_ON);
     btn.setAttribute('aria-pressed', WS_SFX_ON ? 'true' : 'false');
     btn.setAttribute('title', WS_SFX_ON ? 'Wyłącz dźwięki' : 'Włącz dźwięki');
@@ -7527,7 +8063,7 @@ function _wsCollectWriting() {
 // zapis do localStorage ORAZ przez eksport TSV (#progress) - jedna prawda.
 function wsBuildProgressState() {
   return {
-      v: 2,                                    // wersja schematu (1 = stara, 2 = nowa)
+      v: 2,                                    // wersja schematu stanu karty
       done: Array.from(_wsDone),
       // Oceny trudnosci per wiersz WS_DATA (0 = brak oceny).
       diff: WS_DIFF_ENABLED ? WS_DATA.map(r => r._diff || 0) : undefined,
@@ -7746,6 +8282,9 @@ function _wsRestoreUnscramble(data) {
       if (cardData.done) {
         card.classList.add('done');
         card.querySelectorAll('.unsc-word').forEach(w => w.setAttribute('draggable', 'false'));
+        // Dosyp karte do licznika sekcji (inaczej pasek postepu i komunikat
+        // koncowy rozjezdzaly sie po odswiezeniu strony) i odslon atrapy.
+        if (WS_UNSC_MARK[num]) { try { WS_UNSC_MARK[num](cardData.idx); } catch (e) {} }
       }
     });
   });
@@ -7915,7 +8454,7 @@ function resetWorksheet() {
   // KOPIA DO OCENIANIA: pelny reset skasowalby zapis razem z odpowiedziami
   // ucznia. Tutaj "reset" znaczy wiec: zdejmij wszystkie oceny.
   if (WS_RATER) {
-    if (!confirm('Zdjąć WSZYSTKIE oceny trudności?\\n\\nOdpowiedzi zapisane na karcie pracy zostaną nietknięte.')) return;
+    if (!confirm('Zdjąć WSZYSTKIE oznaczenia trudności?\\n\\nOdpowiedzi zapisane na karcie pracy zostaną nietknięte.')) return;
     WS_DATA.forEach(function(r) { r._diff = 0; });
     WS_DATA.forEach(function(r, i) { wsPaintDiff(i); });
     if (typeof wsBuildReview === 'function') { try { wsBuildReview(); } catch (e) {} }
@@ -7968,8 +8507,14 @@ function downloadTSV() {
       // co dystraktory ginely przy pobieraniu. Tutaj sklejamy je z powrotem,
       // zeby kolumna "en" zachowala pelny zestaw opcji (round-trip).
       if (h === 'en' && row._quizOpts && row._quizOpts.length) {
-        const full = [row.en, ...row._quizOpts].join('|');
+        // Separator ze spacjami (" | ") - w arkuszu duzo czytelniejszy niz sama
+        // kreska. Parser i tak przycina spacje, wiec oba zapisy wczytaja sie tak samo.
+        const full = [row.en, ...row._quizOpts].join(' | ');
         return full.replace(/\\t/g, ' ').replace(/\\r?\\n/g, ' ');
+      }
+      // Atrapy zapisujemy tym samym, czytelnym separatorem.
+      if (h === 'distractors' && row._distractors && row._distractors.length) {
+        return row._distractors.join(' | ').replace(/\\t/g, ' ').replace(/\\r?\\n/g, ' ');
       }
       const v = row[h];
       if (v == null) return '';
@@ -8085,7 +8630,7 @@ function wsOpenRaterCopy() {
   try {
     // Nazwane okno: kolejne klikniecia wracaja do tej samej kopii zamiast
     // mnozyc zakladki.
-    var w = window.open(location.href.split('#')[0] + '#oceny', 'wsrater-' + WS_STORAGE_KEY);
+    var w = window.open(location.href.split('#')[0] + '#trudnosc', 'wsrater-' + WS_STORAGE_KEY);
     if (w) { try { w.focus(); } catch (e) {} }
     else alert('Przeglądarka zablokowała otwarcie okna. Zezwól na wyskakujące okienka dla tej strony i kliknij ponownie.');
   } catch (e) {}
@@ -8099,6 +8644,9 @@ function _wsPaintEyeBtn(btn, on, titleOn, titleOff) {
   btn.classList.toggle('ws-tool-off', !on);
   btn.setAttribute('aria-pressed', on ? 'true' : 'false');
   btn.setAttribute('title', on ? titleOn : titleOff);
+  // Ikona idzie za stanem: otwarte oko = widoczne, przekreslone = ukryte.
+  // Sama zmiana przygaszenia bywala niejednoznaczna na pierwszy rzut oka.
+  btn.innerHTML = on ? ICO_EYE_S : ICO_EYE_OFF_S;
 }
 
 // Przelacza widocznosc CALEGO systemu ocen na tej karcie. Zero re-renderu -
@@ -8111,7 +8659,7 @@ function wsSetDiffVisibility(show) {
   if (WS_DIFF_HIDDEN) wsHideDiffOverlays();
   wsSSset(WS_DIFFVIS_KEY, show ? '1' : '0');
   _wsPaintEyeBtn(document.getElementById('wsDiffVisBtn'), show,
-    'Ukryj oceny trudności', 'Pokaż oceny trudności');
+    'Ukryj oznaczenia trudności', 'Pokaż oznaczenia trudności');
   if (typeof wsBuildReview === 'function') { try { wsBuildReview(); } catch (e) {} }
   WS_DATA.forEach(function(r, i) { wsPaintDiff(i); });
   if (typeof wsUpdateReviewCount === 'function') wsUpdateReviewCount();
@@ -8125,15 +8673,15 @@ function wsToggleDiffVis() {
 // znika (nie ma sensu otwierac kopii kopii), a oko zaczyna sterowac
 // widocznoscia ocen na DRUGIEJ karcie.
 function wsRaterBoot() {
-  document.title = 'Oceny · ' + WS_TITLE;
+  document.title = 'Trudność · ' + WS_TITLE;
   var copyBtn = document.getElementById('wsDiffCopyBtn');
   if (copyBtn) copyBtn.remove();
   var eye = document.getElementById('wsDiffVisBtn');
   if (eye) {
     eye.setAttribute('onclick', 'wsRaterToggleRemoteVis()');
     eye.onclick = wsRaterToggleRemoteVis;
-    eye.setAttribute('aria-label', 'Pokaż lub ukryj oceny na karcie pracy');
-    _wsPaintEyeBtn(eye, false, 'Ukryj oceny na karcie pracy', 'Pokaż oceny na karcie pracy');
+    eye.setAttribute('aria-label', 'Pokaż lub ukryj oznaczenia na karcie pracy');
+    _wsPaintEyeBtn(eye, false, 'Ukryj oznaczenia na karcie pracy', 'Pokaż oznaczenia na karcie pracy');
   }
 }
 
@@ -8146,7 +8694,7 @@ function wsRaterToggleRemoteVis() {
     try { _wsDiffBC.postMessage({ t: 'wsdiffvis', show: _wsRemoteVis }); } catch (e) {}
   }
   _wsPaintEyeBtn(document.getElementById('wsDiffVisBtn'), _wsRemoteVis,
-    'Ukryj oceny na karcie pracy', 'Pokaż oceny na karcie pracy');
+    'Ukryj oznaczenia na karcie pracy', 'Pokaż oznaczenia na karcie pracy');
   wsSound('tap');
 }
 
@@ -8169,9 +8717,11 @@ window.addEventListener('load', () => {
     // Ikona oka musi odpowiadac stanowi FAKTYCZNIE przywroconemu (z sesji),
     // a nie temu, co wpisano w HTML przy generowaniu.
     _wsPaintEyeBtn(document.getElementById('wsDiffVisBtn'), !WS_DIFF_HIDDEN,
-      'Ukryj oceny trudności', 'Pokaż oceny trudności');
+      'Ukryj oznaczenia trudności', 'Pokaż oznaczenia trudności');
   }
   wsPaintAllDiff();
+  // Po przywroceniu postepu w lukach moga siedziec dluzsze wpisy niz odpowiedz.
+  wsFitAllGaps();
   if (typeof wsUpdateReviewCount === 'function') wsUpdateReviewCount();
   // Do kazdej sekcji dokladamy przycisk "Wyczyść sekcję" (czysci interaktywne pola
   // i cofa "ukonczono", nie ruszajac ocen trudnosci). Robimy to tu, zeby nie
@@ -8186,8 +8736,8 @@ window.addEventListener('load', () => {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'ws-btn-clear-sec';
-    btn.textContent = '↺ Wyczyść sekcję';
-    btn.title = 'Wyczyść odpowiedzi w tej sekcji (oceny trudności zostają)';
+    btn.innerHTML = ICO_UNDO_S + '<span>Wyczyść sekcję</span>';
+    btn.title = 'Wyczyść odpowiedzi w tej sekcji (oznaczenia trudności zostają)';
     btn.addEventListener('click', () => wsClearSection(num));
     let actions = sec.querySelector('.ws-actions');
     if (!actions) {
@@ -8200,7 +8750,7 @@ window.addEventListener('load', () => {
   });
   // Ustaw poczatkowy wyglad przelacznika dzwiekow wg zapisanego stanu.
   document.querySelectorAll('.ws-sound-toggle').forEach(btn => {
-    btn.textContent = WS_SFX_ON ? '🔊' : '🔇';
+    btn.innerHTML = WS_SFX_ON ? ICO_TTS_ON_S : ICO_MUTE_S;
     btn.classList.toggle('sfx-off', !WS_SFX_ON);
     btn.setAttribute('aria-pressed', WS_SFX_ON ? 'true' : 'false');
     btn.setAttribute('title', WS_SFX_ON ? 'Wyłącz dźwięki' : 'Włącz dźwięki');
@@ -8298,6 +8848,33 @@ function resolveFontSet(key) {
 // 'grid' (jak dawny atelier), 'dots' (nowe), 'none'. Zwraca { html, css }.
 // Zwraca { html, css } wstrzykiwane do karty.
 function buildBackground(style, accent, accent2, accent3, accentV) {
+  if (style === 'html') {
+    const code = (STATE.bgHtmlCode || '').trim();
+    // Brak kodu = zachowaj sie jak "Brak" (bez tla) - tak samo jak przy SVG.
+    if (!code) return { html: '', css: '' };
+    const op = STATE.bgHtmlOpacity || 1;
+    // IZOLACJA: wklejony kod trafia do iframe srcdoc, a nie prosto do karty.
+    // Bez tego jeden <style> z tla (np. "div { position:absolute }") potrafilby
+    // rozlozyc cala karte pracy. W ramce dziala tez JS i animacje CSS.
+    const doc = '<!DOCTYPE html><html><head><meta charset="utf-8">'
+      + '<style>html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:transparent;}</style>'
+      + '</head><body>' + code + '</body></html>';
+    return {
+      html: `<iframe class="ws-bg-html" srcdoc="${escapeHtml(doc)}" title="Tło" aria-hidden="true" tabindex="-1" scrolling="no" loading="lazy"></iframe>`,
+      css: `
+.ws-bg-html {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+  border: 0;
+  /* Tlo nie moze przechwytywac klikniec ani focusu - karta jest interaktywna. */
+  pointer-events: none;
+  z-index: 0;
+  opacity: ${op};
+}
+/* Na papierze animowane tlo jest bezuzyteczne (i zjada toner). */
+@media print { .ws-bg-html { display: none !important; } }`
+    };
+  }
   if (style === 'svg') {
     // Akceptujemy <svg>, blok CSS z background-image albo goly data URI
     // (patrz normalizeSvgInput) - zawsze sprowadzamy do czystego kodu SVG.
@@ -8483,6 +9060,7 @@ function buildWorksheetCSS(t) {
   --ws-card: ${t.cardBg};
   --ws-border: ${t.border};
   --ws-border-strong: ${t.borderStrong};
+  --ws-flash-border: ${t.flashBorder};
   --ws-display: ${t.displayFont};
   --ws-body: ${t.bodyFont};
   --ws-mono: ${t.monoFont};
@@ -8496,6 +9074,9 @@ function buildWorksheetCSS(t) {
   --ws-radius-sm: ${t.radiusSm || '9px'};
   --ws-ok: #16a34a;
   --ws-ok-bg: rgba(22, 163, 74, 0.1);
+  /* Kolor podpowiedzi - bursztyn. Dwa warianty, bo na ciemnym tle ciemny
+     bursztyn ginie, a na jasnym jasny jest nieczytelny. */
+  --ws-hint: ${isDarkTheme ? '#fbbf24' : '#c2740a'};
   --ws-no: #dc2626;
   --ws-no-bg: rgba(220, 38, 38, 0.1);
 }
@@ -9015,7 +9596,7 @@ ${t.sharp ? `
   padding: 1.5rem 1.85rem;
   text-align: center;
   background: var(--ws-flash-gradient);
-  border: 1.5px solid ${t.flashBorder};
+  border: 1.5px solid var(--ws-flash-border);
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   transition: box-shadow 0.25s;
   overflow: hidden;
@@ -9376,7 +9957,12 @@ ${t.sharp ? `
 .scramble-letter-space { opacity: 0.85; font-size: 0.95rem; }
 .scramble-letter-space.used { opacity: 0.28; }
 .scramble-backspace {
-  font-size: 1.05rem;
+  /* Ikona jest SVG (nie tekstem), wiec sam font-size jej nie wysrodkuje -
+     potrzebny grid + place-items, inaczej klei sie do lewej krawedzi.
+     font-size steruje TYLKO wielkoscia ikony (.ws-ico liczy sie w em). */
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
   width: 42px; height: 42px;
   margin-left: 0.2rem;
   background: var(--ws-bg);
@@ -9432,8 +10018,8 @@ ${t.sharp ? `
   transition: all 0.18s;
   font-size: 1.05rem;
 }
-.scramble-check:hover { border-color: var(--ws-accent); color: var(--ws-accent); }
-.scramble-hint-btn:hover { border-color: var(--ws-accent); color: var(--ws-accent); }
+.scramble-check:hover,
+.scramble-hint-btn:hover,
 .scramble-solve-btn:hover { border-color: var(--ws-accent); color: var(--ws-accent); }
 .scramble-solve-btn:disabled,
 .scramble-hint-btn:disabled,
@@ -9566,16 +10152,9 @@ ${t.sharp ? `
 .ws-review-sort-btn.sel {
   background: var(--ws-accent); color: #fff; border-color: var(--ws-accent);
 }
-.ws-review-reveal-all {
-  font-family: var(--ws-body); font-size: 0.85rem; font-weight: 600;
-  padding: 0.4rem 0.9rem; border-radius: 999px;
-  background: var(--ws-accent-soft); color: var(--ws-accent);
-  border: 1px solid var(--ws-border-strong); cursor: pointer;
-  transition: all 0.15s;
-}
-.ws-review-reveal-all:hover { border-color: var(--ws-accent); filter: brightness(0.97); }
-
-/* Przycisk "Drukuj powtórkę" - zwyczajny, spójny z "Pokaż wszystkie". */
+/* "Pokaż wszystkie" i "Drukuj powtórkę" to ten sam przycisk wizualnie -
+   jedna regula zamiast dwoch blizniaczych kopii. */
+.ws-review-reveal-all,
 .ws-review-print {
   font-family: var(--ws-body); font-size: 0.85rem; font-weight: 600;
   padding: 0.4rem 0.9rem; border-radius: 999px;
@@ -9583,6 +10162,7 @@ ${t.sharp ? `
   border: 1px solid var(--ws-border-strong); cursor: pointer;
   transition: all 0.15s;
 }
+.ws-review-reveal-all:hover,
 .ws-review-print:hover { border-color: var(--ws-accent); filter: brightness(0.97); }
 
 .ws-review-result { margin-top: 0; }
@@ -9619,125 +10199,73 @@ body.ws-diff-hidden .ws-review-row-main {
 .ws-review-print-rating { display: none; }
 .ws-review-item-arrow { color: var(--ws-text-dim); text-align: center; }
 /* Strefa odpowiedzi: odpowiedz JEST w DOM pod spodem, nakladka lezy na niej. */
-/* Nakladka na CALA odpowiedz (typy inne niz gap-fill). Lezy NAD tekstem
-   (z-index) z kryjacym tlem, wiec tekst pod spodem jest niewidoczny. Klik
-   ja zdejmuje (.revealed). Po zdjeciu w rogu zostaje maly uchwyt do przywrocenia. */
 .ws-review-ans-text { color: var(--ws-text); display: block; word-break: break-word; }
-.ws-review-gap-word {
+.ws-review-item-answer { position: relative; min-width: 0; }
+/* ── ZASŁONA (jeden pasek na fragment) ────────────────────────────────────
+   Zaslona NIE jest osobna nakladka - to sam tekst z tlem w kolorze akcentu
+   i przezroczysta trescia. Dzieki temu:
+     - lamie sie na nowe linie razem z tekstem, bo nim jest,
+     - nie wymaga zadnych pomiarow ani przeliczen przy zmianie rozmiaru okna,
+     - szerokosc nie zmienia sie przy odslanianiu (tekst tylko przestaje byc
+       przezroczysty), wiec uklad nigdy nie skacze.
+   box-decoration-break: clone daje zaokraglenie na poczatku i koncu KAZDEGO
+   fragmentu po zawinieciu wiersza - bez tego pasek wygladalby jak ucięty. */
+.wsc { cursor: pointer; }
+.ws-review-hint {
+  font-size: 0.78rem;
+  color: var(--ws-text-dim);
+  line-height: 1.5;
+  margin: 0.2rem 0 0.9rem;
+}
+.ws-review-hint kbd {
+  font-family: var(--ws-mono);
+  font-size: 0.9em;
+  background: var(--ws-accent-soft);
+  color: var(--ws-accent);
+  border-radius: 4px;
+  padding: 0.05em 0.35em;
+}
+@media print { .ws-review-hint { display: none !important; } }
+.wsc-h {
+  background-color: color-mix(in srgb, var(--ws-accent) 46%, #ffffff);
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  border-radius: 6px;
+  padding: 0.08em 0.18em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  /* Tekst pod spodem nie moze dac sie zaznaczyc ani skopiowac - inaczej
+     wystarczyloby przeciagnac myszka, zeby zobaczyc odpowiedz. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.wsc:hover .wsc-h { filter: brightness(1.04); }
+/* Podkreslenie odslonietego fragmentu TYLKO przy lukach gap-fill. Tam niesie
+   informacje: pokazuje, ktore slowo bylo brakujace w zdaniu, ktore poza tym
+   jest w calosci widoczne. W pozostalych zadaniach zakryta jest CALA odpowiedz,
+   wiec podkreslenie objeloby caly tekst (np. dluga kwestie w Cornell) i tylko
+   rozpraszaloby, nie wnoszac nic. */
+.wsc[data-bold] > .wsc-r {
+  box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--ws-accent) 40%, transparent);
+}
+/* Nic jeszcze nie odsloniete - zero podkreslenia (inaczej wisialaby kreska
+   szerokosci zera, ktora niektore przegladarki i tak rysuja). */
+.wsc[data-bold] > .wsc-r:empty { box-shadow: none; }
+.wsc-open .wsc-h { padding: 0; }
+/* Aktywna zaslona - na niej dzialaja strzalki. Celowo BEZ obwodki: gruba ramka
+   wokol tekstu w liscie wygladala jak blad przegladarki. Wystarczy nieco
+   mocniejszy odcien samego paska. */
+.wsc.wsc-active > .wsc-h {
+  background-color: color-mix(in srgb, var(--ws-accent) 62%, #ffffff);
+}
+/* Klikniecie nie ma zostawiac systemowej obwodki focusu na tekscie. */
+.wsc:focus, .wsc:focus-visible, .wsc-h:focus, .wsc-r:focus { outline: none; }
+/* Slowo-luka z gap-fill zachowuje wyroznienie po odslonieciu. */
+.ws-review-gap-word,
+.wsc[data-bold] .wsc-r {
   font-weight: 800; color: var(--ws-accent);
   -webkit-print-color-adjust: exact; print-color-adjust: exact;
-}
-.ws-review-item-answer { position: relative; min-width: 0; }
-.ws-review-item:not(.ws-review-item-gap) .ws-review-item-answer { padding-right: 2.4rem; }
-/* ── ZASŁONA "SZKLANA" (typy inne niż gap-fill) ──
-   Nieprzezroczysta tafla w odcieniu akcentu, z delikatnym połyskiem i cienką
-   ramką. Po kliknięciu pęka (efekt rozbicia szkła generowany w JS) i odsłania
-   odpowiedź. Brak ciężkich, rozmytych cieni - zgodnie z preferencjami. */
-.ws-review-cover {
-  position: absolute; inset: -0.15rem -0.3rem; z-index: 2;
-  background:
-    linear-gradient(135deg,
-      color-mix(in srgb, var(--ws-accent) 30%, #ffffff) 0%,
-      color-mix(in srgb, var(--ws-accent) 52%, #ffffff) 100%);
-  border: 1.5px solid color-mix(in srgb, var(--ws-accent) 60%, #ffffff);
-  border-radius: 8px;
-  cursor: pointer; overflow: hidden;
-  /* Tylko hover (filter) - BEZ animowania geometrii. Po rozbiciu tafli maly
-     uchwyt z malpka pojawia sie statycznie, bez morfingu tafli w przycisk. */
-  transition: filter 0.15s;
-  -webkit-print-color-adjust: exact; print-color-adjust: exact;
-}
-/* Połysk - ukośne pasmo światła sugerujące taflę szkła. Lekko rozmyte (szersze
-   pasmo, łagodniejsze krawędzie), żeby biała poświata nie skupiała się zbyt
-   mocno na środku. */
-.ws-review-cover::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(115deg,
-    rgba(255,255,255,0) 30%,
-    rgba(255,255,255,0.48) 50%,
-    rgba(255,255,255,0) 70%);
-}
-.ws-review-cover::after {
-  content: '👁  odsłoń'; position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--ws-body); font-weight: 700; font-size: 0.78rem;
-  letter-spacing: 0.04em;
-  color: color-mix(in srgb, var(--ws-accent) 78%, #000000);
-}
-.ws-review-cover:hover { filter: brightness(1.05); }
-/* Po odsłonięciu: zasłona znika, ale mały uchwyt "zasłoń" zostaje po prawej. */
-.ws-review-item-answer.revealed .ws-review-cover {
-  inset: 50% 0 auto auto; transform: translateY(-50%);
-  width: 1.95rem; height: 1.95rem;
-  border-radius: 7px;
-  background: var(--ws-card); border-width: 1.5px; border-style: solid;
-  border-color: var(--ws-border-strong);
-  display: flex; align-items: center; justify-content: center;
-}
-.ws-review-item-answer.revealed .ws-review-cover::before { display: none; }
-.ws-review-item-answer.revealed .ws-review-cover::after {
-  content: '🙈'; color: var(--ws-text-dim); font-size: 0.9rem; font-weight: 400;
-  position: static;
-}
-/* Gap-fill: zaslona TYLKO na slowach-lukach. Slowo jest pod spodem, nakladka NAD nim. */
-.ws-review-gap { position: relative; display: inline-block; }
-/* Ten sam kolor co pełne zasłsony (--ws-accent), ale połysk jest mocniej
-   rozmazany - szersze, miększe pasmo światła - bo na wąskich lukach ostry
-   gradient wyglądał brzydko. */
-.ws-review-gap-cover {
-  position: absolute; inset: -0.05rem -0.15rem; z-index: 2;
-  /* Prosty, dwukolorowy gradient w tonacji akcentu - BEZ białego błysku w środku,
-     który na wąskich lukach wyglądał źle. */
-  background:
-    linear-gradient(135deg,
-      color-mix(in srgb, var(--ws-accent) 38%, #ffffff) 0%,
-      color-mix(in srgb, var(--ws-accent) 60%, #ffffff) 100%);
-  border: 1.5px solid color-mix(in srgb, var(--ws-accent) 60%, #ffffff);
-  border-radius: 5px;
-  cursor: pointer; padding: 0; overflow: hidden;
-  transition: filter 0.15s, transform 0.15s;
-  -webkit-print-color-adjust: exact; print-color-adjust: exact;
-}
-.ws-review-gap-cover::before {
-  content: ''; position: absolute; inset: 0;
-  /* Brak białego pasma światła - na wąskich lukach wyglądało źle. */
-}
-.ws-review-gap-cover:hover { filter: brightness(1.05); }
-.ws-review-gap-cover:active { transform: scale(0.97); }
-/* Po odsloniu luki: nakladka staje sie przezroczysta, ale nadal klikalna na
-   calym slowie (klik zaslania ponownie). Subtelne podkreslenie = wskazowka. */
-.ws-review-gap:not(.covered) .ws-review-gap-cover {
-  background: transparent; border: none; border-radius: 0;
-  border-bottom: 2px solid var(--ws-accent);
-  -webkit-print-color-adjust: exact; print-color-adjust: exact;
-}
-.ws-review-gap:not(.covered) .ws-review-gap-cover::before { display: none; }
-.ws-review-gap:not(.covered) .ws-review-gap-cover:hover {
-  background: var(--ws-accent-soft);
-}
-
-/* ── EFEKT PĘKAJĄCEGO SZKŁA (umiarkowany) ──
-   Po odsłonięciu zasłony nakładamy na nią chwilowy kontener z kilkoma odłamkami
-   (clip-path: polygon). Każdy odłamek odlatuje w innym kierunku z lekką rotacją
-   i zanika. Efekt jest świadomie rzadki (mało odłamków), więc lekki dla przeglądarki. */
-.ws-review-shatter {
-  position: absolute; inset: 0; z-index: 5;
-  pointer-events: none; overflow: visible;
-}
-.ws-review-shard {
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(135deg,
-      color-mix(in srgb, var(--ws-accent) 34%, #ffffff) 0%,
-      color-mix(in srgb, var(--ws-accent) 56%, #ffffff) 100%);
-  border: 1px solid color-mix(in srgb, var(--ws-accent) 55%, #ffffff);
-  -webkit-print-color-adjust: exact; print-color-adjust: exact;
-  animation: wsShardFly 0.5s cubic-bezier(0.3, 0.7, 0.4, 1) forwards;
-}
-@keyframes wsShardFly {
-  0%   { opacity: 1; transform: translate(0,0) rotate(0deg) scale(1); }
-  100% { opacity: 0;
-         transform: translate(var(--sx,0), var(--sy,0)) rotate(var(--sr,0deg)) scale(0.85); }
 }
 
 /* Stopka pozycji: oceny po lewej, TTS po prawej - w osobnym rzedzie, wiec
@@ -9774,7 +10302,11 @@ body.ws-diff-hidden .ws-review-row-main {
 /* Oceny uzywaja tej samej klasy .ws-diff/.ws-diff-btn co zadania - identyczny
    wyglad i zero skakania (triki translateZ/backface sa w .ws-diff-btn). */
 .ws-review-row-foot .ws-diff { display: inline-flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; }
-.ws-review-item-tts {
+/* Przycisk zaslony (.ws-review-item-recover) celowo dzieli regule z przyciskiem
+   odsluchu - ma byc identyczny co do rozmiaru, ramki, tla i zachowania.
+   Rozni sie WYLACZNIE ikona, dzialaniem i pozycjonowaniem (rog komorki). */
+.ws-review-item-tts,
+.ws-review-item-recover {
   flex-shrink: 0; width: 1.95rem; height: 1.95rem;
   border: 1.5px solid var(--ws-border-strong); border-radius: 7px;
   background: var(--ws-card); cursor: pointer; font-size: 0.9rem;
@@ -9790,7 +10322,21 @@ body.ws-diff-hidden .ws-review-row-main {
   color: var(--ws-text-dim);
   line-height: 1.5;
 }
-.ws-review-item-tts:hover { border-color: var(--ws-accent); background: var(--ws-accent-soft); }
+.ws-review-item-tts:hover,
+.ws-review-item-recover:hover { border-color: var(--ws-accent); background: var(--ws-accent-soft); }
+/* Przelacznik zaslony stoi w PRAWYM GORNYM ROGU komorki z odpowiedzia - tam,
+   gdzie wczesniej byl uchwyt. Wyglad dziedziczy z reguly wspolnej z przyciskiem
+   odsluchu; tutaj TYLKO umiejscowienie. Komorka ma staly zapas z prawej, wiec
+   tekst nigdy nie wchodzi pod przycisk. */
+.ws-review-item-answer { padding-right: 2.45rem; }
+.ws-review-item-recover {
+  position: absolute;
+  top: 0; right: 0;
+}
+@media print {
+  .ws-review-item-recover { display: none !important; }
+  .ws-review-item-answer { padding-right: 0 !important; }
+}
 /* Telefon: rzad "PL → odpowiedz" ciasno sie gniotl w trzech kolumnach.
    Ukladamy w KOLUMNIE: polskie haslo u gory, zasl0nieta odpowiedz pelna
    szerokoscia POD spodem (strzalka zbedna), stopka z ocenami zawija sie. */
@@ -9804,10 +10350,6 @@ body.ws-diff-hidden .ws-review-row-main {
   .ws-review-item-arrow { display: none; }
   .ws-review-item:not(.ws-review-item-gap) .ws-review-item-answer {
     padding-right: 0;
-  }
-  /* Po odslonieciu maly uchwyt 🙈 siedzi po prawej - zrob mu miejsce. */
-  .ws-review-item:not(.ws-review-item-gap) .ws-review-item-answer.revealed {
-    padding-right: 2.4rem;
   }
   .ws-review-row-foot { flex-wrap: wrap; row-gap: 0.4rem; }
 }
@@ -10026,7 +10568,12 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   padding: 0;
   font-size: 0.95rem;
   width: 32px; height: 32px;
-  display: grid; place-items: center;
+  /* inline-grid, NIE grid: gdy przycisk stoi posrod tekstu (polecenie w Writing),
+     wersja blokowa zawsze lamala linie i spadala pod spod. W kontenerach flex
+     element i tak jest "zblokowany", wiec nic sie tam nie zmienia. */
+  display: inline-grid;
+  place-items: center;
+  vertical-align: -0.32em;
   transition: all 0.15s;
   flex-shrink: 0;
   line-height: 1;
@@ -10285,6 +10832,20 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
 .unsc-card.done .unsc-word {
   cursor: default;
 }
+/* Atrapa (dystraktor) po rozwiazaniu karty: przygaszona i przekreslona, zeby
+   bylo widac, ze to slowo NIE nalezalo do zdania. W trakcie ukladania atrapa
+   wyglada dokladnie jak zwykly klocek - inaczej nie mialaby sensu. */
+.unsc-word.unsc-decoy-shown {
+  opacity: 0.5;
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  font-weight: 400;
+  cursor: default;
+}
+.unsc-word.unsc-decoy-shown:hover {
+  transform: none;
+  border-color: var(--ws-border-strong);
+}
 .unsc-controls {
   display: flex;
   flex-wrap: wrap;
@@ -10342,6 +10903,28 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
     text-overflow: ellipsis;
     letter-spacing: -0.01em;
   }
+}
+
+/* ── IKONY W PRZYCISKACH ──
+   Jedna regula na wszystkie inline SVG. Rozmiar w em, wiec ikona skaluje sie
+   razem z tekstem przycisku; kolor bierze sie z currentColor. flex-shrink:0
+   pilnuje, zeby przy ciasnym przycisku scisnal sie tekst, nie ikona. */
+.ws-ico {
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+  display: block;
+}
+/* Przyciski, ktore maja ikone ORAZ tekst: staly odstep i wspolna os. */
+.unsc-hint-btn,
+.unsc-solve-btn,
+.ws-review-print,
+.ws-review-reveal-all,
+.ws-btn-clear-sec {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
 }
 
 /* ========== CORNELL ========== */
@@ -10464,11 +11047,8 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
 .cornell-write-toggle-close { display: none; }
 .cornell-card.writing .cornell-write-toggle-open { display: none; }
 .cornell-card.writing .cornell-write-toggle-close { display: inline; }
-.cornell-card.writing .cornell-write-toggle {
-  border-color: var(--ws-accent);
-  color: var(--ws-accent);
-  border-style: solid;
-}
+/* Stan aktywny (karta w trybie pisania) i hover wygladaja identycznie. */
+.cornell-card.writing .cornell-write-toggle,
 .cornell-write-toggle:hover {
   border-color: var(--ws-accent);
   color: var(--ws-accent);
@@ -10556,12 +11136,11 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
 }
 /* 4 opcje -> 2x2 (najczęstszy przypadek, równo wypełnia box) */
 .quiz-options[data-opts="4"] { grid-template-columns: repeat(2, 1fr); }
-/* 6 opcji -> 3x2 */
+/* 3 kolumny dla 3, 5 i 6 opcji: 3 -> jeden rzad, 6 -> rowne 3x2,
+   5 -> 3+2 (mniej "sieroce" niz 2 kolumny, ktore dawaly 2+2+1). */
+.quiz-options[data-opts="3"],
+.quiz-options[data-opts="5"],
 .quiz-options[data-opts="6"] { grid-template-columns: repeat(3, 1fr); }
-/* 3 opcje -> 3 kolumny w jednym rzędzie (lub 1 kolumna na wąskich) */
-.quiz-options[data-opts="3"] { grid-template-columns: repeat(3, 1fr); }
-/* 5 opcji -> 3 kolumny (3+2) - mniej "sieroce" niż 2 (2+2+1) */
-.quiz-options[data-opts="5"] { grid-template-columns: repeat(3, 1fr); }
 /* 2 opcje -> obok siebie */
 .quiz-options[data-opts="2"] { grid-template-columns: repeat(2, 1fr); }
 /* Mobile: wszystko w jednej kolumnie */
@@ -10726,16 +11305,18 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   font-family: var(--ws-body);
   font-size: 1.05rem;
   font-weight: 600;
-  /* Waskie boki: pole ma obejmowac slowo, a nie stac w nim z rozlozonymi
-     rekami. Wysokosc (padding pionowy) zostaje bez zmian. */
-  padding: 0.3rem 0.4rem;
+  /* Odstep boczny jest STALY i niewielki - to jedyne, co oddziela tekst od
+     krawedzi. Szerokosc pola liczy JS (wsFitGap): mierzy tekst na canvasie
+     i ustawia width = tekst + dokladnie ten padding. Dzieki temu kazda luka
+     ma taki sam wizualny margines, niezaleznie od dlugosci slowa.
+     min-width celowo NIE MA - to ono robilo z krotkich slow puste pudla. */
+  padding: 0.3rem 0.62rem;
   margin: 0 0.1rem;
   background: var(--ws-bg);
   border: 1.5px solid var(--ws-border-strong);
   border-radius: 9px;
   color: var(--ws-text);
   text-align: center;
-  min-width: 52px;
   transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
 }
 .gap-input:focus {
@@ -10983,12 +11564,12 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
 .no-flag .trans-pl-label,
 .no-flag .write-prompt-flag { display: none; }
 
-.trans-check { color: var(--ws-ok); border-color: var(--ws-ok); }
-.trans-check:hover { background: var(--ws-ok-bg); transform: scale(1.05); }
-.trans-hint-btn { color: var(--ws-accent); border-color: var(--ws-accent); }
-.trans-hint-btn:hover { background: var(--ws-accent-soft); transform: scale(1.05); }
-.trans-solve-btn { color: var(--ws-accent); border-color: var(--ws-accent); }
-.trans-solve-btn:hover { background: var(--ws-accent-soft); transform: scale(1.05); }
+/* Kolory tych przyciskow ustawia WSPOLNY blok na koncu arkusza (razem z ich
+   odpowiednikami w pozostalych zadaniach) - tutaj zostaje tylko powiekszenie
+   na hover, wspolne dla calego rzedu w Translate. */
+.trans-check:hover,
+.trans-hint-btn:hover,
+.trans-solve-btn:hover { transform: scale(1.05); }
 .trans-solve-btn:disabled, .trans-hint-btn:disabled, .trans-check:disabled {
   opacity: 0.35;
   cursor: not-allowed;
@@ -11042,20 +11623,30 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   color: var(--ws-text);
   line-height: 1.4;
   display: flex;
-  align-items: baseline;
+  /* flex-start (nie baseline, nie center): flaga trzyma sie PIERWSZEJ linii.
+     Celowo BEZ flex-wrap - tekst ma sie zawijac wewnatrz swojej kolumny,
+     a nie przeskakiwac w calosci pod flage. */
+  align-items: flex-start;
   gap: 0.65rem;
-  flex-wrap: wrap;
+}
+.write-prompt-text {
+  flex: 1 1 auto;
+  min-width: 0;      /* pozwala sie zwezic i lamac zamiast rozpychac kontener */
 }
 .write-prompt-en {
-  font-style: italic;
-  color: var(--ws-text-dim);
+  /* Bez kursywy i bez szarosci: kolor akcentu rozjasniony bielą - polecenie
+     angielskie jest wyraznie odrebne od polskiego, ale dalej dobrze czytelne. */
+  color: color-mix(in srgb, var(--ws-accent) 82%, #ffffff);
   font-size: 1.18rem;
 }
 .write-prompt-flag {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  align-self: center;
+  /* Wyrownanie do pierwszej linii tekstu: line-height 1.4 daje line-box 1.4em,
+     wiec zapas nad flaga to polowa roznicy miedzy nim a wysokoscia flagi. */
+  align-self: flex-start;
+  margin-top: calc((1.4em - 1.2rem) / 2);
   width: 1.7rem;
   height: 1.2rem;
   border-radius: 3px;
@@ -11487,7 +12078,7 @@ body.ws-rater::before {
   }
 
   /* ── Word Scramble: kafelki liter w wersji płaskiej do druku,
-        chowamy przycisk "Sprawdź" (✅) i kasowanie (⌫).
+        chowamy przycisk "Sprawdź" i kasowanie ostatniej litery.
         Pole wpisu zostaje do pisania. ── */
   .scramble-check { display: none !important; }
   .scramble-backspace { display: none !important; }
@@ -11578,11 +12169,16 @@ body.ws-rater::before {
   .ws-review-text,
   .ws-review-levels,
   .ws-review-toolbar { display: none !important; }
-  /* Odpowiedzi w pełni widoczne: zasłony (overlay/canvas) znikają. */
-  .ws-review-cover,
-  .ws-review-gap-cover,
-  .ws-review-shatter,
+  /* Na papierze zasłon nie ma - tekst zwyczajny, bez tła i podkreślenia. */
   .ws-review-item-tts { display: none !important; }
+  .wsc-h {
+    background: none !important;
+    color: var(--ws-text) !important;
+    -webkit-text-fill-color: var(--ws-text) !important;
+    padding: 0 !important;
+  }
+  .wsc-r { box-shadow: none !important; }
+  .wsc.wsc-active { outline: none !important; }
   .ws-review-item-answer { padding-right: 0 !important; }
   .ws-review-ans-text { color: var(--ws-text) !important; }
   .ws-review-gap-word {
@@ -11681,6 +12277,77 @@ body.ws-rater::before {
   body.ws-print-review-only .ws-review { break-before: auto !important; page-break-before: auto !important; }
 }
 
+/* === KOLORY IKON W PRZYCISKACH AKCJI =========================================
+   Do wersji 4.1 kolorowanie siedzialo TYLKO w Translate (.trans-check itd.).
+   Przy emoji nie bylo tego widac, bo emoji ma wlasne kolory i ignoruje wlasciwosc
+   color - dopiero ikony SVG (currentColor) ujawnily te roznice. Zamiast usuwac
+   kolor, rozciagamy go na wszystkie zadania, ale OSZCZEDNIE: barwiona jest sama
+   ikona, ramka zostaje neutralna. Kolor podpowiada funkcje, a karta nie zamienia
+   sie w choinke. Blok stoi na koncu arkusza, wiec wygrywa z regulami zadan
+   bez uzywania !important.
+   Zielony = sprawdz, bursztyn = podpowiedz, akcent = rozwiaz.
+   Ramka bierze DOKLADNIE ten sam kolor co ikona - inaczej neutralna (albo
+   akcentowa) obwodka gryzla sie z kolorowym srodkiem.                          */
+
+.scramble-check,
+.trans-check {
+  color: var(--ws-ok);
+  border-color: var(--ws-ok);
+}
+.scramble-hint-btn,
+.unsc-hint-btn,
+.quiz-hint-btn,
+.gap-helper-btn,
+.trans-hint-btn {
+  color: var(--ws-hint);
+  border-color: var(--ws-hint);
+}
+.scramble-solve-btn,
+.unsc-solve-btn,
+.quiz-solve-btn,
+.gap-solve-btn,
+.match-solve-btn,
+.trans-solve-btn {
+  color: var(--ws-accent);
+  border-color: var(--ws-accent);
+}
+/* Hover: ramka przejmuje kolor ikony + bardzo delikatny podklad w tym samym
+   tonie. Bez przesuwania elementu - tylko kolor (i ewentualne skalowanie,
+   ktore zadania definiuja u siebie). */
+.scramble-check:hover,
+.trans-check:hover {
+  color: var(--ws-ok);
+  border-color: var(--ws-ok);
+  background: var(--ws-ok-bg);
+}
+.scramble-hint-btn:hover,
+.unsc-hint-btn:hover,
+.quiz-hint-btn:hover,
+.gap-helper-btn:hover,
+.trans-hint-btn:hover {
+  color: var(--ws-hint);
+  border-color: var(--ws-hint);
+  background: color-mix(in srgb, var(--ws-hint) 12%, transparent);
+}
+.scramble-solve-btn:hover,
+.unsc-solve-btn:hover,
+.quiz-solve-btn:hover,
+.gap-solve-btn:hover,
+.match-solve-btn:hover,
+.trans-solve-btn:hover {
+  color: var(--ws-accent);
+  border-color: var(--ws-accent);
+  background: var(--ws-accent-soft);
+}
+/* Wylaczony przycisk nie krzyczy kolorem - samo przygaszenie zostaje. */
+.scramble-check:disabled, .scramble-hint-btn:disabled, .scramble-solve-btn:disabled,
+.quiz-hint-btn:disabled, .quiz-solve-btn:disabled,
+.trans-check:disabled, .trans-hint-btn:disabled, .trans-solve-btn:disabled {
+  color: var(--ws-text-dim);
+  border-color: var(--ws-border-strong);
+  background: transparent;
+}
+
 /* === OSTATECZNY OVERRIDE: zielone rozwiazane podzadanie (Scramble + Translate) ===
    Umieszczone na samym koncu arkusza i z wysoka specyficznoscia, zeby wygralo z
    regulami presetow (editorial/vintage), ktore wczesniej ustawialy tla na inne.
@@ -11707,8 +12374,6 @@ body.ws-rater::before {
 // kolory, tlo, czcionki, przelaczniki, sekcje materialow, obrazki, kolejnosc.
 // Zapis odpalany z opoznieniem po kazdej zmianie; przywracanie raz, na starcie.
 // ============================================================
-// v2: stary klucz v1 porzucony celowo - snapshoty 3.1 przywracaly wylaczone
-// zadania i blokade auto-wyboru, przez co zadania "znikaly" z nowych kart.
 const WSGEN_LS_KEY = 'wsgen-autosave-v2';
 let _wsgenRestoring = false; // podczas przywracania nie zapisujemy w kolko
 
@@ -11722,7 +12387,7 @@ function wsgenBuildSnapshot() {
     title: val('title'),
     subtitle: val('subtitle'),
     colors: { accent: val('colorAccent'), bg: val('colorBg'), text: val('colorText') },
-    bg: { style: STATE.bgStyle, svg: STATE.bgSvgCode || '', size: STATE.bgSvgSize, op: STATE.bgSvgOpacity },
+    bg: { style: STATE.bgStyle, svg: STATE.bgSvgCode || '', size: STATE.bgSvgSize, op: STATE.bgSvgOpacity, html: STATE.bgHtmlCode || '', htmlOp: STATE.bgHtmlOpacity },
     corners: STATE.sharpCorners,
     headerGradient: chk('headerGradientChk'),
     tts: { enabled: chk('ttsEnabled'), lang: val('ttsLang'), voice: val('ttsVoice'), rate: val('ttsRate') },
@@ -11741,6 +12406,7 @@ function wsgenBuildSnapshot() {
       instrOn: { ...STATE.taskInstructions },
       headOn: { ...STATE.taskHeaders },
       flags: { ...STATE.taskFlags },
+      flagsUK: { ...STATE.taskFlagsUK },
       customs: STATE.taskOrder.map((k, pos) => {
         const c = STATE.customSections[k];
         if (!c) return null;
@@ -11760,6 +12426,22 @@ function wsgenScheduleSave() {
     } catch (e) { /* brak miejsca / tryb prywatny - autozapis po cichu pomijamy */ }
   }, 700);
 }
+// ── PELNY RESET GENERATORA ──
+// Celowo NIE zerujemy tu recznie kilkudziesieciu pol STATE i ich odbic w UI.
+// Taka lista rozjezdzalaby sie przy kazdej nowej opcji i zostawiala ciche
+// niedoczyszczone resztki. Zamiast tego kasujemy autozapis i przeladowujemy
+// strone - generator wstaje dokladnie w stanie fabrycznym, bez wyjatkow.
+// Przycisk "✕ Wyczyść" u gory zostaje osobno: czysci tylko tytul i dane,
+// zachowujac dobrany wyglad karty (kolory, czcionki, tlo).
+const _btnResetAll = document.getElementById('btnResetAll');
+if (_btnResetAll) _btnResetAll.addEventListener('click', () => {
+  if (!confirm('Zresetować cały generator?\n\nWrócą ustawienia domyślne: dane, tytuł, wybrane zadania, kolory, czcionki, tło, obrazki i sekcje materiałów.\n\nWygenerowane wcześniej pliki HTML zostają nietknięte.')) return;
+  _wsgenRestoring = true;                       // zablokuj autozapis przed przeladowaniem
+  clearTimeout(_wsgenSaveTimer);                // i anuluj zaplanowany zapis
+  try { localStorage.removeItem(WSGEN_LS_KEY); } catch (e) {}
+  location.reload();
+});
+
 // Kazda interakcja z generatorem moze zmieniac stan - lapiemy szeroko,
 // debounce trzyma koszt w ryzach.
 document.addEventListener('input', wsgenScheduleSave, true);
@@ -11769,8 +12451,6 @@ document.addEventListener('click', wsgenScheduleSave, true);
 function wsgenRestore() {
   let snap = null;
   try { snap = JSON.parse(localStorage.getItem(WSGEN_LS_KEY) || 'null'); } catch (e) {}
-  // Sprzatanie po v1 (patrz komentarz przy kluczu).
-  try { localStorage.removeItem('wsgen-autosave-v1'); } catch (e) {}
   if (!snap || snap.v !== 1) return;
   _wsgenRestoring = true;
   try {
@@ -11789,6 +12469,8 @@ function wsgenRestore() {
     // 1. Tlo (styl + SVG) - przed TSV, zeby klik w kafelek stylu nie nadpisal nic pozniej.
     if (snap.bg) {
       if (typeof snap.bg.svg === 'string') setInput('svgBgCode', snap.bg.svg);
+      if (typeof snap.bg.html === 'string') setInput('htmlBgCode', snap.bg.html);
+      if (snap.bg.htmlOp != null) setInput('htmlBgOpacity', snap.bg.htmlOp);
       if (snap.bg.size != null) setInput('svgBgSize', snap.bg.size);
       if (snap.bg.op != null) setInput('svgBgOpacity', snap.bg.op);
       const bgBtn = document.querySelector('.bg-style-btn[data-bg="' + (snap.bg.style || 'blobs') + '"]');
