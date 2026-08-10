@@ -1128,15 +1128,13 @@ body {
   border-radius: 8px;
   padding: 0.45rem 0.9rem;
   cursor: pointer;
-  transition: color 0.18s, border-color 0.18s, background-color 0.18s, transform 0.12s;
+  transition: color 0.18s, border-color 0.18s, background-color 0.18s;
 }
 .btn-reset-all:hover {
   color: #c0392b;
   border-color: #c0392b;
   background-color: rgba(192, 57, 43, 0.06);
-  transform: scale(1.03);
 }
-.btn-reset-all:active { transform: scale(0.98); }
 .btn-reset-all:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* Ostrzezenie w statusie TSV - wyrazniejsze niz zwykla podpowiedz, ale bez
@@ -1165,15 +1163,13 @@ body {
   padding: 0.3rem 0.7rem;
   margin-top: 0.6rem;
   cursor: pointer;
-  transition: color 0.18s, border-color 0.18s, background-color 0.18s, transform 0.12s;
+  transition: color 0.18s, border-color 0.18s, background-color 0.18s;
 }
 .tsv-clear-btn:hover {
   color: #c0392b;
   border-color: #c0392b;
   background-color: rgba(192, 57, 43, 0.06);
-  transform: scale(1.04);
 }
-.tsv-clear-btn:active { transform: scale(0.98); }
 .tsv-clear-btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -1741,7 +1737,7 @@ Napisz krótki email do przyjaciela o weekendzie.	Use past simple. Include at le
 // Jedno zrodlo prawdy o numerze wersji. Uzywane w naglowku generatora
 // ORAZ w badge "Worksheet vX.Y" na samej karcie pracy - dzieki temu
 // wiadomo, w jakiej wersji generatora powstala dana karta.
-const WS_GEN_VERSION = '4.2';
+const WS_GEN_VERSION = '4.3';
 
 // LOGO KARTY PRACY - jeden staly URL, zawsze widoczne na gorze i dole karty.
 // Chcesz inne logo? Podmien ponizszy adres (jedyne miejsce w kodzie).
@@ -4117,6 +4113,8 @@ const ICO_EYE_OFF = _ICO('<path d="M3.5 3.5l17 17"/><path d="M9.6 5.9A9.4 9.4 0 
 const ICO_TEACHER = _ICO('<path d="M14 4.5h5.5V10"/><path d="M19.5 4.5L11 13"/><path d="M18 14v4.5a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 014 18.5v-11A1.5 1.5 0 015.5 6H10"/>');
 // zaslon z powrotem - kreska u gory + strzalka w dol ("opusc zaslone")
 const ICO_RECOVER = _ICO('<path d="M4 5.5h16"/><path d="M12 9v7.5"/><path d="M8.5 13l3.5 3.5 3.5-3.5"/>');
+// powtorka - dwie strzalki w petli
+const ICO_REVIEW = _ICO('<path d="M3.5 9.5a8.5 8.5 0 0114.3-3.3L20.5 9"/><path d="M20.5 4.5V9H16"/><path d="M20.5 14.5a8.5 8.5 0 01-14.3 3.3L3.5 15"/><path d="M3.5 19.5V15H8"/>');
 // Z1 - strzalka cofania
 const ICO_UNDO = _ICO('<path d="M3.5 6v5.5H9"/><path d="M4.6 11.5a8 8 0 113 8"/>');
 // P1 - drukarka
@@ -5132,8 +5130,8 @@ function buildScrambleSection(num, options = {}) {
           <button class="scramble-solve-btn" onclick="solveScrambleOne_${num}(${i})" title="Rozwiąż to słowo" aria-label="Rozwiąż">${ICO_SOLVE}</button>
           <button class="scramble-tts-btn tts-btn" onclick="ttsBtnClick(event, ${JSON.stringify(r.en).replace(/"/g, '&quot;')})" title="Posłuchaj" aria-label="Czytaj">${ICO_TTS}</button>
         </div>
-        ${noteHTML(r)}
         ${diffRow(diffRowIdx(r))}
+        ${noteHTML(r)}
       </div>`;
   }).join('');
 
@@ -5292,8 +5290,8 @@ function buildQuizSection(num, options = {}) {
           <button class="tts-btn quiz-solve-btn" onclick="solveQuizOne_${num}(${i})" title="Rozwiąż to pytanie" aria-label="Rozwiąż">${ICO_SOLVE}</button>
         </div>
         <div class="quiz-options" data-opts="${opts.length}">${optHTML}</div>
-        ${noteHTML(r)}
         ${diffRow(diffRowIdx(r))}
+        ${noteHTML(r)}
       </div>`;
   }).join('');
 
@@ -5467,13 +5465,13 @@ function buildUnscrambleSection(num, options = {}) {
           </button>
         </div>
         <div class="unsc-controls">
-          <button type="button" class="unsc-check-btn" onclick="checkUnscramble_${num}(${i})">Sprawdź</button>
-          <button type="button" class="unsc-hint-btn" onclick="hintUnscramble_${num}(${i})" title="Podpowiedź" aria-label="Podpowiedź">${ICO_HINT}<span>Podpowiedź</span></button>
-          <button type="button" class="unsc-solve-btn" onclick="solveUnscrambleOne_${num}(${i})" title="Rozwiąż" aria-label="Rozwiąż">${ICO_SOLVE}<span>Rozwiąż</span></button>
-          <button type="button" class="unsc-clear-btn" onclick="clearUnscramble_${num}(${i})">Wyczyść</button>
+          <button type="button" class="unsc-check-btn" onclick="checkUnscramble_${num}(${i})" title="Sprawdź" aria-label="Sprawdź">${ICO_CHECK}</button>
+          <button type="button" class="unsc-hint-btn" onclick="hintUnscramble_${num}(${i})" title="Podpowiedź" aria-label="Podpowiedź">${ICO_HINT}</button>
+          <button type="button" class="unsc-solve-btn" onclick="solveUnscrambleOne_${num}(${i})" title="Rozwiąż" aria-label="Rozwiąż">${ICO_SOLVE}</button>
+          <button type="button" class="unsc-clear-btn" onclick="clearUnscramble_${num}(${i})" title="Wyczyść i zasłoń słowa" aria-label="Wyczyść">${ICO_UNDO}</button>
         </div>
-        ${noteHTML(r)}
         ${diffRow(diffRowIdx(r))}
+        ${noteHTML(r)}
       </div>`;
   }).filter(s => s.length > 0).join('');
 
@@ -5588,6 +5586,14 @@ function buildUnscrambleJS(num, options = {}) {
   }
 
   // Per-section nazwy (zob. komentarz przy solveFlashcards_).
+  // Odslania pule slow (uzywane po rozwiazaniu karty w dowolny sposob).
+  function _unscRevealPool_${num}(card) {
+    const pool = card.querySelector('.unsc-pool');
+    const reveal = card.querySelector('.unsc-pool-reveal');
+    if (pool) pool.classList.remove('unsc-pool-hidden');
+    if (reveal) reveal.style.display = 'none';
+  }
+
   window.checkUnscramble_${num} = function(cardIdx) {
     const card = _unscCard_${num}(cardIdx);
     if (!card) return;
@@ -5628,6 +5634,9 @@ function buildUnscrambleJS(num, options = {}) {
       card.classList.add('done');
       // wszystkie słowa staja sie disabled
       card.querySelectorAll('.unsc-word').forEach(w => w.setAttribute('draggable', 'false'));
+      // Zdanie moglo zostac ulozone samymi podpowiedziami, przy zaslonietej puli -
+      // wtedy zaslona wisialaby nad rozwiazana karta. Zdejmujemy ja zawsze.
+      _unscRevealPool_${num}(card);
       // Atrapy, ktore zostaly w puli, oznaczamy DOPIERO teraz - w trakcie
       // ukladania musialy wygladac jak zwykle klocki.
       _unscRevealDecoys_${num}(card);
@@ -5712,6 +5721,15 @@ function buildUnscrambleJS(num, options = {}) {
     });
     const answerWords = Array.from(card.querySelectorAll('.unsc-answer-area .unsc-word'));
     answerWords.forEach(w => _unscMoveToPool_${num}(w));
+    // Po powrocie do puli slowa staly w kolejnosci, w jakiej byly ulozone -
+    // czyli czesto GOTOWE ROZWIAZANIE widoczne jak na dloni. Mieszamy je od nowa.
+    _unscShufflePool_${num}(card);
+    // "Wyczysc" przywraca karte do stanu wyjsciowego, wiec zaslania tez pule.
+    // Dzieki temu przypadkowe odsloniecie da sie cofnac bez dodatkowego przycisku.
+    const pool = card.querySelector('.unsc-pool');
+    const reveal = card.querySelector('.unsc-pool-reveal');
+    if (pool) pool.classList.add('unsc-pool-hidden');
+    if (reveal) reveal.style.display = '';
     if (wasDone) {
       _unscDone_${num}.delete(cardIdx);
       // Cala sekcja przestaje byc ukonczona, gdy cofniemy rozwiazana karte.
@@ -5721,6 +5739,38 @@ function buildUnscrambleJS(num, options = {}) {
       wsSound('tap');
     }
   };
+
+  // Miesza kolejnosc klockow w puli. Przy dwoch i wiecej slowach pilnujemy, zeby
+  // nowa kolejnosc rzeczywiscie roznila sie od poprzedniej - inaczej losowanie
+  // potrafi zwrocic ten sam uklad i wyglada to jak brak reakcji.
+  function _unscShufflePool_${num}(card) {
+    const pool = card.querySelector('.unsc-pool');
+    if (!pool) return;
+    const words = Array.from(pool.querySelectorAll('.unsc-word'));
+    if (words.length < 2) return;
+    const before = words.map(w => w.dataset.word).join(' ');
+    // Wlasny shuffle - funkcja z generatora nie istnieje w gotowej karcie.
+    const mix = arr => {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+      }
+      return a;
+    };
+    let order = words;
+    for (let attempt = 0; attempt < 6; attempt++) {
+      order = mix(words);
+      if (order.map(w => w.dataset.word).join(' ') !== before) break;
+    }
+    // Gdyby losowanie uparcie zwracalo ten sam uklad (np. dwa identyczne slowa),
+    // wymuszamy zamiane dwoch pierwszych - pula nigdy nie zostaje w kolejnosci
+    // rozwiazania.
+    if (order.map(w => w.dataset.word).join(' ') === before && order.length >= 2) {
+      const t = order[0]; order[0] = order[1]; order[1] = t;
+    }
+    order.forEach(w => pool.appendChild(w));
+  }
 
   // Wypelnia JEDNA karte poprawna odpowiedzia (wspolny trzon dla "Rozwiaz"
   // pojedynczej karty i "Pokaz wszystkie odpowiedzi").
@@ -6014,7 +6064,7 @@ function buildGapfillSection(num, options = {}) {
       const w = Math.max(p.answer.length + 1, 4);
       // Liczba słów w odpowiedzi - pokazywana jako ghost text w nawiasach, np. (1) lub (4).
       const wordCount = p.answer.trim().split(/\s+/).filter(Boolean).length || 1;
-      return `<input type="text" class="gap-input" data-answer="${escapeHtml(p.answer.toLowerCase())}" data-gap-idx="${p.idx}" size="${w}" placeholder="(${wordCount})" onkeydown="if(event.key==='Enter') checkGap_${num}(this)">`;
+      return `<input type="text" class="gap-input" data-answer="${escapeHtml(p.answer.toLowerCase())}" data-display="${escapeHtml(p.answer)}" data-gap-idx="${p.idx}" size="${w}" placeholder="(${wordCount})" onkeydown="if(event.key==='Enter') checkGap_${num}(this)">`;
     }).join('');
     // pełne zdanie EN bez klamr (do TTS)
     const enClean = r.en.replace(/\{([^}]+)\}/g, '$1');
@@ -6024,15 +6074,15 @@ function buildGapfillSection(num, options = {}) {
         <div class="gap-translation${flagOffCls(taskKey)}">
           <span class="gap-translation-label">${sectionFlag(taskKey)}</span> <span class="gap-translation-text">${escapeHtml(r.pl)}</span>
         </div>
-        <div class="gap-sentence">${sentenceHTML}
+        <div class="gap-sentence"><span class="gap-sentence-text">${sentenceHTML}</span>
           <span class="gap-actions">
             <button class="tts-btn tts-btn-gap gap-helper-btn" onclick="hintGap_${num}(${i})" title="Podpowiedź - kolejna litera w pierwszej pustej luce" aria-label="Podpowiedź">${ICO_HINT}</button>
             <button class="tts-btn tts-btn-gap gap-solve-btn" onclick="solveGapOne_${num}(${i})" title="Rozwiąż całe zdanie" aria-label="Rozwiąż">${ICO_SOLVE}</button>
             <button class="tts-btn tts-btn-gap" onclick="ttsBtnClick(event, ${JSON.stringify(enClean).replace(/"/g, '&quot;')})" title="Posłuchaj całego zdania" aria-label="Czytaj">${ICO_TTS}</button>
           </span>
         </div>
-        ${noteHTML(r)}
         ${diffRow(diffRowIdx(r))}
+        ${noteHTML(r)}
       </div>`;
   }).join('');
 
@@ -6064,6 +6114,11 @@ function buildGapfillJS(num, options = {}) {
     const val = input.value.trim().toLowerCase();
     if (val === ans) {
       wsSound('correct');
+      // Wpisywanie jest nieczule na wielkosc liter, ale po zaliczeniu pokazujemy
+      // pisownie z danych - dzieki temu zdanie czyta sie poprawnie, np. z wielka
+      // litera na poczatku albo z nazwa wlasna.
+      input.value = input.dataset.display || input.value.trim();
+      wsFitGap(input);
       input.classList.remove('gap-wrong');
       input.classList.add('gap-correct');
       input.disabled = true;
@@ -6111,7 +6166,8 @@ function buildGapfillJS(num, options = {}) {
       else break;
     }
     const newLen = Math.min(matchLen + 1, ans.length);
-    target.value = ans.slice(0, newLen);
+    target.value = (target.dataset.display || ans).slice(0, newLen);
+    wsFitGap(target);
     target.classList.remove('gap-wrong');
     target.focus();
     if (newLen === ans.length) {
@@ -6126,7 +6182,8 @@ function buildGapfillJS(num, options = {}) {
     wsSound('correct');
     card.querySelectorAll('.gap-input').forEach(inp => {
       if (inp.classList.contains('gap-correct')) return;
-      inp.value = inp.dataset.answer;
+      inp.value = inp.dataset.display || inp.dataset.answer;
+      wsFitGap(inp);
       inp.classList.add('gap-correct');
       inp.disabled = true;
     });
@@ -6202,8 +6259,8 @@ function buildTranslateSection(num, options = {}) {
             <button class="tts-btn tts-btn-trans" onclick="ttsBtnClick(event, ${JSON.stringify(r.en).replace(/"/g, '&quot;')})" title="Posłuchaj poprawnego tłumaczenia" aria-label="Czytaj">${ICO_TTS}</button>
           </div>
         </div>
-        ${noteHTML(r)}
         ${diffRow(diffRowIdx(r))}
+        ${noteHTML(r)}
       </div>`;
   }).join('');
 
@@ -6347,9 +6404,10 @@ function buildWritingSection(num, options = {}) {
         <div class="write-print-note" aria-hidden="true"></div>
         <div class="write-footer">
           <span class="write-counter"><span class="write-counter-num">0</span> słów</span>
-          <button class="write-save" onclick="saveWrite_${num}(this)">✅ Gotowe</button>
+          <button class="write-save" onclick="saveWrite_${num}(this)" title="Gotowe" aria-label="Gotowe">${ICO_CHECK}<span>Gotowe</span></button>
         </div>
         ${diffRow(diffRowIdx(r))}
+        ${noteHTML(r)}
       </div>`;
   }).join('');
 
@@ -6393,7 +6451,11 @@ function buildWritingJS(num, options = {}) {
     if (card.classList.contains('done')) return;
     card.classList.add('done');
     btn.disabled = true;
-    btn.textContent = '✅ Zapisane';
+    btn.innerHTML = ICO_CHECK_S + '<span>Zapisane</span>';
+    // Klasa 'saved' odslania notatke pod TYM podzadaniem (a nie dopiero po
+    // zapisaniu wszystkich). Pozostale zadania robia to przez '.done', ale
+    // w writing '.done' oznacza tez wygaszenie karty, wiec potrzebna jest wlasna.
+    card.classList.add('saved');
     _writeSaved_${num}.add(parseInt(card.dataset.idx));
     // Pojedyncze "Gotowe" = correct. Sekcja konczy sie dopiero, gdy WSZYSTKIE
     // podzadania writing zostaly zapisane.
@@ -6480,7 +6542,7 @@ ${bgEffectHTML}
     <div class="ws-review-card">
       <button type="button" class="ws-review-toggle" id="wsReviewToggle" onclick="wsToggleReview()" aria-expanded="false">
         <span class="ws-review-toggle-left">
-          <span class="ws-review-icon">🔁</span>
+          <span class="ws-review-icon">${ICO_REVIEW}</span>
           <span class="ws-review-toggle-titles">
             <span class="ws-review-title">Szybka powtórka</span>
             <span class="ws-review-toggle-sub" id="wsReviewCount">Oznacz trudność słów, żeby zebrać je tutaj do powtórki</span>
@@ -6521,7 +6583,7 @@ ${bgEffectHTML}
         </div>
         <div class="ws-review-result" id="wsReviewResult"></div>
         <div class="ws-review-finish-wrap" id="wsReviewFinishWrap" hidden>
-          <button type="button" class="ws-review-finish-btn" onclick="wsEndFlowFinishReview()">Gotowe! 🎉</button>
+          <button type="button" class="ws-review-finish-btn" onclick="wsEndFlowFinishReview()">${ICO_CHECK}<span>Gotowe</span></button>
         </div>
       </div>
     </div>
@@ -6539,6 +6601,7 @@ ${bgEffectHTML}
     <span class="ws-save-indicator">💾 Postęp zapisywany automatycznie</span>
     <button class="ws-btn-finish-early" onclick="wsFinishEarly()" title="Zakończ teraz i świętuj, nawet jeśli nie wszystko zrobione">🎉 Zakończ wcześniej</button>
     <button class="ws-btn-reset-foot" onclick="resetWorksheet()">Reset</button>
+    <button class="ws-btn-download-tsv" onclick="copyTSV()" title="Skopiuj dane TSV do schowka">⧉ TSV</button>
     <button class="ws-btn-download-tsv" onclick="downloadTSV()" title="Pobierz dane jako plik TSV">⤓ TSV</button>
   </footer>
 </div>
@@ -6615,6 +6678,7 @@ if (document.body) {
 // Te same stale co w generatorze - wstrzykniete jako gotowe stringi.
 const ICO_TTS_S = ${JSON.stringify(ICO_TTS)};
 const ICO_UNDO_S = ${JSON.stringify(ICO_UNDO)};
+const ICO_CHECK_S = ${JSON.stringify(ICO_CHECK)};
 const ICO_RECOVER_S = ${JSON.stringify(ICO_RECOVER)};
 const ICO_TTS_ON_S = ${JSON.stringify(ICO_TTS)};
 const ICO_MUTE_S = ${JSON.stringify(ICO_MUTE)};
@@ -7073,9 +7137,11 @@ function wsClearSection(num) {
   // chowamy go. Nie myli sie z inputem, bo input zostal juz wyczyszczony powyzej.
 
   // ── WRITING ── wyczysc pola, odblokuj przycisk "Gotowe" i wyzeruj licznik slow.
-  sec.querySelectorAll('.write-card').forEach(card => card.classList.remove('done'));
+  // 'saved' trzeba zdjac razem z 'done' - to ona odslania notatke pod
+  // podzadaniem, wiec bez tego notatka zostawala widoczna po wyczyszczeniu.
+  sec.querySelectorAll('.write-card').forEach(card => card.classList.remove('done', 'saved'));
   sec.querySelectorAll('.write-area').forEach(ta => { ta.value = ''; });
-  sec.querySelectorAll('.write-save').forEach(b => { b.disabled = false; b.textContent = '✅ Gotowe'; });
+  sec.querySelectorAll('.write-save').forEach(b => { b.disabled = false; b.innerHTML = ICO_CHECK_S + '<span>Gotowe</span>'; });
   sec.querySelectorAll('.write-counter-num').forEach(c => { c.textContent = '0'; });
 
   // Wyczysc komunikat feedbacku sekcji.
@@ -7413,7 +7479,17 @@ function wsBuildReview() {
           [sh[k], sh[j]] = [sh[j], sh[k]];
         }
         if (sh.join(' ') === ws.join(' ')) { [sh[0], sh[1]] = [sh[1], sh[0]]; }
-        unscHint = '<span class="ws-review-unsc-words">' + sh.map(w => _wsEsc(w)).join(' ◆ ') + '</span>';
+        // Slowa jako male bloczki (zamiast tekstu rozdzielonego rombami) plus
+        // wlasna zaslona - inaczej rozsypanka od razu podpowiadala odpowiedz
+        // stojaca tuz obok, po prawej stronie.
+        unscHint = '<span class="ws-review-unsc-wrap">'
+          + '<span class="ws-review-unsc-words">'
+          +   sh.map(w => '<span class="ws-review-unsc-chip">' + _wsEsc(w) + '</span>').join('')
+          + '</span>'
+          + '<button type="button" class="ws-review-unsc-cover" onclick="wsToggleUnscHint(this)" aria-label="Pokaż lub ukryj rozsypane słowa">'
+          +   '<span class="ws-review-unsc-cover-label">' + ICO_EYE_S + '<span>Pokaż słowa</span></span>'
+          + '</button>'
+          + '</span>';
       }
     }
 
@@ -7433,15 +7509,15 @@ function wsBuildReview() {
       ? ''
       : '<div class="ws-review-row-foot">'
         + '<span class="ws-diff' + '" data-row="' + i + '"' + selAttr + ' aria-label="Zmień poziom trudności">' + rateBtns + '</span>'
-        + ttsBtnHtml
+        + '<span class="ws-review-foot-btns">' + recoverBtnHtml + ttsBtnHtml + '</span>'
         + '</div>';
     return '<div class="ws-review-item' + gapCls + '" data-row="' + i + '">'
       + printRating
       + '<div class="ws-review-row-main">'
       +   '<span class="ws-review-item-pl">' + _wsEsc(r.pl) + unscHint + '</span>'
       +   '<span class="ws-review-item-arrow">→</span>'
-      +   '<span class="ws-review-item-answer">' + answerInner + recoverBtnHtml + '</span>'
-      +   (WS_DIFF_HIDDEN ? ttsBtnHtml : '')
+      +   '<span class="ws-review-item-answer">' + answerInner + '</span>'
+      +   (WS_DIFF_HIDDEN ? '<span class="ws-review-foot-btns">' + recoverBtnHtml + ttsBtnHtml + '</span>' : '')
       + '</div>'
       + noteBlock
       + footBlock
@@ -7551,6 +7627,23 @@ function _wsBarSet(unit, n, dir) {
 // Przelacznik widocznosci CALEJ pozycji: cokolwiek zakryte -> odslon wszystko,
 // wszystko odsloniete -> zaslon z powrotem. Wygodniejsze niz celowanie myszka
 // w pierwsza litere, zwlaszcza przy krotkich odpowiedziach.
+// Przelacznik zaslony nad rozsypanka slow w powtorce. Klik na zaslone odslania,
+// klik na odsloniete slowa zaslania z powrotem.
+function wsToggleUnscHint(btn) {
+  const wrap = btn.closest('.ws-review-unsc-wrap');
+  if (!wrap) return;
+  wrap.classList.add('shown');
+  wsSound('tap');
+}
+document.addEventListener('click', e => {
+  const words = e.target.closest && e.target.closest('.ws-review-unsc-words');
+  if (!words) return;
+  const wrap = words.closest('.ws-review-unsc-wrap');
+  if (!wrap || !wrap.classList.contains('shown')) return;
+  wrap.classList.remove('shown');
+  wsSound('tap');
+});
+
 function wsToggleItemCover(btn) {
   const item = btn.closest('.ws-review-item');
   if (!item) return;
@@ -8484,11 +8577,9 @@ function resetWorksheet() {
 
 // Konwertuje WS_DATA z powrotem na TSV i pobiera plik. Naglowki sa zapisane w WS_HEADERS.
 // Wewnetrzne pola (_tasks, ktorych nie bylo w oryginalnym TSV) sa pomijane.
-function downloadTSV() {
-  if (!WS_HEADERS || WS_HEADERS.length === 0) {
-    showToast('Brak danych do pobrania', true);
-    return;
-  }
+// Buduje pelna zawartosc TSV. Wydzielone z downloadTSV, zeby "Kopiuj" i
+// "Pobierz" dawaly identyczny wynik - jedna implementacja, zero rozjazdu.
+function buildTSVText() {
   // Sledzenie trudnosci: dolacz kolumne "difficulty" (jesli oryginalny TSV
   // jej nie mial). Wiersze bez oceny zostaja puste; przy ocenie zapisujemy
   // czytelna wartosc typu "2 - trudne", ktora przy ponownym imporcie
@@ -8564,7 +8655,49 @@ function downloadTSV() {
       tags.forEach(t => lines.push(t));
     }
   }
-  const tsv = lines.join('\\n');
+  return lines.join('\\n');
+}
+
+// Kopiuje TSV do schowka. Clipboard API bywa niedostepne (starsza przegladarka,
+// strona z pliku lokalnego bez bezpiecznego kontekstu), wiec jest zapasowa
+// sciezka przez ukryte pole tekstowe i execCommand.
+function copyTSV() {
+  if (!WS_HEADERS || WS_HEADERS.length === 0) {
+    showToast('Brak danych do skopiowania', true);
+    return;
+  }
+  const tsv = buildTSVText();
+  const ok = () => showToast('Skopiowano TSV do schowka');
+  const fail = () => showToast('Nie udało się skopiować - pobierz plik', true);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(tsv).then(ok).catch(() => _copyTSVFallback(tsv) ? ok() : fail());
+    return;
+  }
+  if (_copyTSVFallback(tsv)) ok(); else fail();
+}
+function _copyTSVFallback(text) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    // Poza ekranem, ale NIE display:none - inaczej nie da sie zaznaczyc tresci.
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    ta.setAttribute('readonly', 'readonly');
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    const done = document.execCommand && document.execCommand('copy');
+    document.body.removeChild(ta);
+    return !!done;
+  } catch (e) { return false; }
+}
+
+function downloadTSV() {
+  if (!WS_HEADERS || WS_HEADERS.length === 0) {
+    showToast('Brak danych do pobrania', true);
+    return;
+  }
+  const tsv = buildTSVText();
   // Nazwa pliku z tytulu karty (sanityzacja)
   const safeName = (WS_TITLE || 'karta-pracy')
     .replace(/[^a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ -]/g, '')
@@ -9208,8 +9341,12 @@ ${t.sharp ? `
 .ws-progress-top-right {
   display: inline-flex; align-items: center; gap: 0.6rem;
 }
+/* Czcionka NAGLOWKOWA karty, nie monospace. Wersalikowa etykieta pisana
+   monospace odstawala od wszystkiego innego w karcie - to jedyne miejsce,
+   gdzie ta czcionka pokazywala sie uzytkownikowi jako zwykly tekst. */
 .ws-progress-label {
-  font-family: var(--ws-mono); font-size: 0.65rem; letter-spacing: 0.2em;
+  font-family: var(--ws-display); font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.2em;
   text-transform: uppercase; color: var(--ws-text-dim);
 }
 .ws-progress-track {
@@ -10063,7 +10200,21 @@ ${t.sharp ? `
 }
 .ws-review-toggle:hover { background: var(--ws-box-bg); }
 .ws-review-toggle-left { display: flex; align-items: center; gap: 1rem; min-width: 0; }
-.ws-review-icon { font-size: 2.1rem; line-height: 1; flex-shrink: 0; }
+/* Odznaka powtorki - te same wymiary i zaokraglenie co numer sekcji
+   (.ws-sec-num), zeby oba "kafelki" w karcie mialy jeden format. Celowo BEZ
+   gradientu i wtloczonych cieni: numer sekcji jest glansowany, bo ich jest
+   wiele i tworza rytm; ta odznaka wystepuje raz i ma byc spokojna. */
+.ws-review-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: var(--ws-accent);
+  color: #fff;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+  line-height: 1;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.ws-review-icon .ws-ico { width: 1.6rem; height: 1.6rem; }
 .ws-review-toggle-titles { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
 .ws-review-title {
   font-family: var(--ws-display); font-weight: 700; font-size: 1.35rem;
@@ -10177,6 +10328,8 @@ ${t.sharp ? `
    Glowny rzad to grid o stalych kolumnach, zeby strzalki i odpowiedzi tworzyly
    rowne kolumny niezaleznie od dlugosci hasel (koniec z poszarpaniem). */
 .ws-review-item {
+  /* Kotwica dla przycisku zaslony, ktory na duzym ekranie stoi w rogu. */
+  position: relative;
   background: var(--ws-box-bg);
   border: 1px solid var(--ws-border);
   border-radius: 10px;
@@ -10314,24 +10467,86 @@ body.ws-diff-hidden .ws-review-row-main {
   transition: all 0.15s;
 }
 /* Rozsypane slowa (wiersze z unscramble) - pod polskim haslem, do ulozenia ustnie */
-.ws-review-unsc-words {
+/* Rozsypane slowa do ulozenia ustnie - male bloczki zamiast tekstu z rombami. */
+.ws-review-unsc-wrap {
   display: block;
-  margin-top: 0.35rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--ws-text-dim);
-  line-height: 1.5;
+  position: relative;
+  margin-top: 0.4rem;
 }
+.ws-review-unsc-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.ws-review-unsc-chip {
+  font-family: var(--ws-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ws-text-dim);
+  background: var(--ws-accent-soft);
+  border-radius: 6px;
+  padding: 0.16rem 0.45rem;
+  line-height: 1.35;
+}
+/* Zaslona nad rozsypanka - taka sama zasada jak przy puli slow w zadaniu:
+   kryjace tlo, klik przelacza widocznosc w obie strony. */
+.ws-review-unsc-cover {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ws-card);
+  /* Zwykla, ciagla ramka - przerywana i jej zamiana na ciagla przy najechaniu
+     robily niepotrzebny ruch w miejscu, ktore ma byc tylko przelacznikiem. */
+  border: 1.5px solid var(--ws-accent);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.ws-review-unsc-cover:hover {
+  background: color-mix(in srgb, var(--ws-accent) 9%, var(--ws-card));
+}
+.ws-review-unsc-cover-label {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  font-family: var(--ws-body); font-size: 0.75rem; font-weight: 600;
+  color: var(--ws-accent);
+}
+.ws-review-unsc-wrap.shown .ws-review-unsc-cover { display: none; }
+@media print { .ws-review-unsc-cover { display: none !important; } }
 .ws-review-item-tts:hover,
 .ws-review-item-recover:hover { border-color: var(--ws-accent); background: var(--ws-accent-soft); }
-/* Przelacznik zaslony stoi w PRAWYM GORNYM ROGU komorki z odpowiedzia - tam,
-   gdzie wczesniej byl uchwyt. Wyglad dziedziczy z reguly wspolnej z przyciskiem
-   odsluchu; tutaj TYLKO umiejscowienie. Komorka ma staly zapas z prawej, wiec
-   tekst nigdy nie wchodzi pod przycisk. */
-.ws-review-item-answer { padding-right: 2.45rem; }
-.ws-review-item-recover {
-  position: absolute;
-  top: 0; right: 0;
+/* Domyslnie przycisk zaslony stoi normalnie w rzedzie, obok odsluchu.
+   Pozycjonowanie do rogu wlacza sie DOPIERO od 601px (nizej) - wczesniej ta
+   regula stala tutaj bez zadnego progu i dzialala takze na telefonie, przez co
+   przycisk wisial w rogu niezaleznie od szerokosci ekranu. */
+/* Przycisk siedzi w DOM w stopce, obok odsluchu. Na duzym ekranie CSS
+   przenosi go wizualnie w prawy gorny rog pozycji - tam, gdzie jest najblizej
+   odslanianej odpowiedzi. Na telefonie kolumna jest zbyt waska i przycisk
+   wchodzil na tekst, wiec zostaje w stopce przy odsluchu. */
+.ws-review-foot-btns {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+/* Prog 600px - taki sam jak reszta stylow powtorki. Wczesniej bylo 560px,
+   wiec na telefonach o szerokosci 561-600px przycisk dalej wisial w rogu
+   zamiast stanac obok odsluchu. */
+@media (min-width: 601px) {
+  .ws-review-item-answer { padding-right: 2.45rem; }
+  .ws-review-item-recover {
+    position: absolute;
+    top: 0.7rem;
+    right: 0.9rem;
+  }
+}
+@media (max-width: 600px) {
+  .ws-review-item-answer { padding-right: 0; }
+  /* Tryb ukrytych oznaczen: para przyciskow stoi w glownym rzedzie siatki. */
+  .ws-review-foot-btns { justify-self: start; }
 }
 @media print {
   .ws-review-item-recover { display: none !important; }
@@ -10725,7 +10940,11 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   border: 1px dotted var(--ws-border);
   border-radius: 10px;
   min-height: 56px;
-  margin-bottom: 0.85rem;
+  /* Odstep pod pula nalezy do WRAPPERA, nie do puli. Gdy siedzial tutaj,
+     zwijal sie na zewnatrz wrappera (margin collapsing), wiec wrapper byl
+     dokladnie wysokosci puli, a zaslona liczona jako 100% minus ten odstep
+     wychodzila o 0.85rem za krotka - u dolu przezieral pasek ze slowami. */
+  margin-bottom: 0;
   transition: border-color 0.2s, background 0.2s, filter 0.3s;
   align-items: center;
   justify-content: center;
@@ -10733,17 +10952,28 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
 /* Wrapper na pulę i przycisk odkrywający (overlay). */
 .unsc-pool-wrap {
   position: relative;
+  margin-bottom: 0.85rem;
 }
-/* Pula slow ukryta na starcie - mocno rozmyta zeby nie dalo sie odczytac.
-   pointer-events: none zapobiega drag/click przed kliknieciem zaslony. */
+/* Pula slow ukryta na starcie. Zaslona lezaca na wierzchu jest nieprzezroczysta,
+   wiec rozmycie (filter: blur) niczego nie dawalo poza kosztem renderowania -
+   usuniete. Zostaje blokada zaznaczania i klikania pod spodem. */
 .unsc-pool.unsc-pool-hidden {
-  filter: blur(10px);
   user-select: none;
   pointer-events: none;
 }
+/* Zaslona puli slow. Wyglad jak wczesniej (kropkowana ramka w akcencie),
+   ale bez zbednych efektow.
+   POKRYCIE: wczesniej bylo inset:0 + margin-bottom, przez co <button> liczyl
+   sobie szerokosc jak element o tresci wlasnej i nie siegal krawedzi puli -
+   przy krawedziach dalo sie odczytac slowa. Rozmycie puli to maskowalo; po jego
+   usunieciu dziura stala sie widoczna. Teraz wymiar jest podany WPROST, wiec
+   zaslona zawsze pokrywa caly box ze slowami. */
 .unsc-pool-reveal {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10756,8 +10986,8 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   font-size: 0.95rem;
   border-radius: 10px;
   cursor: pointer;
-  margin-bottom: 0.85rem; /* dopasuj do unsc-pool */
-  transition: all 0.18s;
+  /* Tylko kolory - zadnego "all", zeby nie animowac wymiarow i cieni. */
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
   z-index: 2;
 }
 /* Telefon: napis "Kliknij, aby pokazac slowa..." ledwo miescil sie na tafli -
@@ -10772,8 +11002,12 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   }
   .unsc-pool-reveal-icon { font-size: 0.9rem; }
 }
+/* Hover MUSI zostac kryjacy. Wczesniej wchodzil tu poltransparentny
+   --ws-accent-soft i po najechaniu spod zaslony przezieraly slowa,
+   czyli zaslona sama zdradzala odpowiedz. */
 .unsc-pool-reveal:hover {
-  background: var(--ws-accent-soft);
+  background: color-mix(in srgb, var(--ws-accent) 9%, var(--ws-card));
+  border-style: solid;
 }
 .unsc-pool-reveal-icon {
   font-size: 1.2rem;
@@ -10851,29 +11085,28 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   flex-wrap: wrap;
   gap: 0.5rem;
 }
+/* Te same kwadraty 3rem co w Word Scramble i Translate - jedna regula na
+   wszystkie zadania zamiast osobnego, podluznego zestawu tylko tutaj.
+   Kolory ikon nadaje wspolny blok na koncu arkusza. */
 .unsc-check-btn,
 .unsc-hint-btn,
 .unsc-solve-btn,
 .unsc-clear-btn {
   font-family: var(--ws-body);
-  font-size: 0.92rem;
-  font-weight: 500;
-  padding: 0.55rem 1rem;
-  border-radius: 9px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  width: 3rem; height: 3rem;
+  flex-shrink: 0;
+  border-radius: 8px;
   border: 1.5px solid var(--ws-border-strong);
   background: var(--ws-bg);
   color: var(--ws-text);
   cursor: pointer;
-  transition: all 0.15s;
+  display: grid;
+  place-items: center;
+  transition: all 0.18s;
 }
-.unsc-check-btn {
-  background: var(--ws-accent);
-  color: ${isDarkTheme ? t.bg : '#fff'};
-  border-color: var(--ws-accent);
-  font-weight: 600;
-}
-.unsc-check-btn:hover { opacity: 0.85; }
-.unsc-hint-btn:hover, .unsc-solve-btn:hover, .unsc-clear-btn:hover {
+.unsc-clear-btn:hover {
   border-color: var(--ws-accent);
   color: var(--ws-accent);
 }
@@ -10882,26 +11115,16 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   animation: wsBuzz 0.45s;
   border-color: var(--ws-no);
 }
-/* Telefon: cztery przyciski w rownej siatce 2x2 - stale rozmiary, wygodne
-   cele dotykowe, nic sie nie rozjezdza przy zawijaniu. */
+/* Telefon: przyciski zostaja KWADRATAMI i mieszcza sie w jednym rzedzie.
+   Siatka 2x2 z rozciaganiem na cala szerokosc pochodzila z czasow, gdy byly to
+   podluzne przyciski z napisami. Teraz to same ikony, wiec rozciaganie robilo
+   z nich cztery szerokie prostokaty bez powodu. Kwadrat jest tylko odrobine
+   mniejszy niz na duzym ekranie, dalej wygodny do trafienia palcem. */
 @media (max-width: 560px) {
-  .unsc-controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-  }
   .unsc-check-btn, .unsc-hint-btn, .unsc-solve-btn, .unsc-clear-btn {
-    width: 100%;
-    min-height: 2.7rem;
-    padding: 0.5rem 0.3rem;
-    font-size: 0.84rem;
-    /* Etykieta z emotka ("💡 Podpowiedź") nie moze sie lamac na dwie linie -
-       trzymamy jedna linie, a gdyby i tak bylo za ciasno, tekst delikatnie
-       sie zwezi zamiast przeskoczyc pod ikonke. */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    letter-spacing: -0.01em;
+    width: 2.8rem;
+    height: 2.8rem;
+    font-size: 1rem;
   }
 }
 
@@ -10916,8 +11139,8 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   display: block;
 }
 /* Przyciski, ktore maja ikone ORAZ tekst: staly odstep i wspolna os. */
-.unsc-hint-btn,
-.unsc-solve-btn,
+.write-save,
+.ws-review-finish-btn,
 .ws-review-print,
 .ws-review-reveal-all,
 .ws-btn-clear-sec {
@@ -11274,15 +11497,23 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   border-color: var(--ws-accent);
   background: var(--ws-accent-soft);
 }
+/* Zdanie z lukami: tekst siedzi we WLASNYM spanie z flex:1 1 auto.
+   Wczesniej fragmenty tekstu byly golymi wezlami w kontenerze flex, przez co
+   kazdy stawal sie osobnym elementem flex i przy flex-wrap przeskakiwal w
+   CALOSCI do nowej linii - na telefonie zdanie lamalo sie tuz za luka, mimo ze
+   miescilo sie jeszcze kilka slow. Teraz tekst lamie sie normalnie, w sobie. */
 .gap-sentence {
   font-family: var(--ws-body);
   font-size: 1.18rem;
   line-height: 2.1;
   color: var(--ws-text);
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.3rem;
+}
+.gap-sentence-text {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 .gap-sentence .tts-btn-gap {
   margin-left: 0.4rem;
@@ -11295,6 +11526,7 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   align-items: center;
   gap: 0.3rem;
   margin-left: auto;
+  flex-shrink: 0;
   white-space: nowrap;
 }
 .gap-actions .tts-btn-gap {
@@ -11508,7 +11740,8 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
 .trans-card.done .ws-note,
 .scramble-card.done .ws-note,
 .unsc-card.done .ws-note,
-.quiz-card.answered .ws-note { display: block; }
+.quiz-card.answered .ws-note,
+.write-card.saved .ws-note { display: block; }
 /* Cornell: notatka w bloku odpowiedzi, wyrownana do tekstu odpowiedzi
    (ten sam lewy margines co cornell-a-inner) i z oddechem od ramki. */
 .ws-note-open { display: block; margin: 0.15rem 1.1rem 0.95rem 4rem; }
@@ -11697,22 +11930,27 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   color: var(--ws-text);
   font-weight: 700;
 }
+/* "Gotowe" to odpowiednik "Sprawdź" z innych zadan - stad zielen zaliczenia
+   i ta sama ikona. Rozni sie tylko tym, ze ma przy ikonie napis, bo stoi
+   samotnie w stopce, gdzie sam kwadrat bylby nieczytelny. */
 .write-save {
   font-family: var(--ws-body);
   font-size: 0.95rem;
   font-weight: 600;
   padding: 0.55rem 1.1rem;
   border-radius: 8px;
-  border: 1.5px solid var(--ws-accent);
-  background: var(--ws-accent-soft);
-  color: var(--ws-accent);
+  border: 1.5px solid var(--ws-ok);
+  /* Ledwie muskniete zielenia - mocniejsze tlo czytalo sie jak przycisk juz
+     klikniety. Pelna zielen pojawia sie dopiero po zapisaniu (:disabled). */
+  background: color-mix(in srgb, var(--ws-ok) 5%, transparent);
+  color: var(--ws-ok);
   cursor: pointer;
-  transition: transform 0.15s, background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, opacity 0.15s;
 }
 .write-save:hover {
-  background: var(--ws-accent);
+  background: var(--ws-ok);
   color: var(--ws-bg);
-  transform: scale(1.03);
+  border-color: var(--ws-ok);
 }
 .write-save:disabled {
   opacity: 0.7;
@@ -11720,7 +11958,6 @@ body.ws-review-only-mode .ws-review { margin-top: 0.5rem; }
   background: var(--ws-ok-bg);
   border-color: var(--ws-ok);
   color: var(--ws-ok);
-  transform: none;
 }
 
 /* Kopie wpisanego tekstu (Cornell / Writing) widoczne TYLKO w druku/PDF.
@@ -12290,6 +12527,7 @@ body.ws-rater::before {
    akcentowa) obwodka gryzla sie z kolorowym srodkiem.                          */
 
 .scramble-check,
+.unsc-check-btn,
 .trans-check {
   color: var(--ws-ok);
   border-color: var(--ws-ok);
@@ -12315,6 +12553,7 @@ body.ws-rater::before {
    tonie. Bez przesuwania elementu - tylko kolor (i ewentualne skalowanie,
    ktore zadania definiuja u siebie). */
 .scramble-check:hover,
+.unsc-check-btn:hover,
 .trans-check:hover {
   color: var(--ws-ok);
   border-color: var(--ws-ok);
